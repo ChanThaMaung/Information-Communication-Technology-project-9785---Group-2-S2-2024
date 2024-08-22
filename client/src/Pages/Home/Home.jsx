@@ -23,7 +23,7 @@ export default function Home() {
 
                     <div className="form-group pt-5">
                         <input type="email" className="form-control p-1" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email" />
-                        <a className="text-gray-500 hover:text-white hover:text-gray-300 hover:cursor-pointer hover:bg-cyan-600 text-lg p-2 rounded bg-cyan-100 ml-1" href="#">
+                        <a className="p-2 ml-1 text-white text-lg p-1 bg-indigo-600 hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600" href="#">
                             Sign Up
                         </a>
                     </div>

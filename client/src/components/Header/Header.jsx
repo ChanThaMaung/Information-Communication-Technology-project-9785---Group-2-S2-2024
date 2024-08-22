@@ -30,7 +30,7 @@ function Header() {
                         <li className="text-white hover:text-gray-300 hover:cursor-pointer text-lg p-1">
                             <a href="#">Sign In</a>
                         </li>
-                        <li className="text-gray-500 rounded hover:text-white hover:text-gray-300 hover:cursor-pointer hover:bg-cyan-600 text-lg p-1 bg-cyan-200 ">
+                        <li className="rounded text-white text-lg p-1 bg-indigo-600 hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
                             <a href="#">Sign Up</a>
                         </li>
                     </ul>

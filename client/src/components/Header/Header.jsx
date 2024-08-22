@@ -14,23 +14,23 @@ function Header() {
                         <li className="text-cyan-600 text-xl p-1">
                             <a className="font-semibold" href="#">Home</a>
                         </li>
-                        <li className="text-white text-lg p-1">
+                        <li className="text-white hover:text-gray-300 hover:cursor-pointer text-lg p-1">
                             <a href="#">Dashboard</a>
                         </li>
-                        <li className="text-white text-lg p-1">
+                        <li className="text-white hover:text-gray-300 hover:cursor-pointer text-lg p-1">
                             <a href="#">About</a>
                         </li>
-                        <li className="text-white text-lg p-1">
+                        <li className="text-white hover:text-gray-300 hover:cursor-pointer text-lg p-1">
                             <a href="#">Contact</a>
                         </li>
                     </ul>
                 </div>
                 <div className="hidden md:flex flex-col md:flex-row md:items-center md:space-x-4 mt-4 md:mt-0">
                     <ul className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-4">
-                        <li className="text-white text-lg p-1">
+                        <li className="text-white hover:text-gray-300 hover:cursor-pointer text-lg p-1">
                             <a href="#">Sign In</a>
                         </li>
-                        <li className="text-gray-500 rounded hover:text-white hover:bg-cyan-600 text-lg p-1 bg-cyan-200 ">
+                        <li className="text-gray-500 rounded hover:text-white hover:text-gray-300 hover:cursor-pointer hover:bg-cyan-600 text-lg p-1 bg-cyan-200 ">
                             <a href="#">Sign Up</a>
                         </li>
                     </ul>

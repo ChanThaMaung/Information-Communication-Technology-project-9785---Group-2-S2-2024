@@ -10,22 +10,11 @@ export default function Home() {
             <Header />
 
             {/* Carousel */}
-            <div id="carouselExampleIndicators" className="relative overflow-hidden">
-                <ol className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
-                    <li data-target="#carouselExampleIndicators" data-slide-to="0" className="w-3 h-3 bg-gray-400 rounded-full"></li>
-                    <li data-target="#carouselExampleIndicators" data-slide-to="1" className="w-3 h-3 bg-gray-400 rounded-full"></li>
-                    <li data-target="#carouselExampleIndicators" data-slide-to="2" className="w-3 h-3 bg-gray-600 rounded-full"></li>
-                </ol>
+            <div id="carouselExampleIndicators" className="relative overflow-hidden mt-18">
 
                 <div className="carousel-inner relative w-full h-fit overflow-hidden flex transition-transform duration-700">
                     <div className="carousel-item active w-full flex-none">
                         <img className="w-full h-full object-cover" src="https://tse2.mm.bing.net/th?id=OIP.yEinwMqB6YvkbDnqTciTDQHaEK&pid=Api&P=0&h=180" alt="First slide" />
-                    </div>
-                    <div className="carousel-item w-full flex-none">
-                        <img className="w-full h-full object-cover" src="..." alt="Second slide" />
-                    </div>
-                    <div className="carousel-item w-full flex-none">
-                        <img className="w-full h-full object-cover" src="..." alt="Third slide" />
                     </div>
                 </div>
 

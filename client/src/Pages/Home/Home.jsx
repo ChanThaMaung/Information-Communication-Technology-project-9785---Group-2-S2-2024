@@ -10,16 +10,26 @@ export default function Home() {
             <Header />
 
             {/* Carousel */}
-            <div id="carouselExampleIndicators" className="relative overflow-hidden mt-18">
+            <div className="relative w-full h-screen bg--gradientCarousel place-content-center">
+                <div className=" text-center p-10">
+                    <h1 className="text-6xl font-semibold font-mono text-white">Blockchain Payment</h1>
+                </div>
+                <div className=" w-4/5  p-4 md:block ml-8">
+                    <h5 className="text-white font-mono text-lg ">Lorem ipsum dolor sit amet consectetur adipisicing elit.</h5>
+                    <p className="text-white font-mono">Lorem ipsum dolor sit amet consectetur, adipisicing elit. Harum ipsum expedita soluta, nesciunt assumenda aliquam consequuntur necessitatibus at vel dolor!</p>
+                </div>
+                <div className=" w-4/5  p-4 md:block ml-8">
+                    <h5 className="text-white font-mono text-lg ">Sign up by your email</h5>
 
-                <div className="carousel-inner relative w-full h-fit overflow-hidden flex transition-transform duration-700">
-                    <div className="carousel-item active w-full flex-none">
-                        <img className="w-full h-full object-cover" src="https://tse2.mm.bing.net/th?id=OIP.yEinwMqB6YvkbDnqTciTDQHaEK&pid=Api&P=0&h=180" alt="First slide" />
+                    <div className="form-group pt-5">
+                        <input type="email" className="form-control p-1" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email" />
+                        <a className="text-gray-500 hover:text-white hover:text-gray-300 hover:cursor-pointer hover:bg-cyan-600 text-lg p-2 rounded bg-cyan-100 ml-1" href="#">
+                            Sign Up
+                        </a>
                     </div>
                 </div>
-
-
             </div>
+
 
             {/* Dashboard */}
             <div className="container mx-auto px-4 mt-8 mb-4">

@@ -7,7 +7,7 @@ function Header() {
                 <a classNameName="nav-link" href="#">Link</a>
                 <a classNameName="nav-link disabled" href="#">Disabled</a>
             </nav> */}
-            <nav className="bg-gray-100 flex p-4 fixed right-0 left-0 top-0 z-50 place-content-between bg-black">
+            <nav className="flex p-4 fixed right-0 left-0 top-0 z-50 place-content-between bg-black">
 
                 <div className="hidden md:flex flex-col md:flex-row md:items-center md:space-x-4 mt-4 md:mt-0">
                     <ul className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-4">

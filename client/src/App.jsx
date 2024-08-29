@@ -4,7 +4,7 @@ import {
   Routes,
   Route
 } from "react-router-dom";
-import {Home, Dashboard } from './components';
+import { Dashboard, Home, NotFound } from "./Pages";
 // import React from 'react';
 
 function App() {
@@ -12,9 +12,10 @@ function App() {
     <>
       <BrowserRouter>
         <Routes>
-          <Route index element={<Home />} />
+          <Route index element={<Home/>} />
           <Route path="/home" element={<Home />} />
-          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/dashboard" element={<Dashboard/>} />
+          <Route path="*" element={<NotFound/>}/>
         </Routes>
       </BrowserRouter>
     </>

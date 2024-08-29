@@ -1,13 +1,10 @@
-import Header from "../../components/Header/Header";
-import Footer from "../../components/Footer/Footer";
-
+import { Footer, Navbar } from "../../components";
 
 
 export default function Home() {
     return (
         <>
-            {/* Header */}
-            <Header />
+        <Navbar/>
 
             {/* Carousel */}
             <div className="relative w-full h-screen bg--gradientCarousel place-content-center">
@@ -154,8 +151,7 @@ export default function Home() {
                 </div>
             </div>
 
-            {/* Footer */}
-            <Footer />
+            <Footer/>
         </>
     )
 }

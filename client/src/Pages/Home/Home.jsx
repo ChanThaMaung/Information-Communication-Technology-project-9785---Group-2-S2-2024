@@ -1,36 +1,32 @@
-import Header from "../../components/Header/Header";
-import Footer from "../../components/Footer/Footer";
-
+import { Footer, Navbar } from "../../components";
 
 
 export default function Home() {
     return (
         <>
-            {/* Header */}
-            <Header />
+        <Navbar/>
 
             {/* Carousel */}
-            <div id="carouselExampleIndicators" className="relative overflow-hidden">
-                <ol className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
-                    <li data-target="#carouselExampleIndicators" data-slide-to="0" className="w-3 h-3 bg-gray-400 rounded-full"></li>
-                    <li data-target="#carouselExampleIndicators" data-slide-to="1" className="w-3 h-3 bg-gray-400 rounded-full"></li>
-                    <li data-target="#carouselExampleIndicators" data-slide-to="2" className="w-3 h-3 bg-gray-600 rounded-full"></li>
-                </ol>
+            <div className="relative w-full h-screen bg--gradientCarousel place-content-center">
+                <div className=" text-center p-10">
+                    <h1 className="text-6xl font-semibold font-mono text-white">Blockchain Payment</h1>
+                </div>
+                <div className=" w-4/5  p-4 md:block ml-8">
+                    <h5 className="text-white font-mono text-lg ">Lorem ipsum dolor sit amet consectetur adipisicing elit.</h5>
+                    <p className="text-white font-mono">Lorem ipsum dolor sit amet consectetur, adipisicing elit. Harum ipsum expedita soluta, nesciunt assumenda aliquam consequuntur necessitatibus at vel dolor!</p>
+                </div>
+                <div className=" w-4/5  p-4 md:block ml-8">
+                    <h5 className="text-white font-mono text-lg ">Sign up by your email</h5>
 
-                <div className="carousel-inner relative w-full h-fit overflow-hidden flex transition-transform duration-700">
-                    <div className="carousel-item active w-full flex-none">
-                        <img className="w-full h-full object-cover" src="https://tse2.mm.bing.net/th?id=OIP.yEinwMqB6YvkbDnqTciTDQHaEK&pid=Api&P=0&h=180" alt="First slide" />
-                    </div>
-                    <div className="carousel-item w-full flex-none">
-                        <img className="w-full h-full object-cover" src="..." alt="Second slide" />
-                    </div>
-                    <div className="carousel-item w-full flex-none">
-                        <img className="w-full h-full object-cover" src="..." alt="Third slide" />
+                    <div className="form-group pt-5">
+                        <input type="email" className="form-control p-1" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email" />
+                        <a className="p-2 ml-1 text-white text-lg p-1 bg-indigo-600 hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600" href="#">
+                            Sign Up
+                        </a>
                     </div>
                 </div>
-
-
             </div>
+
 
             {/* Dashboard */}
             <div className="container mx-auto px-4 mt-8 mb-4">
@@ -155,8 +151,7 @@ export default function Home() {
                 </div>
             </div>
 
-            {/* Footer */}
-            <Footer />
+            <Footer/>
         </>
     )
 }

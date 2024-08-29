@@ -1,15 +1,22 @@
-// import {Navbar, Footer} from './components';
-// import Header from './components/Header/Header';
-import Home from './Pages/Home/Home';
+
+import {
+  BrowserRouter,
+  Routes,
+  Route
+} from "react-router-dom";
+import {Home, Dashboard } from './components';
+// import React from 'react';
 
 function App() {
-
-
   return (
     <>
-      <div className="App">
-        <Home/>
-      </div>
+      <BrowserRouter>
+        <Routes>
+          <Route index element={<Home />} />
+          <Route path="/home" element={<Home />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+        </Routes>
+      </BrowserRouter>
     </>
   )
 }

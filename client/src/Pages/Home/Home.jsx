@@ -4,7 +4,7 @@ import { Footer, Navbar } from "../../components";
 export default function Home() {
     return (
         <>
-        <Navbar/>
+            <Navbar />
 
             {/* Carousel */}
             <div className="relative w-full h-screen bg--gradientCarousel place-content-center">
@@ -77,7 +77,7 @@ export default function Home() {
             </div>
 
             {/* About */}
-            <div className="mt-20">
+            <div id="about" className="mt-20">
                 <div className="w-full md:w-auto blue-card-parent relative">
                     <div className="w-3/5 ml-auto mr-auto">
                         <h1 className=" text-center text-2xl font-semibold item-title ">About</h1>
@@ -128,7 +128,7 @@ export default function Home() {
             </div>
 
             {/* Contact */}
-            <div className="w-full mt-6 mb-6">
+            <div id="contact" className="w-full mt-6 mb-6">
                 <div className="w-3/5 ml-auto mr-auto p-10">
                     <h1 className=" text-center text-2xl font-semibold item-title ">Contact</h1>
                 </div>
@@ -151,7 +151,7 @@ export default function Home() {
                 </div>
             </div>
 
-            <Footer/>
+            <Footer />
         </>
     )
 }

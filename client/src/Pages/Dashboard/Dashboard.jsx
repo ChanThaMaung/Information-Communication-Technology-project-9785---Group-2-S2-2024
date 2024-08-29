@@ -1,6 +1,7 @@
 // import * as React from 'react';
 
 import { PieChart, BarChart } from '@mui/x-charts';
+import { Link } from 'react-router-dom';
 
 export default function Dashboard() {
 
@@ -37,7 +38,8 @@ export default function Dashboard() {
     <>
       <div className="w-full">
         <nav className="bg-slate-500 p-4">
-          <div className="container mx-auto">
+          <div className="">
+            <Link to={"/home"} className='text-black text-2xl p-2 bg-white'>Home</Link>
             <a href="#" className="text-3xl text-white font-semibold font-mono">Dashboard</a>
           </div>
         </nav>
@@ -49,7 +51,7 @@ export default function Dashboard() {
             {createBarChart()}
           </div>
           <div className="bg-amber-300 h-screen col-span-full">
-            
+
           </div>
 
         </div>

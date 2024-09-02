@@ -56,8 +56,20 @@ module.exports = {
    *
    * $ truffle test --network <network-name>
    */
-
+  solidity: '0.8.13',
   networks: {
+    development: {
+      host: "127.0.0.1",
+      port: 7545,
+      network_id: "*",
+      // accounts: ['0x8dd5e6f66d4927676c2760f3deb5af714cf93bc0cf39e513fcecb255d6ceaf27']
+    },
+    development: {
+      host: "127.0.0.1",
+      port: 8545,
+      network_id: "*",
+      // accounts: ['0x8dd5e6f66d4927676c2760f3deb5af714cf93bc0cf39e513fcecb255d6ceaf27']
+    },
     // Useful for testing. The `development` name is special - truffle uses it by default
     // if it's defined here and no other network is specified at the command line.
     // You should run a client (like ganache, geth, or parity) in a separate terminal
@@ -106,7 +118,7 @@ module.exports = {
   // Configure your compilers
   compilers: {
     solc: {
-      version: "0.8.21",      // Fetch exact version from solc-bin (default: truffle's version)
+      version: "0.8.13", // Fetch exact version from solc-bin (default: truffle's version)
       // docker: true,        // Use "0.5.1" you've installed locally with docker (default: false)
       // settings: {          // See the solidity docs for advice about optimization and evmVersion
       //  optimizer: {
@@ -115,7 +127,7 @@ module.exports = {
       //  },
       //  evmVersion: "byzantium"
       // }
-    }
+    },
   },
 
   // Truffle DB is currently disabled by default; to enable it, change enabled:

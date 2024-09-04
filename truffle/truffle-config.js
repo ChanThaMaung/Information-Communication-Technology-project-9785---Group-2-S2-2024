@@ -64,12 +64,6 @@ module.exports = {
       network_id: "*",
       // accounts: ['0x8dd5e6f66d4927676c2760f3deb5af714cf93bc0cf39e513fcecb255d6ceaf27']
     },
-    development: {
-      host: "127.0.0.1",
-      port: 8545,
-      network_id: "*",
-      // accounts: ['0x8dd5e6f66d4927676c2760f3deb5af714cf93bc0cf39e513fcecb255d6ceaf27']
-    },
     // Useful for testing. The `development` name is special - truffle uses it by default
     // if it's defined here and no other network is specified at the command line.
     // You should run a client (like ganache, geth, or parity) in a separate terminal

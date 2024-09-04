@@ -1,3 +1,6 @@
 {
-    "editor.defaultFormatter": "anysphere.cursor-shadow-workspace"
+    "editor.defaultFormatter": "anysphere.cursor-shadow-workspace",
+    "[solidity]": {
+        "editor.defaultFormatter": "NomicFoundation.hardhat-solidity"
+    }
 }

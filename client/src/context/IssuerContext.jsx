@@ -8,6 +8,7 @@ export const IssuerContext = React.createContext();
 const { ethereum } = window;
 
 export const IssuerProvider = ({ children }) => {
+  const [transactions, setTransactions] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [currentAccount, setCurrentAccount] = useState("");
   const [transactionCount, setTransactionCount] = useState(localStorage.getItem('transactionCount'));
@@ -28,6 +29,16 @@ export const IssuerProvider = ({ children }) => {
 
   };
 
+  const fetchTransactions = async () => {
+    try {
+      const issuerContract = await getEthereumContract(contractAddress, contractABI, {ethereum});
+      const transactions = await issuerContract.getAllTransactions();
+      setTransactions(transactions);
+      console.log(transactions);
+    } catch (error) {
+      console.log(error);
+    }
+  };
   const connectWallet = async () => {
       const account = await connectWalletFunction();
       setCurrentAccount(account);
@@ -58,6 +69,7 @@ export const IssuerProvider = ({ children }) => {
       setTransactionCount(transactionCount.toNumber);
       console.log(`Transaction Count: ${transactionCount}`);
 
+      await fetchTransactions();
 
     } catch (error) {
       console.log(error);
@@ -67,6 +79,9 @@ export const IssuerProvider = ({ children }) => {
   };
   useEffect(() => {
     checkIfWalletIsConnected();
+    if (currentAccount) {
+      fetchTransactions();
+    }
   }, []);
 
   return (
@@ -78,6 +93,7 @@ export const IssuerProvider = ({ children }) => {
         setFormData,
         sendTransaction,
         handleChange,
+        transactions,
       }}
     >
       {children}

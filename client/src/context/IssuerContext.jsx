@@ -8,6 +8,7 @@ export const IssuerContext = React.createContext();
 const { ethereum } = window;
 
 export const IssuerProvider = ({ children }) => {
+  
   const [transactions, setTransactions] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [currentAccount, setCurrentAccount] = useState("");
@@ -87,8 +88,6 @@ export const IssuerProvider = ({ children }) => {
   return (
     <IssuerContext.Provider
       value={{
-        connectWallet,
-        currentAccount,
         formData,
         setFormData,
         sendTransaction,

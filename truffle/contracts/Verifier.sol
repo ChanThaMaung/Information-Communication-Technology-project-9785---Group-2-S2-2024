@@ -7,11 +7,13 @@ contract Verifier {
     Emitter emitterContract;
     Issuer issuerContract;
     
+    enum TransactionType { Emitter, Issuer }
+    
     struct VerificationUpdate {
         bytes32 originalTxHash;
         uint256 newStatus;
         uint256 timestamp;
-        bool isEmitterTransaction;
+        TransactionType transactionType;
     }
     
     mapping(bytes32 => VerificationUpdate) public verificationUpdates;
@@ -21,7 +23,7 @@ contract Verifier {
         bytes32 indexed originalTxHash,
         bytes32 indexed updateTxHash,
         uint256 newStatus,
-        bool isEmitterTransaction
+        TransactionType transactionType
     );
 
     event TransactionUpdateLinked(
@@ -37,28 +39,28 @@ contract Verifier {
 
     function verifyEmitterTransaction(bytes32 originalTxHash, uint256 newStatus) external returns (bytes32) {
         require(emitterContract.transactionExists(originalTxHash), "Original emitter transaction does not exist");
-        return _createVerificationUpdate(originalTxHash, newStatus, true);
+        return _createVerificationUpdate(originalTxHash, newStatus, TransactionType.Emitter);
     }
 
     function verifyIssuerTransaction(bytes32 originalTxHash, uint256 newStatus) external returns (bytes32) {
         require(issuerContract.transactionExists(originalTxHash), "Original issuer transaction does not exist");
-        return _createVerificationUpdate(originalTxHash, newStatus, false);
+        return _createVerificationUpdate(originalTxHash, newStatus, TransactionType.Issuer);
     }
 
-    function _createVerificationUpdate(bytes32 originalTxHash, uint256 newStatus, bool isEmitterTransaction) internal returns (bytes32) {
-        bytes32 updateTxHash = keccak256(abi.encodePacked(originalTxHash, newStatus, block.timestamp, isEmitterTransaction));
+    function _createVerificationUpdate(bytes32 originalTxHash, uint256 newStatus, TransactionType transactionType) internal returns (bytes32) {
+        bytes32 updateTxHash = keccak256(abi.encodePacked(originalTxHash, newStatus, block.timestamp, transactionType));
         
         verificationUpdates[updateTxHash] = VerificationUpdate({
             originalTxHash: originalTxHash,
             newStatus: newStatus,
             timestamp: block.timestamp,
-            isEmitterTransaction: isEmitterTransaction
+            transactionType: transactionType
         });
         
         transactionUpdateHistory[originalTxHash].push(updateTxHash);
         uint256 updateCount = transactionUpdateHistory[originalTxHash].length;
         
-        emit TransactionVerified(originalTxHash, updateTxHash, newStatus, isEmitterTransaction);
+        emit TransactionVerified(originalTxHash, updateTxHash, newStatus, transactionType);
         emit TransactionUpdateLinked(originalTxHash, updateTxHash, updateCount);
         
         return updateTxHash;

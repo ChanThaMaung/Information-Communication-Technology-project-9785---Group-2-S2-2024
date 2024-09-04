@@ -10,6 +10,5 @@ export const getEthereumContract = async (contractAddress, contractABI, {ethereu
       contractABI,
       signer
     );
-    console.log(contract);
     return contract;
   };

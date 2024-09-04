@@ -25,11 +25,15 @@ export const IssuerProvider = ({ children }) => {
     if (!ethereum) return alert("Please install Metamask");
 
     const accounts = await ethereum.request({ method: "eth_accounts" });
+
   };
 
   const connectWallet = async () => {
       const account = await connectWalletFunction();
       setCurrentAccount(account);
+      const issuerContract = await getEthereumContract(contractAddress, contractABI, {ethereum});
+      const transactions = await issuerContract.getAllTransactions();
+      console.log(transactions);
   };
 
   const sendTransaction = async () => {

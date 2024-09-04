@@ -8,7 +8,7 @@ contract Issuer {
     event issueCredits (
         bytes32 indexed txHash,
         address from,
-        uint amount,
+        uint credit_amount,
         uint256 timestamp,
         string status,
         uint256 end_date
@@ -16,7 +16,7 @@ contract Issuer {
 
     struct issuerStruct {
         address issuerAdd; 
-        uint amount;
+        uint credit_amount;
         uint256 timestamp; 
         string status; // Retired, Active 
         uint256 end_date;
@@ -24,14 +24,14 @@ contract Issuer {
 
     issuerStruct[] issuerTransactions;
 
-    function addToBlockChain(uint amount, string calldata status, uint256 end_date) public returns (bytes32) {
+    function addToBlockChain(uint credit_amount, string calldata status, uint256 end_date) public returns (bytes32) {
         transactionCounter += 1;
-        issuerTransactions.push(issuerStruct(msg.sender, amount, block.timestamp, status, end_date));
+        issuerTransactions.push(issuerStruct(msg.sender, credit_amount, block.timestamp, status, end_date));
         
-        bytes32 txHash = keccak256(abi.encodePacked(msg.sender, amount, block.timestamp, status, end_date));
+        bytes32 txHash = keccak256(abi.encodePacked(msg.sender, credit_amount, block.timestamp, status, end_date));
         transactions[txHash] = true;
         
-        emit issueCredits(txHash, msg.sender, amount, block.timestamp, status, end_date);
+        emit issueCredits(txHash, msg.sender, credit_amount, block.timestamp, status, end_date);
         return txHash;
     }
     

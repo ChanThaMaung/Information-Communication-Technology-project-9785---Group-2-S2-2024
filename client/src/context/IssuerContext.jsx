@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { contractABI, contractAddress } from "../utils/IssuerConstants";
+import { contractABI, contractAddress } from "../utils/Issuer/IssuerConstants";
 import { getEthereumContract } from "./GlobalFunctions/getEthereumContract";
 import { connectWallet as connectWalletFunction } from "./GlobalFunctions/connectWallet";
 
@@ -14,7 +14,7 @@ export const IssuerProvider = ({ children }) => {
   const [transactionCount, setTransactionCount] = useState(localStorage.getItem('transactionCount'));
   const [formData, setFormData] = useState({
     amount: "",
-    end_date: "",
+    end_date: 0,
     status: "",
   });
 
@@ -53,7 +53,7 @@ export const IssuerProvider = ({ children }) => {
       const { amount, end_date, status } = formData;
       console.log(amount, end_date, status);
       const issuerContract = await getEthereumContract(contractAddress, contractABI, {ethereum});
-      const transactionHash = await issuerContract.addToBlockChain(amount, end_date, status, {
+      const transactionHash = await issuerContract.addToBlockChain(amount, status, end_date, {
         from: currentAccount,
         gas: '0x5208',
       });

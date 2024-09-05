@@ -11,6 +11,12 @@ function InputPage() {
     transactions,
   } = useContext(IssuerContext);
 
+  const handleEndDateChange = (e) => {
+    const date = new Date(e.target.value);
+    const unixTimestamp = Math.floor(date.getTime() / 1000);
+    handleChange({ target: { name: 'end_date', value: unixTimestamp } }, 'end_date');
+  };
+
   const handleSubmit = (e) => {
     const { amount, end_date, status } = formData;
     e.preventDefault();
@@ -45,11 +51,11 @@ function InputPage() {
         </div>
 
         <div className="flex items-center">
-          <span className="mr-2 w-32">End Date:</span>
+          <span className="mr-2 w-32">Expected Retirement Date:</span>
           <input
             name="end_date"
-            type="text"
-            onChange={(e) => handleChange(e, "end_date")}
+            type="date"
+            onChange={handleEndDateChange}
             className="form-control border border-black p-2 ml-2"
           />
         </div>

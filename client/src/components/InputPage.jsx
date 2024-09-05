@@ -62,12 +62,15 @@ function InputPage() {
 
         <div className="flex items-center">
           <span className="mr-2 w-32">Status:</span>
-          <input
+          <select
             name="status"
-            type="text"
             onChange={(e) => handleChange(e, "status")}
             className="form-control border border-black p-2 ml-2"
-          />
+          >
+            <option value="">Select Status</option>
+            <option value="Active">Active</option>
+            <option value="Retired">Retired</option>
+          </select>
         </div>
         <button
           onClick={handleSubmit}

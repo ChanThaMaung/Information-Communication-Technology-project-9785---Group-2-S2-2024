@@ -37,7 +37,7 @@ function InputPage() {
       const context = getContextToUse(address);
       setContextToUse(context);
     } catch (error) {
-      console.error("Failed to connect wallet:", error);
+      console.error("Failed to connect wallets:", error);
     }
   };
 
@@ -94,11 +94,11 @@ function InputPage() {
         </div>
 
         <div className="flex items-center">
-          <span className="mr-2 w-32">End Date:</span>
+          <span className="mr-2 w-32">Date Submitted:</span>
           <input
-            name="end_date"
-            type="text"
-            onChange={(e) => handleChange(e, "end_date")}
+            name="date_submit"
+            type="date"
+            onChange={(e) => handleChange(e, "date_submit")}
             className="form-control border border-black p-2 ml-2"
           />
         </div>
@@ -126,8 +126,7 @@ function InputPage() {
           <ul>
             {transactions.map((tx, index) => (
               <li key={index}>
-                Amount: {tx[1].toString()}, Timestamp: {tx[2].toString()}, End
-                Date: {tx[3]}, Status: {tx[4].toString()}
+                Amount: {tx[1].toString()}, Timestamp: {tx[2].toString()}, Date submitted: {tx[3]}, Status: {tx[4].toString()}
               </li>
             ))}
           </ul>

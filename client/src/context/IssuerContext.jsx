@@ -15,12 +15,23 @@ export const IssuerProvider = ({ children }) => {
   const [transactionCount, setTransactionCount] = useState(localStorage.getItem('transactionCount'));
   const [formData, setFormData] = useState({
     amount: "",
-    end_date: "",
+    date_submit: "",
     status: "",
   });
 
   const handleChange = (e, name) => {
-    setFormData((prevState) => ({ ...prevState, [name]: e.target.value }));
+    let value = e.target.value;
+    if (name === "date_submit") {
+      value = dateStringToUint256(value);
+    }
+    setFormData((prevState) => ({ ...prevState, [name]: value }));
+  };
+  
+  // Add this helper function
+  const dateStringToUint256 = (dateString) => {
+    const date = new Date(dateString);
+    console.log(date.getTime() / 1000);
+    return Math.floor(date.getTime() / 1000);
   };
 
   const checkIfWalletIsConnected = async () => {
@@ -51,10 +62,10 @@ export const IssuerProvider = ({ children }) => {
   const sendTransaction = async () => {
     try {
       if (!window.ethereum) return alert("Please install metamask");
-      const { amount, end_date, status } = formData;
-      console.log(amount, end_date, status);
+      const { amount, date_submit, status } = formData;
+      console.log(amount, date_submit, status);
       const issuerContract = await getEthereumContract(contractAddress, contractABI, {ethereum});
-      const transactionHash = await issuerContract.addToBlockChain(amount, end_date, status, {
+      const transactionHash = await issuerContract.addToBlockChain(amount, date_submit, status, {
         from: currentAccount,
         gas: '0x5208',
       });

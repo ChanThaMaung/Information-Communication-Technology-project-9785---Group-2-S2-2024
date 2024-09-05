@@ -11,7 +11,7 @@ contract Issuer {
         uint credit_amount,
         uint256 timestamp,
         string status,
-        uint256 end_date
+        uint256 date_submit
     );
 
     struct issuerStruct {
@@ -19,19 +19,19 @@ contract Issuer {
         uint credit_amount;
         uint256 timestamp; 
         string status; // Retired, Active 
-        uint256 end_date;
+        uint256 date_submit;
     }
 
     issuerStruct[] issuerTransactions;
 
-    function addToBlockChain(uint credit_amount, string calldata status, uint256 end_date) public returns (bytes32) {
+    function addToBlockChain(uint credit_amount, string calldata status, uint256 date_submit) public returns (bytes32) {
         transactionCounter += 1;
-        issuerTransactions.push(issuerStruct(msg.sender, credit_amount, block.timestamp, status, end_date));
+        issuerTransactions.push(issuerStruct(msg.sender, credit_amount, block.timestamp, status, date_submit));
         
-        bytes32 txHash = keccak256(abi.encodePacked(msg.sender, credit_amount, block.timestamp, status, end_date));
+        bytes32 txHash = keccak256(abi.encodePacked(msg.sender, credit_amount, block.timestamp, status, date_submit));
         transactions[txHash] = true;
         
-        emit issueCredits(txHash, msg.sender, credit_amount, block.timestamp, status, end_date);
+        emit issueCredits(txHash, msg.sender, credit_amount, block.timestamp, status, date_submit);
         return txHash;
     }
     

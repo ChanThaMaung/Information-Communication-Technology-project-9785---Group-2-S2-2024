@@ -47,7 +47,7 @@ export default function Dashboard() {
           <div className="bg-red-700 text-center col-span-2 h-full">
             {createPieChat()}
           </div>
-          <div className="bg-slate-400 h-full">
+          <div className=" h-full">
             {createBarChart()}
           </div>
           <div className="bg-amber-300 h-screen col-span-full">

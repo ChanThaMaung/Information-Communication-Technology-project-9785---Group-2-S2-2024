@@ -34,7 +34,7 @@ export const EmitterProvider = ({ children }) => {
     const accounts = await ethereum.request({ method: "eth_accounts" });
     if (accounts.length) {
       setCurrentEmitterAccount(accounts[0]);
-      fetchEmitterTransactions();
+      // fetchEmitterTransactions();
     }
   };
 

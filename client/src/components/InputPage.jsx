@@ -6,6 +6,8 @@ import { connectWallet as connectWalletFunction } from "../context/GlobalFunctio
 function InputPage() {
   const [currentAccount, setCurrentAccount] = useState("");
   const [accountType, setAccountType] = useState("");
+  const [isWalletChecked, setIsWalletChecked] = useState(false);
+
 
   const {
     connectIssuerWallet,
@@ -30,15 +32,6 @@ function InputPage() {
   const emitterAcc = "0x21B4B54911cFA548C153daA6605161cBAa1eb878";
 
   useEffect(() => {
-    const checkWalletConnection = async () => {
-      const account = await connectWalletFunction();
-      if (account) {
-        setCurrentAccount(account);
-      }
-    };
-
-    checkWalletConnection();
-
     // Listen for account changes
     if (window.ethereum) {
       window.ethereum.on('accountsChanged', handleAccountsChanged);

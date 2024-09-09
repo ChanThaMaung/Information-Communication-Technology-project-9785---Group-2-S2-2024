@@ -4,74 +4,20 @@ import "./Issuer.sol";
 import "./Emitter.sol";
 
 contract Verifier {
-    Emitter emitterContract;
-    Issuer issuerContract;
-    
-    enum TransactionType { Emitter, Issuer }
-    
-    struct VerificationUpdate {
-        bytes32 originalTxHash;
-        uint256 newStatus;
-        uint256 timestamp;
-        TransactionType transactionType;
-    }
-    
-    mapping(bytes32 => VerificationUpdate) public verificationUpdates;
-    mapping(bytes32 => bytes32[]) public transactionUpdateHistory;
-    
-    event TransactionVerified(
-        bytes32 indexed originalTxHash,
-        bytes32 indexed updateTxHash,
-        uint256 newStatus,
-        TransactionType transactionType
+    uint256 transactionCounter;
+
+    event regulateTransactions(
+        address from, 
+        string txHash,
+        string updated_status
     );
 
-    event TransactionUpdateLinked(
-        bytes32 indexed originalTxHash,
-        bytes32 indexed updateTxHash,
-        uint256 updateCount
-    );
-
-    constructor(address _emitterAddress, address _issuerAddress) {
-        emitterContract = Emitter(_emitterAddress);
-        issuerContract = Issuer(_issuerAddress);
+    function regulate(string calldata txHash, string calldata updated_status) public {
+        transactionCounter += 1;
+        emit regulateTransactions(msg.sender, txHash, updated_status);
     }
 
-    function verifyEmitterTransaction(bytes32 originalTxHash, uint256 newStatus) external returns (bytes32) {
-        require(emitterContract.transactionExists(originalTxHash), "Original emitter transaction does not exist");
-        return _createVerificationUpdate(originalTxHash, newStatus, TransactionType.Emitter);
-    }
-
-    function verifyIssuerTransaction(bytes32 originalTxHash, uint256 newStatus) external returns (bytes32) {
-        require(issuerContract.transactionExists(originalTxHash), "Original issuer transaction does not exist");
-        return _createVerificationUpdate(originalTxHash, newStatus, TransactionType.Issuer);
-    }
-
-    function _createVerificationUpdate(bytes32 originalTxHash, uint256 newStatus, TransactionType transactionType) internal returns (bytes32) {
-        bytes32 updateTxHash = keccak256(abi.encodePacked(originalTxHash, newStatus, block.timestamp, transactionType));
-        
-        verificationUpdates[updateTxHash] = VerificationUpdate({
-            originalTxHash: originalTxHash,
-            newStatus: newStatus,
-            timestamp: block.timestamp,
-            transactionType: transactionType
-        });
-        
-        transactionUpdateHistory[originalTxHash].push(updateTxHash);
-        uint256 updateCount = transactionUpdateHistory[originalTxHash].length;
-        
-        emit TransactionVerified(originalTxHash, updateTxHash, newStatus, transactionType);
-        emit TransactionUpdateLinked(originalTxHash, updateTxHash, updateCount);
-        
-        return updateTxHash;
-    }
-
-    function getVerificationUpdate(bytes32 updateTxHash) public view returns (VerificationUpdate memory) {
-        require(verificationUpdates[updateTxHash].timestamp != 0, "Update not found");
-        return verificationUpdates[updateTxHash];
-    }
-
-    function getTransactionUpdateHistory(bytes32 originalTxHash) public view returns (bytes32[] memory) {
-        return transactionUpdateHistory[originalTxHash];
+    function getTransactionCount() public view returns (uint256) {
+        return transactionCounter;
     }
 }

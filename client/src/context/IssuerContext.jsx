@@ -47,7 +47,7 @@ export const IssuerProvider = ({ children }) => {
   };
   const connectIssuerWallet = async (account) => {
     setCurrentIssuerAccount(account);
-    // fetchIssuerTransactions();
+    fetchIssuerTransactions();
   };
 
   const sendIssuerTransaction = async () => {

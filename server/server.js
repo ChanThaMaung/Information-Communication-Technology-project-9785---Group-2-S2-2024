@@ -1,21 +1,35 @@
 
+require('dotenv').config();
+
 const express = require('express');
-const mysql = require('mysql');
+const mysql = require('mysql2/promise');
 const cors = require('cors');
 const app = express();
 const port = 3000;
 
-const my_sql = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: '',
-    database: 'crud_db'
-}).promise();
+const pool = mysql.createPool({
+    host: process.env.MYSQL_HOST,
+    user: process.env.MYSQL_USER,
+    password: process.env.MYSQL_PASSWORD,
+    database: process.env.MYSQL_DATABASE,
+});
 
-app.use(cors({origin: 'http://localhost:5173'}));
+async function fetchEmitterData() {
+  try {
+      const [rows] = await pool.query("SELECT * FROM emitter");
+      console.log(rows);
+      return rows;
+  } catch (error) {
+      console.error("Error fetching emitter data:", error);
+      throw error;
+  }
+}
 
-app.get("/api", (req, res) => {
-  res.json({users: ["userOne", "userTwo", "userThree"]})
+app.use(cors());
+
+app.get("/api", async (req, res) => {
+  const emitterData = await fetchEmitterData();
+  res.json({emitters: emitterData});
 });
 
 app.listen(port, () => {

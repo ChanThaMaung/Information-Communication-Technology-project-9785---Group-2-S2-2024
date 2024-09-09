@@ -3,4 +3,4 @@ import abi from './Verifier.json';
 
 export const contractABI = abi.abi;
 
-export const contractAddress = '0x3b4CAb62110D0f489F9C55A3a7F8b37E5946fc02';
+export const contractAddress = '0x6700B63D464aD232d8ddd4f67CF5871037907368';

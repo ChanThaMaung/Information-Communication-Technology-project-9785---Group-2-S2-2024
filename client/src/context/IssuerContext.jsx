@@ -64,7 +64,7 @@ export const IssuerProvider = ({ children }) => {
         contractABI,
         { ethereum }
       );
-      const parsedAmount = Math.max(0, Math.floor(Number(credit_amount)));
+      const parsedAmount = Math.floor(Number(amount));
 
       const transactionHash = await issuerContract.addToBlockChain(
         parsedAmount,

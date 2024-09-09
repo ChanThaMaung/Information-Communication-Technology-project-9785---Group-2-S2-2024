@@ -1,76 +1,91 @@
 import React, { useEffect, useState } from "react";
 import { contractABI, contractAddress } from "../utils/Issuer/IssuerConstants";
 import { getEthereumContract } from "./GlobalFunctions/getEthereumContract";
-import { connectWallet as connectWalletFunction } from "./GlobalFunctions/connectWallet";
 
 export const IssuerContext = React.createContext();
 
 const { ethereum } = window;
 
 export const IssuerProvider = ({ children }) => {
-  const [transactions, setTransactions] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [currentAccount, setCurrentAccount] = useState("");
-  const [transactionCount, setTransactionCount] = useState(localStorage.getItem('transactionCount'));
-  const [formData, setFormData] = useState({
-    amount: "",
+  const [issuerTransactions, setIssuerTransactions] = useState([]);
+  const [isLoadingIssuer, setIsLoadingIssuer] = useState(false);
+  const [currentIssuerAccount, setCurrentIssuerAccount] = useState("");
+  const [issuerTransactionCount, setIssuerTransactionCount] = useState(
+    localStorage.getItem("transactionCount")
+  );
+  const [formIssuerData, setFormIssuerData] = useState({
+    amount: 0,
     end_date: 0,
     status: "",
   });
 
-  const handleChange = (e, name) => {
-    setFormData((prevState) => ({ ...prevState, [name]: e.target.value }));
+  const handleChangeIssuer = (e, name) => {
+    setFormIssuerData((prevState) => ({
+      ...prevState,
+      [name]: e.target.value,
+    }));
   };
 
   const checkIfWalletIsConnected = async () => {
     if (!ethereum) return alert("Please install Metamask");
-
     const accounts = await ethereum.request({ method: "eth_accounts" });
-
   };
 
-  const fetchTransactions = async () => {
+  const fetchIssuerTransactions = async () => {
     try {
-      const issuerContract = await getEthereumContract(contractAddress, contractABI, {ethereum});
+      const issuerContract = await getEthereumContract(
+        contractAddress,
+        contractABI,
+        { ethereum }
+      );
       const transactions = await issuerContract.getAllTransactions();
-      setTransactions(transactions);
+      setIssuerTransactions(transactions);
       console.log(transactions);
     } catch (error) {
       console.log(error);
     }
   };
-  const connectWallet = async () => {
-      const account = await connectWalletFunction();
-      setCurrentAccount(account);
-      const issuerContract = await getEthereumContract(contractAddress, contractABI, {ethereum});
-      const transactions = await issuerContract.getAllTransactions();
-      console.log(transactions);
+  const connectIssuerWallet = async (account) => {
+    setCurrentIssuerAccount(account);
+    // fetchIssuerTransactions();
   };
 
-  const sendTransaction = async () => {
+  const sendIssuerTransaction = async () => {
     try {
-      if (!window.ethereum) return alert("Please install metamask");
-      const { amount, end_date, status } = formData;
-      console.log(amount, end_date, status);
-      const issuerContract = await getEthereumContract(contractAddress, contractABI, {ethereum});
-      const transactionHash = await issuerContract.addToBlockChain(amount, status, end_date, {
-        from: currentAccount,
-        gas: '0x5208',
+      const accounts = await window.ethereum.request({
+        method: "eth_accounts",
       });
+      const currentAccount = accounts[0];
 
-      setIsLoading(true);
+      const { amount, end_date, status } = formIssuerData;
+      console.log(amount, end_date, status);
+      const issuerContract = await getEthereumContract(
+        contractAddress,
+        contractABI,
+        { ethereum }
+      );
+      const parsedAmount = Math.floor(Number(amount));
+
+      const transactionHash = await issuerContract.addToBlockChain(
+        parsedAmount,
+        status,
+        end_date,
+        {
+          from: currentAccount,
+          gas: "0x5208",
+        }
+      );
+
+      setIsLoadingIssuer(true);
       console.log(`Loading: ${transactionHash.hash}`);
       await transactionHash.wait();
-      setIsLoading(false);
+      setIsLoadingIssuer(false);
       console.log(`Success: ${transactionHash.hash}`);
 
       const transactionCount = await issuerContract.getTransactionCount();
 
-      setTransactionCount(transactionCount.toNumber);
+      setIssuerTransactionCount(transactionCount.toNumber);
       console.log(`Transaction Count: ${transactionCount}`);
-
-      await fetchTransactions();
-
     } catch (error) {
       console.log(error);
 
@@ -79,21 +94,21 @@ export const IssuerProvider = ({ children }) => {
   };
   useEffect(() => {
     checkIfWalletIsConnected();
-    if (currentAccount) {
-      fetchTransactions();
+    if (currentIssuerAccount) {
+      fetchIssuerTransactions();
     }
   }, []);
 
   return (
     <IssuerContext.Provider
       value={{
-        connectWallet,
-        currentAccount,
-        formData,
-        setFormData,
-        sendTransaction,
-        handleChange,
-        transactions,
+        connectIssuerWallet,
+        currentIssuerAccount,
+        formIssuerData,
+        setFormIssuerData,
+        sendIssuerTransaction,
+        handleChangeIssuer,
+        issuerTransactions,
       }}
     >
       {children}

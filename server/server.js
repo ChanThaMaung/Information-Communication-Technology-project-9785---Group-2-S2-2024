@@ -1,36 +1,32 @@
 
-require('dotenv').config();
-
 const express = require('express');
-const mysql = require('mysql2/promise');
 const cors = require('cors');
 const app = express();
 const port = 3000;
+const pool = require('./database/db');
 
-const pool = mysql.createPool({
-    host: process.env.MYSQL_HOST,
-    user: process.env.MYSQL_USER,
-    password: process.env.MYSQL_PASSWORD,
-    database: process.env.MYSQL_DATABASE,
-});
+const emitterRouter = require('./routes/Emitter');
+const issuerRouter = require('./routes/Issuer');
+const verifierRouter = require('./routes/Verifier');
 
-async function fetchEmitterData() {
-  try {
-      const [rows] = await pool.query("SELECT * FROM emitter");
-      console.log(rows);
-      return rows;
-  } catch (error) {
-      console.error("Error fetching emitter data:", error);
-      throw error;
-  }
-}
+
 
 app.use(cors());
+app.use(express.json()); // Add this line to parse JSON request bodies
 
-app.get("/api", async (req, res) => {
-  const emitterData = await fetchEmitterData();
-  res.json({emitters: emitterData});
-});
+app.use('/emitter', emitterRouter(pool));
+app.use('/issuer', issuerRouter(pool));
+app.use('/verifier', verifierRouter(pool));
+
+// app.get("/api", async (req, res) => {
+//   try {
+//     const [rows] = await pool.query("SELECT * FROM some_table");
+//     res.json(rows);
+//   } catch (error) {
+//     console.error("Error executing query:", error);
+//     res.status(500).json({ error: "Internal server error" });
+//   }
+// });
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);

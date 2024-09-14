@@ -25,7 +25,8 @@ DROP TABLE IF EXISTS `emitter`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `emitter` (
-  `idemitter` int NOT NULL AUTO_INCREMENT,
+  `id` int NOT NULL AUTO_INCREMENT,
+  `emitterAddress` varchar(200) NOT NULL,
   `credit_amount` int NOT NULL,
   `date_bought` date NOT NULL,
   `verification_status` tinyint(1) NOT NULL,
@@ -53,7 +54,8 @@ DROP TABLE IF EXISTS `issuer`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `issuer` (
-  `idissuer` int NOT NULL AUTO_INCREMENT,
+  `id` int NOT NULL AUTO_INCREMENT,
+  `issuerAddress` varchar(200) NOT NULL,
   `credit_amount` int NOT NULL,
   `active_status` tinyint(1) NOT NULL,
   `date_issued` date NOT NULL,
@@ -83,13 +85,13 @@ DROP TABLE IF EXISTS `verifier`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `verifier` (
-  `idverifier` int NOT NULL AUTO_INCREMENT,
+  `id` int NOT NULL AUTO_INCREMENT,
+  `verifierAddress` varchar(200) NOT NULL,
   `transaction_hash` varchar(200) NOT NULL,
   `transaction_updated` varchar(200) NOT NULL,
   PRIMARY KEY (`idverifier`),
   UNIQUE KEY `idverifier_UNIQUE` (`idverifier`),
   UNIQUE KEY `transaction_hash_UNIQUE` (`transaction_hash`),
-  UNIQUE KEY `transaction_updated_UNIQUE` (`transaction_updated`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 

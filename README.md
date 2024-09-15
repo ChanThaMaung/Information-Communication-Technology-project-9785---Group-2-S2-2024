@@ -2,4 +2,5 @@
 
 
 Changelog 1.0: 
+I have successfully fetched data from the database and displayed them on the front-end. 
 ![image](https://github.com/user-attachments/assets/7e01efea-4fe1-49da-9a6b-a221ffb8f9d7)

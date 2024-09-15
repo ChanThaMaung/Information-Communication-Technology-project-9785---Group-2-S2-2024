@@ -10,7 +10,6 @@ const issuerRouter = require('./routes/Issuer');
 const verifierRouter = require('./routes/Verifier');
 
 
-
 app.use(cors());
 app.use(express.json()); // Add this line to parse JSON request bodies
 

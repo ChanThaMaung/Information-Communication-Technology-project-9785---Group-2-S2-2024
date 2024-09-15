@@ -30,7 +30,7 @@ function createRouter(pool) {
 		const { emitterAddress, credit_amount, date_bought, verification_status, transaction_hash } = req.body;
 		try {
 			const [result] = await pool.query(
-				'INSERT INTO emitters (emitterAddress, credit_amount, date_bought, verification_status, transaction_hash) VALUES (?, ?, ?, ?, ?)',
+				'INSERT INTO emitter (emitter_address, credit_amount, date_bought, verification_status, transaction_hash) VALUES (?, ?, ?, ?, ?)',
 				[emitterAddress, credit_amount, date_bought, verification_status, transaction_hash]
 			);
 			res.status(201).json({ id: result.insertId, emitterAddress, credit_amount, date_bought, verification_status, transaction_hash });
@@ -46,7 +46,7 @@ function createRouter(pool) {
 		const { emitterAddress, credit_amount, date_bought, verification_status, transaction_hash } = req.body;
 		try {
 			await pool.query(
-				'UPDATE emitters SET emitterAddress = ?, credit_amount = ?, date_bought = ?, verification_status = ?, transaction_hash = ? WHERE id = ?',
+				'UPDATE emitter SET emitter_address = ?, credit_amount = ?, date_bought = ?, verification_status = ?, transaction_hash = ? WHERE id = ?',
 				[emitterAddress, credit_amount, date_bought, verification_status, transaction_hash, id]
 			);
 			res.json({ id, emitterAddress, credit_amount, date_bought, verification_status, transaction_hash });
@@ -57,16 +57,16 @@ function createRouter(pool) {
 	});
 
 	// DELETE - Remove an emitter
-	// router.delete('/delete/:id', async (req, res) => {
-	// 	const { id } = req.params;
-	// 	try {
-	// 		await pool.query('DELETE FROM emitters WHERE id = ?', [id]);
-	// 		res.status(204).end();
-	// 	} catch (error) {
-	// 		console.error('Error deleting emitter:', error);
-	// 		res.status(500).json({ error: 'Internal server error', details: error.message });
-	// 	}
-	// });
+	router.delete('/delete/:id', async (req, res) => {
+		const { id } = req.params;
+		try {
+			await pool.query('DELETE FROM emitter WHERE id = ?', [id]);
+			res.status(204).end();
+		} catch (error) {
+			console.error('Error deleting emitter:', error);
+			res.status(500).json({ error: 'Internal server error', details: error.message });
+		}
+	});
 
 	return router;
 }

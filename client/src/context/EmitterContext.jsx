@@ -45,9 +45,9 @@ export const EmitterProvider = ({ children }) => {
         contractABI,
         { ethereum }
       );
-      const availableTransactions = await emitterContract.getAllTransactions();
-      console.log("Raw transactions data:", availableTransactions);
-      setEmitterTransactions(availableTransactions);
+      // const availableTransactions = await emitterContract.getAllTransactions();
+      // console.log("Raw transactions data:", availableTransactions);
+      // setEmitterTransactions(availableTransactions);
     } catch (error) {
       console.log(error);
     }

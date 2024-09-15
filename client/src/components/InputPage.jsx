@@ -2,12 +2,14 @@ import React, { useContext, useState, useEffect } from "react";
 import { IssuerContext } from "../context/IssuerContext";
 import { EmitterContext } from "../context/EmitterContext";
 import { connectWallet as connectWalletFunction } from "../context/GlobalFunctions/connectWallet";
+import axios from "axios";
+import { formatDate } from "../scripts/handleDateFormat";
 
 function InputPage() {
   const [currentAccount, setCurrentAccount] = useState("");
   const [accountType, setAccountType] = useState("");
-  const [isWalletChecked, setIsWalletChecked] = useState(false);
-
+  const [allTransactions, setAllTransactions] = useState([]);
+  // const [isWalletChecked, setIsWalletChecked] = useState(false);
 
   const {
     connectIssuerWallet,
@@ -17,7 +19,7 @@ function InputPage() {
     handleChangeIssuer,
     issuerTransactions,
   } = useContext(IssuerContext);
-  
+
   const {
     connectEmitterWallet,
     currentEmitterAccount,
@@ -34,12 +36,15 @@ function InputPage() {
   useEffect(() => {
     // Listen for account changes
     if (window.ethereum) {
-      window.ethereum.on('accountsChanged', handleAccountsChanged);
+      window.ethereum.on("accountsChanged", handleAccountsChanged);
     }
 
     return () => {
       if (window.ethereum) {
-        window.ethereum.removeListener('accountsChanged', handleAccountsChanged);
+        window.ethereum.removeListener(
+          "accountsChanged",
+          handleAccountsChanged
+        );
       }
     };
   }, []);
@@ -51,7 +56,7 @@ function InputPage() {
   const handleAccountsChanged = async (accounts) => {
     if (accounts.length === 0) {
       // MetaMask is locked or the user has not connected any accounts
-      console.log('Please connect to MetaMask.');
+      console.log("Please connect to MetaMask.");
     } else if (accounts[0] !== currentAccount) {
       setCurrentAccount(accounts[0]);
     }
@@ -68,17 +73,58 @@ function InputPage() {
     }
   };
 
+  const retrieveData = async (accountType) => {
+    let response;
+    if (accountType === "issuer") {
+      response = await axios.get("http://localhost:3000/issuer/all");
+      console.log("Issuer");
+    } else if (accountType === "verifier") {
+      response = await axios.get("http://localhost:3000/verifier/all");
+      console.log("V");
+    } else if (accountType === "emitter") {
+      response = await axios.get("http://localhost:3000/emitter/all");
+      console.log("E");
+    }
+    return response;
+  };
   const determineAccountType = () => {
+    let accountType = "";
     if (currentAccount.toLowerCase() === issuerAcc.toLowerCase()) {
-      setAccountType("issuer");
+      accountType = "issuer";
+      setAccountType(accountType);
       connectIssuerWallet(currentAccount);
+      retrieveData(accountType)
+        .then((response) => {
+          setAllTransactions(response.data);
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+        });
     } else if (currentAccount.toLowerCase() === verifierAcc.toLowerCase()) {
-      setAccountType("verifier");
+      accountType = "verifier";
+      setAccountType(accountType);
+      connectVerifierWallet(currentAccount);
+      retrieveData(accountType)
+        .then((response) => {
+          setAllTransactions(response.data);
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+        });
     } else if (currentAccount.toLowerCase() === emitterAcc.toLowerCase()) {
-      setAccountType("emitter");
+      accountType = "emitter";
+      setAccountType(accountType);
       connectEmitterWallet(currentAccount);
+      retrieveData(accountType)
+        .then((response) => {
+          setAllTransactions(response.data);
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+        });
     } else {
-      setAccountType("");
+      accountType = "";
+      setAccountType(accountType);
     }
   };
 
@@ -98,15 +144,9 @@ function InputPage() {
     }
   };
 
-  function formatDate( unixTimestamp) {
-    const date = new Date(unixTimestamp * 1000); // Convert seconds to milliseconds
-    return date.toLocaleDateString(); // Returns a string with a language-sensitive representation of the date
-  }
-
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-  
     if (accountType === "issuer") {
       const { amount, end_date, status } = formIssuerData;
       if (!amount || !end_date || !status) return;
@@ -181,15 +221,22 @@ function InputPage() {
                 Submit
               </button>
             </div>
-            <div>{currentIssuerAccount ? <p>Address: {currentIssuerAccount}</p> : null}</div>
+            <div>
+              {currentIssuerAccount ? (
+                <p>Address: {currentIssuerAccount}</p>
+              ) : null}
+            </div>
             <div>
               <h1>Transactions</h1>
               {/* {currentIssuerAccount && <h2>Address: {currentIssuerAccount}</h2>} */}
               <ul>
-                {issuerTransactions.map((tx, index) => (
+                {allTransactions.map((tx, index) => (
                   <li key={index}>
-                    Amount: {tx[1].toString()}, Timestamp: {formatDate(Number(tx[2]))}, End
-                    Date: {formatDate(Number(tx[4]))}, Status: {tx[3].toString()}
+                    Address: {tx.issuer_address}, Carbon Credit Amount: {tx.credit_amount},{" "}
+                    {tx.active_status === 1 ? "Active" : "Inactive"},
+                    Date Issued: {formatDate(tx.date_issued)}, End Date: {formatDate(tx.end_date)},
+                    Verification Status: {tx.verification_status === 1 ? "Verified" : "Unverified"},
+                    Transaction Hash: {tx.transaction_hash}
                   </li>
                 ))}
               </ul>
@@ -279,14 +326,19 @@ function InputPage() {
                 Submit
               </button>
             </div>
-            <div>{currentEmitterAccount ? <p>Address: {currentEmitterAccount}</p> : null}</div>
+            <div>
+              {currentEmitterAccount ? (
+                <p>Address: {currentEmitterAccount}</p>
+              ) : null}
+            </div>
             <div>
               <h1>Transactions</h1>
               <ul>
                 {emitterTransactions.map((tx, index) => (
                   <li key={index}>
-                    Amount: {tx[1].toString()}, Timestamp: {formatDate(Number(tx[2]))}, End
-                    Date: {formatDate(Number(tx[4]))}, Status: {tx[3].toString()}
+                    Amount: {tx[1].toString()}, Timestamp:{" "}
+                    {formatDate(Number(tx[2]))}, End Date:{" "}
+                    {formatDate(Number(tx[4]))}, Status: {tx[3].toString()}
                   </li>
                 ))}
               </ul>
@@ -298,11 +350,7 @@ function InputPage() {
     }
   };
 
-  return (
-    <>
-      {renderContent()}
-    </>
-  );
+  return <>{renderContent()}</>;
 }
 
 export default InputPage;

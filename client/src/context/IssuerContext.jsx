@@ -38,9 +38,9 @@ export const IssuerProvider = ({ children }) => {
         contractABI,
         { ethereum }
       );
-      const transactions = await issuerContract.getAllTransactions();
-      setIssuerTransactions(transactions);
-      console.log(transactions);
+      // const transactions = await issuerContract.getAllTransactions();
+      // setIssuerTransactions(transactions);
+      // console.log(transactions);
     } catch (error) {
       console.log(error);
     }

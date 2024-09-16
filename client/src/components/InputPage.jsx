@@ -288,7 +288,6 @@ function InputPage() {
             </div>
             <div>
               <h1>Transactions</h1>
-              {/* {currentIssuerAccount && <h2>Address: {currentIssuerAccount}</h2>} */}
               <table className="w-full border-collapse border border-gray-300">
                 <thead>
                   <tr>
@@ -310,10 +309,7 @@ function InputPage() {
                 <tbody>
                   {allTransactions.map((tx, index) => (
                     <tr key={index}>
-                      <td className="border border-gray-300 p-2">{`${tx.issuer_address.slice(
-                        0,
-                        4
-                      )}...${tx.issuer_address.slice(-4)}`}</td>
+                      <td className="border border-gray-300 p-2">{tx.issuer_address}</td>
                       <td className="border border-gray-300 p-2">
                         {tx.credit_amount}
                       </td>
@@ -338,8 +334,7 @@ function InputPage() {
                           rel="noopener noreferrer"
                           className="text-blue-500 underline"
                         >
-                          {tx.transaction_hash.slice(0, 4)}...
-                          {tx.transaction_hash.slice(-4)}
+                          {tx.transaction_hash}
                         </a>
                       </td>
                     </tr>
@@ -458,9 +453,7 @@ function InputPage() {
                 <tbody>
                   {allTransactions.map((tx, index) => (
                     <tr key={index}>
-                      <td className="border border-gray-300 p-2">
-                        {tx.emitter_address}
-                      </td>
+                      <td className="border border-gray-300 p-2">{tx.emitter_address}</td>
                       <td className="border border-gray-300 p-2">
                         {tx.credit_amount}
                       </td>
@@ -473,7 +466,14 @@ function InputPage() {
                           : "Unverified"}
                       </td>
                       <td className="border border-gray-300 p-2">
-                        {tx.transaction_hash}
+                        <a
+                          href={`https://sepolia.etherscan.io/tx/${tx.transaction_hash}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-500 underline"
+                        >
+                          {tx.transaction_hash}
+                        </a>
                       </td>
                     </tr>
                   ))}

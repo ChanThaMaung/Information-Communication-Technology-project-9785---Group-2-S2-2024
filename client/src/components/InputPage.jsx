@@ -3,7 +3,7 @@ import { IssuerContext } from "../context/IssuerContext";
 import { EmitterContext } from "../context/EmitterContext";
 import { connectWallet as connectWalletFunction } from "../context/GlobalFunctions/connectWallet";
 import axios from "axios";
-import { formatDate } from "../scripts/handleDateFormat";
+import { formatDate, convertDateFormat } from "../scripts/handleDateFormat";
 
 function InputPage() {
   const [currentAccount, setCurrentAccount] = useState("");
@@ -17,7 +17,6 @@ function InputPage() {
     formIssuerData,
     sendIssuerTransaction,
     handleChangeIssuer,
-    issuerTransactions,
   } = useContext(IssuerContext);
 
   const {
@@ -26,7 +25,6 @@ function InputPage() {
     formEmitterData,
     sendEmitterTransaction,
     handleEmitterChange,
-    emitterTransactions,
   } = useContext(EmitterContext);
 
   const issuerAcc = "0xf8E848eDC950D1455481e7D82a80098f35D2dCE6";
@@ -127,36 +125,77 @@ function InputPage() {
       setAccountType(accountType);
     }
   };
-
   const handleEndDateChange = (e) => {
     const date = new Date(e.target.value);
     const unixTimestamp = Math.floor(date.getTime() / 1000);
-    if (accountType === "issuer") {
-      handleChangeIssuer(
-        { target: { name: "end_date", value: unixTimestamp } },
-        "end_date"
-      );
-    } else if (accountType === "emitter") {
-      handleEmitterChange(
-        { target: { name: "end_date", value: unixTimestamp } },
-        "end_date"
-      );
+    const field = e.target.name;
+
+    let handleChange;
+    switch (accountType) {
+      case "issuer":
+        handleChange = handleChangeIssuer;
+        break;
+      case "emitter":
+        handleChange = handleEmitterChange;
+        break;
+      case "verifier":
+        handleChange = handleVerifierChange;
+        break;
+      default:
+        console.error("Unknown account type:", accountType);
+        return;
     }
+
+    handleChange({ target: { name: field, value: unixTimestamp } }, field);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     if (accountType === "issuer") {
-      const { amount, end_date, status } = formIssuerData;
-      if (!amount || !end_date || !status) return;
-      await sendIssuerTransaction();
+      const { amount, end_date, verification_status, issued_date, status } =
+        formIssuerData;
+      console.log(amount, end_date, verification_status, issued_date, status);
+      if (
+        !amount ||
+        !end_date ||
+        !status ||
+        !issued_date ||
+        !verification_status
+      ) {
+        console.log("Missing required fields, returning early");
+        return;
+      }
+
+      try {
+        console.log("Sending transaction");
+        await sendIssuerTransaction();
+        console.log("Transaction sent");
+        // Optionally, refresh the transactions list
+        const updatedTransactions = await retrieveData("issuer");
+        setAllTransactions(updatedTransactions.data);
+      } catch (error) {
+        console.error("Error:", error);
+      }
     } else if (accountType === "verifier") {
       console.log("Verifier functionality not implemented yet");
     } else if (accountType === "emitter") {
-      const { credit_amount, end_date, status } = formEmitterData;
-      if (!credit_amount || !end_date || !status) return;
-      await sendEmitterTransaction();
+      const { credit_amount, date_bought, verification_status } =
+        formEmitterData;
+      console.log(credit_amount, date_bought, verification_status);
+      if (!credit_amount || !date_bought || !verification_status) {
+        console.log("Missing required fields, returning early");
+        return;
+      }
+      try {
+        console.log("Sending transaction");
+        await sendEmitterTransaction();
+        console.log("Transaction sent");
+        // Optionally, refresh the transactions list
+        const updatedTransactions = await retrieveData("emitter");
+        setAllTransactions(updatedTransactions.data);
+      } catch (error) {
+        console.error("Error:", error);
+      }
     } else {
       console.log("Unknown account type");
     }
@@ -191,6 +230,27 @@ function InputPage() {
                   className="form-control border border-black p-2 ml-2"
                 />
               </div>
+              <div className="flex items-center">
+                <span className="mr-2 w-32">Verification Status:</span>
+                <select
+                  name="verification_status"
+                  onChange={(e) => handleChangeIssuer(e, "verification_status")}
+                  className="form-control border border-black p-2 ml-2"
+                >
+                  <option value="">Select Status</option>
+                  <option value={0}>Unverified</option>
+                  <option value={1}>Verified</option>
+                </select>
+              </div>
+              <div className="flex items-center">
+                <span className="mr-2 w-32">Date Issued:</span>
+                <input
+                  name="issued_date"
+                  type="date"
+                  onChange={handleEndDateChange}
+                  className="form-control border border-black p-2 ml-2"
+                />
+              </div>
 
               <div className="flex items-center">
                 <span className="mr-2 w-32">Expected Retirement Date:</span>
@@ -203,15 +263,15 @@ function InputPage() {
               </div>
 
               <div className="flex items-center">
-                <span className="mr-2 w-32">Status:</span>
+                <span className="mr-2 w-32">Active Status:</span>
                 <select
                   name="status"
                   onChange={(e) => handleChangeIssuer(e, "status")}
                   className="form-control border border-black p-2 ml-2"
                 >
                   <option value="">Select Status</option>
-                  <option value="Active">Active</option>
-                  <option value="Retired">Retired</option>
+                  <option value={0}>Inactive</option>
+                  <option value={1}>Active</option>
                 </select>
               </div>
               <button
@@ -229,17 +289,63 @@ function InputPage() {
             <div>
               <h1>Transactions</h1>
               {/* {currentIssuerAccount && <h2>Address: {currentIssuerAccount}</h2>} */}
-              <ul>
-                {allTransactions.map((tx, index) => (
-                  <li key={index}>
-                    Address: {tx.issuer_address}, Carbon Credit Amount: {tx.credit_amount},{" "}
-                    {tx.active_status === 1 ? "Active" : "Inactive"},
-                    Date Issued: {formatDate(tx.date_issued)}, End Date: {formatDate(tx.end_date)},
-                    Verification Status: {tx.verification_status === 1 ? "Verified" : "Unverified"},
-                    Transaction Hash: {tx.transaction_hash}
-                  </li>
-                ))}
-              </ul>
+              <table className="w-full border-collapse border border-gray-300">
+                <thead>
+                  <tr>
+                    <th className="border border-gray-300 p-2">Address</th>
+                    <th className="border border-gray-300 p-2">
+                      Carbon Credit Amount
+                    </th>
+                    <th className="border border-gray-300 p-2">Status</th>
+                    <th className="border border-gray-300 p-2">Date Issued</th>
+                    <th className="border border-gray-300 p-2">End Date</th>
+                    <th className="border border-gray-300 p-2">
+                      Verification Status
+                    </th>
+                    <th className="border border-gray-300 p-2">
+                      Transaction Hash
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {allTransactions.map((tx, index) => (
+                    <tr key={index}>
+                      <td className="border border-gray-300 p-2">{`${tx.issuer_address.slice(
+                        0,
+                        4
+                      )}...${tx.issuer_address.slice(-4)}`}</td>
+                      <td className="border border-gray-300 p-2">
+                        {tx.credit_amount}
+                      </td>
+                      <td className="border border-gray-300 p-2">
+                        {tx.active_status === 1 ? "Retired" : "Active"}
+                      </td>
+                      <td className="border border-gray-300 p-2">
+                        {formatDate(tx.date_issued)}
+                      </td>
+                      <td className="border border-gray-300 p-2">
+                        {formatDate(tx.end_date)}
+                      </td>
+                      <td className="border border-gray-300 p-2">
+                        {tx.verification_status === 1
+                          ? "Verified"
+                          : "Unverified"}
+                      </td>
+                      <td className="border border-gray-300 p-2">
+                        <a
+                          href={`https://sepolia.etherscan.io/tx/${tx.transaction_hash}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-500 underline"
+                        >
+                          {tx.transaction_hash.slice(0, 4)}...
+                          {tx.transaction_hash.slice(-4)}
+                        </a>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           </>
         );
@@ -298,9 +404,9 @@ function InputPage() {
               </div>
 
               <div className="flex items-center">
-                <span className="mr-2 w-32">Expected Retirement Date:</span>
+                <span className="mr-2 w-32">Date of Purchase:</span>
                 <input
-                  name="end_date"
+                  name="date_bought"
                   type="date"
                   onChange={handleEndDateChange}
                   className="form-control border border-black p-2 ml-2"
@@ -310,13 +416,15 @@ function InputPage() {
               <div className="flex items-center">
                 <span className="mr-2 w-32">Status:</span>
                 <select
-                  name="status"
-                  onChange={(e) => handleEmitterChange(e, "status")}
+                  name="verification_status"
+                  onChange={(e) =>
+                    handleEmitterChange(e, "verification_status")
+                  }
                   className="form-control border border-black p-2 ml-2"
                 >
                   <option value="">Select Status</option>
-                  <option value="Verified">Verified</option>
-                  <option value="Unverified">Unverified</option>
+                  <option value={0}>Unverified</option>
+                  <option value={1}>Verified</option>
                 </select>
               </div>
               <button
@@ -333,15 +441,44 @@ function InputPage() {
             </div>
             <div>
               <h1>Transactions</h1>
-              <ul>
-                {emitterTransactions.map((tx, index) => (
-                  <li key={index}>
-                    Amount: {tx[1].toString()}, Timestamp:{" "}
-                    {formatDate(Number(tx[2]))}, End Date:{" "}
-                    {formatDate(Number(tx[4]))}, Status: {tx[3].toString()}
-                  </li>
-                ))}
-              </ul>
+              <table className="w-full border-collapse border border-gray-300">
+                <thead>
+                  <tr>
+                    <th className="border border-gray-300 p-2">Address</th>
+                    <th className="border border-gray-300 p-2">
+                      Carbon Credit Amount
+                    </th>
+                    <th className="border border-gray-300 p-2">Date Bought</th>
+                    <th className="border border-gray-300 p-2">Status</th>
+                    <th className="border border-gray-300 p-2">
+                      Transaction Hash
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {allTransactions.map((tx, index) => (
+                    <tr key={index}>
+                      <td className="border border-gray-300 p-2">
+                        {tx.emitter_address}
+                      </td>
+                      <td className="border border-gray-300 p-2">
+                        {tx.credit_amount}
+                      </td>
+                      <td className="border border-gray-300 p-2">
+                        {formatDate(tx.date_bought)}
+                      </td>
+                      <td className="border border-gray-300 p-2">
+                        {tx.verification_status === 1
+                          ? "Verified"
+                          : "Unverified"}
+                      </td>
+                      <td className="border border-gray-300 p-2">
+                        {tx.transaction_hash}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           </>
         );

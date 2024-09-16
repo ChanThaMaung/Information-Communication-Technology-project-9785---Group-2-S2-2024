@@ -9,7 +9,8 @@ Changelog 1.0.1:
 ![image](https://github.com/user-attachments/assets/882b237f-a31e-4105-bfb8-cf6475d9e989)
 ![image](https://github.com/user-attachments/assets/c80f4e7a-529d-468a-8559-8194ff46e409)
 - Future fixes: to remove the id and make changes between metamask accounts work without having to refresh page;
-  (currently, we can only switch from Issuer to Emitter)
+  (currently, we can only switch from Issuer to Emitter). The main cause for this is the slicing i used to
+  shorten the addresses of the account and the transaction hashes. 
 
 Changelog 1.0: 
 - Successfully fetched data from the database and displayed them on the front-end. 

@@ -14,10 +14,10 @@ function createRouter(pool) {
     }
   });
 
-  router.get('/:id', async (req, res) => {
-    const { id } = req.params;
+  router.get('/:txHash', async (req, res) => {
+    const { txHash } = req.params;
     try {
-      const [rows] = await pool.query('SELECT * FROM issuer WHERE id = ?', [id]);
+      const [rows] = await pool.query('SELECT * FROM issuer WHERE transaction_hash = ?', [txHash]);
       res.json(rows);
     } catch (error) {
       console.error('Error fetching issuer:', error);
@@ -41,15 +41,15 @@ function createRouter(pool) {
   });
 
   // PUT - Update an issuer
-  router.put('/update/:id', async (req, res) => {
-    const { id } = req.params;
-    const { issuerAddress, credit_amount, active_status, date_issued, end_date, verification_status, transaction_hash } = req.body;
+  router.put('/update/:txHash', async (req, res) => {
+    const { txHash } = req.params;
+    const { issuerAddress, credit_amount, active_status, date_issued, end_date, verification_status } = req.body;
     try {
       await pool.query(
-        'UPDATE issuer SET issuer_address = ?, credit_amount = ?, active_status = ?, date_issued = ?, end_date = ?, verification_status = ?, transaction_hash = ? WHERE id = ?',
-        [issuerAddress, credit_amount, active_status, date_issued, end_date, verification_status, transaction_hash, id]
+        'UPDATE issuer SET issuer_address = ?, credit_amount = ?, active_status = ?, date_issued = ?, end_date = ?, verification_status = ? WHERE transaction_hash = ?',
+        [issuerAddress, credit_amount, active_status, date_issued, end_date, verification_status, txHash]
       );
-      res.json({ id, issuerAddress, credit_amount, active_status, date_issued, end_date, verification_status, transaction_hash });
+      res.json({ issuerAddress, credit_amount, active_status, date_issued, end_date, verification_status, txHash });
     } catch (error) {
       console.error('Error updating issuer:', error);
       res.status(500).json({ error: 'Internal server error', details: error.message });
@@ -57,10 +57,10 @@ function createRouter(pool) {
   });
 
   // DELETE - Remove an issuer
-  router.delete('/delete/:id', async (req, res) => {
-    const { id } = req.params;
+  router.delete('/delete/:txHash  ', async (req, res) => {
+    const { txHash } = req.params;
     try {
-      await pool.query('DELETE FROM issuer WHERE id = ?', [id]);
+      await pool.query('DELETE FROM issuer WHERE transaction_hash = ?', [txHash]);
       res.status(204).end();
     } catch (error) {
       console.error('Error deleting issuer:', error);

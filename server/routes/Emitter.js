@@ -14,10 +14,10 @@ function createRouter(pool) {
 		}
 	});
 
-	router.get('/:id', async (req, res) => {
-		const { id } = req.params;
+	router.get('/:txHash', async (req, res) => {
+		const { txHash } = req.params;
 		try {
-			const [rows] = await pool.query('SELECT * FROM emitter WHERE id = ?', [id]);
+			const [rows] = await pool.query('SELECT * FROM emitter WHERE transaction_hash = ?', [txHash]);
 			res.json(rows);
 		} catch (error) {
 			console.error('Error fetching emitter:', error);
@@ -41,15 +41,15 @@ function createRouter(pool) {
 	});
 
 	// PUT - Update an emitter
-	router.put('/update/:id', async (req, res) => {
-		const { id } = req.params;
-		const { emitterAddress, credit_amount, date_bought, verification_status, transaction_hash } = req.body;
+	router.put('/update/:txHash', async (req, res) => {
+		const { txHash } = req.params;
+		const { emitterAddress, credit_amount, date_bought, verification_status } = req.body;
 		try {
 			await pool.query(
-				'UPDATE emitter SET emitter_address = ?, credit_amount = ?, date_bought = ?, verification_status = ?, transaction_hash = ? WHERE id = ?',
-				[emitterAddress, credit_amount, date_bought, verification_status, transaction_hash, id]
+				'UPDATE emitter SET emitter_address = ?, credit_amount = ?, date_bought = ?, verification_status = ? WHERE transaction_hash = ?',
+				[emitterAddress, credit_amount, date_bought, verification_status, txHash]
 			);
-			res.json({ id, emitterAddress, credit_amount, date_bought, verification_status, transaction_hash });
+			res.json({ emitterAddress, credit_amount, date_bought, verification_status, txHash });
 		} catch (error) {
 			console.error('Error updating emitter:', error);
 			res.status(500).json({ error: 'Internal server error', details: error.message });
@@ -57,10 +57,10 @@ function createRouter(pool) {
 	});
 
 	// DELETE - Remove an emitter
-	router.delete('/delete/:id', async (req, res) => {
-		const { id } = req.params;
+	router.delete('/delete/:txHash', async (req, res) => {
+		const { txHash } = req.params;
 		try {
-			await pool.query('DELETE FROM emitter WHERE id = ?', [id]);
+			await pool.query('DELETE FROM emitter WHERE transaction_hash = ?', [txHash]);
 			res.status(204).end();
 		} catch (error) {
 			console.error('Error deleting emitter:', error);

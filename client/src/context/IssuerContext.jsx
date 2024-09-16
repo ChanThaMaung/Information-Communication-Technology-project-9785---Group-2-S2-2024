@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { contractABI, contractAddress } from "../utils/Issuer/IssuerConstants";
 import { getEthereumContract } from "./GlobalFunctions/getEthereumContract";
+import axios from "axios";
+import { convertDateFormat } from "../scripts/handleDateFormat";
 
 export const IssuerContext = React.createContext();
 
@@ -16,7 +18,9 @@ export const IssuerProvider = ({ children }) => {
   const [formIssuerData, setFormIssuerData] = useState({
     amount: 0,
     end_date: 0,
-    status: "",
+    status: 0,
+    issued_date: "",
+    verification_status: 0,
   });
 
   const handleChangeIssuer = (e, name) => {
@@ -31,23 +35,9 @@ export const IssuerProvider = ({ children }) => {
     const accounts = await ethereum.request({ method: "eth_accounts" });
   };
 
-  const fetchIssuerTransactions = async () => {
-    try {
-      const issuerContract = await getEthereumContract(
-        contractAddress,
-        contractABI,
-        { ethereum }
-      );
-      // const transactions = await issuerContract.getAllTransactions();
-      // setIssuerTransactions(transactions);
-      // console.log(transactions);
-    } catch (error) {
-      console.log(error);
-    }
-  };
+
   const connectIssuerWallet = async (account) => {
     setCurrentIssuerAccount(account);
-    fetchIssuerTransactions();
   };
 
   const sendIssuerTransaction = async () => {
@@ -57,8 +47,9 @@ export const IssuerProvider = ({ children }) => {
       });
       const currentAccount = accounts[0];
 
-      const { amount, end_date, status } = formIssuerData;
-      console.log(amount, end_date, status);
+      const { amount, end_date, status, issued_date, verification_status } = formIssuerData;
+      console.log(amount, end_date, status, issued_date, verification_status);
+
       const issuerContract = await getEthereumContract(
         contractAddress,
         contractABI,
@@ -70,6 +61,8 @@ export const IssuerProvider = ({ children }) => {
         parsedAmount,
         status,
         end_date,
+        issued_date,
+        verification_status,
         {
           from: currentAccount,
           gas: "0x5208",
@@ -86,6 +79,19 @@ export const IssuerProvider = ({ children }) => {
 
       setIssuerTransactionCount(transactionCount.toNumber);
       console.log(`Transaction Count: ${transactionCount}`);
+      const formattedRetirementDate = convertDateFormat(end_date);
+      const formattedIssuedDate = convertDateFormat(issued_date);
+
+      const response = await axios.post('http://localhost:3000/issuer/create', {
+        issuerAddress: currentAccount,
+        credit_amount: amount,
+        active_status: status,
+        date_issued: formattedIssuedDate,
+        end_date: formattedRetirementDate,
+        verification_status: verification_status,
+        transaction_hash: transactionHash.hash
+      });
+      console.log('Data created:', response.data);
     } catch (error) {
       console.log(error);
 
@@ -95,7 +101,6 @@ export const IssuerProvider = ({ children }) => {
   useEffect(() => {
     checkIfWalletIsConnected();
     if (currentIssuerAccount) {
-      fetchIssuerTransactions();
     }
   }, []);
 

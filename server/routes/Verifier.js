@@ -14,10 +14,10 @@ function createRouter(pool) {
     }
   });
 
-  router.get('/:id', async (req, res) => {
-    const { id } = req.params;
+  router.get('/:txHash', async (req, res) => {
+    const { txHash } = req.params;
     try {
-      const [rows] = await pool.query('SELECT * FROM verifier WHERE id = ?', [id]);
+      const [rows] = await pool.query('SELECT * FROM verifier WHERE transaction_hash = ?', [txHash]);
       res.json(rows);
     } catch (error) {
       console.error('Error fetching verifier:', error);
@@ -41,15 +41,15 @@ function createRouter(pool) {
   });
 
   // PUT - Update a verifier
-  router.put('/update/:id', async (req, res) => {
-    const { id } = req.params;
-    const { verifierAddress, transaction_updated, transaction_hash } = req.body;
+  router.put('/update/:txHash', async (req, res) => {
+    const { txHash } = req.params;
+    const { verifierAddress, transaction_updated } = req.body;
     try {
       await pool.query(
-        'UPDATE verifier SET verifier_address = ?, transaction_updated = ?, transaction_hash = ? WHERE id = ?',
-        [verifierAddress, transaction_updated, transaction_hash, id]
+        'UPDATE verifier SET verifier_address = ?, transaction_updated = ? WHERE transaction_hash = ?',
+        [verifierAddress, transaction_updated, txHash]
       );
-      res.json({ id, verifierAddress, transaction_updated, transaction_hash });
+      res.json({ txHash, verifierAddress, transaction_updated });
     } catch (error) {
       console.error('Error updating verifier:', error);
       res.status(500).json({ error: 'Internal server error', details: error.message });
@@ -57,10 +57,10 @@ function createRouter(pool) {
   });
 
   // DELETE - Remove a verifier
-  router.delete('/delete/:id', async (req, res) => {
-    const { id } = req.params;
+  router.delete('/delete/:txHash', async (req, res) => {
+    const { txHash } = req.params;
     try {
-      await pool.query('DELETE FROM verifier WHERE id = ?', [id]);
+      await pool.query('DELETE FROM verifier WHERE transaction_hash = ?', [txHash]);
       res.status(204).end();
     } catch (error) {
       console.error('Error deleting verifier:', error);

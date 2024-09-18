@@ -7,7 +7,7 @@ function Footer() {
                     <small className="block text-gray-500">© 2017-2018</small>
                 </div>
                 <div>
-                    <h5 className="font-semibold">Features</h5>
+                    <h5 className="font-semibold p-5 pl-0 text-lg">Features</h5>
                     <ul className="space-y-2">
                         <li><a className="text-gray-500 hover:text-gray-700" href="#">Trading and Exchange Platform</a></li>
                         <li><a className="text-gray-500 hover:text-gray-700" href="#">Cryptocurrency Wallet Integration</a></li>
@@ -16,7 +16,7 @@ function Footer() {
                     </ul>
                 </div>
                 <div>
-                    <h5 className="font-semibold">Resources</h5>
+                    <h5 className="font-semibold p-5 pl-0 text-lg">Resources</h5>
                     <ul className="space-y-2">
                         <li><a className="text-gray-500 hover:text-gray-700" href="#">Educational Content</a></li>
                         <li><a className="text-gray-500 hover:text-gray-700" href="#">API Documentation</a></li>
@@ -25,7 +25,7 @@ function Footer() {
                     </ul>
                 </div>
                 <div>
-                    <h5 className="font-semibold">About</h5>
+                    <h5 className="font-semibold p-5 pl-0 text-lg">About</h5>
                     <ul className="space-y-2">
                         <li><a className="text-gray-500 hover:text-gray-700" href="#">Team</a></li>
                         <li><a className="text-gray-500 hover:text-gray-700" href="#">Locations</a></li>

@@ -1,10 +1,13 @@
 import { useEffect, useState } from "react";
-import { Footer, Navbar } from "../../components";
-// import CryptoCard from "../../components/CryptoCard/CryptoCard";
-// import axios from "axios";
+import { Link } from "react-router-dom";
+import { Footer, Navbar} from "../../components";
+import { CountUp } from "../../components/CountUp/CountUp";
+
 
 
 export default function Home() {
+
+
     const [cryptoData, setCryptoData] = useState([]);
     const fetchCryptoAPI = async () => {
         const options = {
@@ -36,8 +39,7 @@ export default function Home() {
                     <h1 className="text-6xl font-semibold font-mono text-white">Blockchain Payment</h1>
                 </div>
                 <div className=" w-4/5  p-4 md:block ml-8">
-                    <h5 className="text-white font-mono text-lg ">Lorem ipsum dolor sit amet consectetur adipisicing elit.</h5>
-                    <p className="text-white font-mono">Lorem ipsum dolor sit amet consectetur, adipisicing elit. Harum ipsum expedita soluta, nesciunt assumenda aliquam consequuntur necessitatibus at vel dolor!</p>
+                    <h5 className="text-white font-mono text-lg ">Explore the Future of Finance: Buy, Sell, and Manage Your Cryptocurrency Portfolio with Confidence and Security</h5>
                 </div>
                 <div className=" w-4/5  p-4 md:block ml-8">
                     <h5 className="text-white font-mono text-lg ">Sign up by your email</h5>
@@ -55,28 +57,27 @@ export default function Home() {
             {/* Dashboard */}
             <div className="container mx-auto px-4 mt-8 mb-4">
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-6 text-center mb-8">
-                    {cryptoData.map((coin) => {
-                        const price = Number(coin.price).toFixed(3); // Ensure price is a number
+                    {cryptoData.map((coin) => {// Ensure price is a number
                         return (
                             <div className="bg-white rounded-lg shadow-md" key={coin.rank}>
                                 <div className="bg-gray-100 p-4 rounded-t-lg">
-                                    <img src={coin.iconUrl} alt={`${coin.name} icon`} className="w-14 h-14 block mx-auto"/> {/* Centered image */}
+                                    <img src={coin.iconUrl} alt={`${coin.name} icon`} className="w-14 h-14 block mx-auto" /> {/* Centered image */}
                                     <h4 className="text-lg font-normal">{coin.name} {coin.symbol}</h4>
                                 </div>
                                 <div className="p-4">
                                     <h1 className="text-xl font-bold">
-                                        {price} $
-                                    </h1> {/* Used price variable */}
+                                        <CountUp end={coin.price} /> {/* Use CountUp component */}
+                                    </h1>
                                 </div>
                             </div>
                         );
                     })}
                 </div>
                 <div className="bg-cyan-500 p-4 rounded-t-lg">
-                    <a className="text-lg font-normal">
+                    <Link className="text-lg font-normal" to={"/rtcryptochart"}>
                         Explore on Realtime Price Chart
                         <i className="fa-solid fa-arrow-right pl-2"></i>
-                    </a>
+                    </Link>
                 </div>
             </div>
 

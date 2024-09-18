@@ -1,7 +1,30 @@
+import { useEffect, useState } from "react";
 import { Footer, Navbar } from "../../components";
+// import CryptoCard from "../../components/CryptoCard/CryptoCard";
+// import axios from "axios";
 
 
 export default function Home() {
+    const [cryptoData, setCryptoData] = useState([]);
+    const fetchCryptoAPI = async () => {
+        const options = {
+            headers: {
+                'x-access-token': 'coinranking3b54ba27f3f686f288bbc64a3e2f238398c7516f5e8bcf18',
+            },
+        };
+
+        try { // Added try-catch for error handling
+            const response = await fetch('https://api.coinranking.com/v2/coins', options); // Used await
+            const result = await response.json(); // Used await\
+            setCryptoData(result.data.coins.slice(0, 4)); // Store first 4 coins in state
+        } catch (error) {
+            console.error('Error fetching crypto data:', error); // Error handling
+        }
+    }
+
+    useEffect(() => {
+        fetchCryptoAPI();
+    }, [])
 
     return (
         <>
@@ -21,7 +44,7 @@ export default function Home() {
 
                     <div className="form-group pt-5">
                         <input type="email" className="form-control p-1" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email" />
-                        <a className="p-2 ml-1 text-white text-lg p-1 bg-indigo-600 hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600" href="#">
+                        <a className="p-2 ml-1 text-white text-lg bg-indigo-600 hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600" href="#">
                             Sign Up
                         </a>
                     </div>
@@ -32,46 +55,26 @@ export default function Home() {
             {/* Dashboard */}
             <div className="container mx-auto px-4 mt-8 mb-4">
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-6 text-center mb-8">
-                    <div className="bg-white rounded-lg shadow-md">
-                        <div className="bg-gray-100 p-4 rounded-t-lg">
-                            <i className="fa-solid fa-fire"></i>
-                            <h4 className="text-lg font-normal">Bitcoin BTC</h4>
-                        </div>
-                        <div className="p-4">
-                            <h1 className="text-4xl font-bold">$60,573.39 <small className="text-green-500 text-base">+1%</small></h1>
-                        </div>
-                    </div>
-                    <div className="bg-white rounded-lg shadow-md">
-                        <div className="bg-gray-100 p-4 rounded-t-lg">
-                            <i className="fa-solid fa-fire"></i>
-                            <h4 className="text-lg font-normal">Ethereum ETH</h4>
-                        </div>
-                        <div className="p-4">
-                            <h1 className="text-4xl font-bold">$2,659.77<small className="text-green-500 text-base">+1%</small></h1>
-                        </div>
-                    </div>
-                    <div className="bg-white rounded-lg shadow-md">
-                        <div className="bg-gray-100 p-4 rounded-t-lg">
-                            <i className="fa-solid fa-fire"></i>
-                            <h4 className="text-lg font-normal">Stellar XLM</h4>
-                        </div>
-                        <div className="p-4">
-                            <h1 className="text-4xl font-bold">$0.10 <small className="text-red-500 text-base">-1%</small></h1>
-                        </div>
-                    </div>
-                    <div className="bg-white rounded-lg shadow-md">
-                        <div className="bg-gray-100 p-4 rounded-t-lg">
-                            <i className="fa-solid fa-fire"></i>
-                            <h4 className="text-lg font-normal">Solana SOL</h4>
-                        </div>
-                        <div className="p-4">
-                            <h1 className="text-4xl font-bold">$146.47 <small className="text-red-500 text-base">-1%</small></h1>
-                        </div>
-                    </div>
+                    {cryptoData.map((coin) => {
+                        const price = Number(coin.price).toFixed(3); // Ensure price is a number
+                        return (
+                            <div className="bg-white rounded-lg shadow-md" key={coin.rank}>
+                                <div className="bg-gray-100 p-4 rounded-t-lg">
+                                    <img src={coin.iconUrl} alt={`${coin.name} icon`} className="w-14 h-14 block mx-auto"/> {/* Centered image */}
+                                    <h4 className="text-lg font-normal">{coin.name} {coin.symbol}</h4>
+                                </div>
+                                <div className="p-4">
+                                    <h1 className="text-xl font-bold">
+                                        {price} $
+                                    </h1> {/* Used price variable */}
+                                </div>
+                            </div>
+                        );
+                    })}
                 </div>
                 <div className="bg-cyan-500 p-4 rounded-t-lg">
                     <a className="text-lg font-normal">
-                        Explore more on Dashboard
+                        Explore on Realtime Price Chart
                         <i className="fa-solid fa-arrow-right pl-2"></i>
                     </a>
                 </div>
@@ -87,9 +90,9 @@ export default function Home() {
                         <div className="w-full md:w-1/2 lg:w-1/3 p-4 item-box">
                             <article className="item">
                                 <div className="item-content">
-                                    <h3 className="item-title font-semibold text-lg">Protected &amp; secure</h3>
+                                    <h3 className="item-title font-semibold text-lg">Portfolio Management</h3>
                                     <div className="item-desc text-sm">
-                                        Lorem, ipsum dolor sit amet consectetur adipisicing elit. Culpa iure, animi molestiae minus quas quam ad unde qui impedit atque.
+                                        Easily track your crypto investments in real-time with our comprehensive portfolio manager. Monitor performance, view historical data, and make informed decisions.
                                     </div>
                                 </div>
                             </article>
@@ -97,9 +100,9 @@ export default function Home() {
                         <div className="w-full md:w-1/2 lg:w-1/3 p-4 item-box">
                             <article className="item">
                                 <div className="item-content">
-                                    <h3 className="item-title font-semibold text-lg">Professional support</h3>
+                                    <h3 className="item-title font-semibold text-lg">Real-Time Price Tracking</h3>
                                     <div className="item-desc text-sm">
-                                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Labore, veniam!
+                                        Stay updated with real-time price tracking for your favorite cryptocurrencies. Explore detailed price charts, trends, and market statistics.
                                     </div>
                                 </div>
                             </article>
@@ -107,9 +110,9 @@ export default function Home() {
                         <div className="w-full md:w-1/2 lg:w-1/3 p-4 item-box">
                             <article className="item">
                                 <div className="item-content">
-                                    <h3 className="item-title font-semibold text-lg">Regulated</h3>
+                                    <h3 className="item-title font-semibold text-lg">Wallet Integration</h3>
                                     <div className="item-desc text-sm">
-                                        Lorem ipsum dolor sit amet consectetur, adipisicing elit. Nesciunt rem earum veniam obcaecati ea, corporis ducimus delectus tenetur autem dolores! <a href="/en-au/tradingacademy/faq/regulators/throughwhichsubsdoyouoperate" className="text-blue-500 underline">Learn more</a>.
+                                        Securely connect and manage your wallets. Our platform supports popular hardware and software wallets, keeping your assets safe.
                                     </div>
                                 </div>
                             </article>
@@ -117,9 +120,9 @@ export default function Home() {
                         <div className="w-full md:w-1/2 lg:w-1/3 p-4 item-box">
                             <article className="item">
                                 <div className="item-content">
-                                    <h3 className="item-title font-semibold text-lg">Reliable</h3>
+                                    <h3 className="item-title font-semibold text-lg">Customer Support Chat</h3>
                                     <div className="item-desc text-sm">
-                                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Placeat, doloribus pariatur architecto sint officiis expedita culpa nisi saepe eos mollitia.
+                                        Need help? Our customer support team is available 24/7 via live chat to assist you with any queries or issues.
                                     </div>
                                 </div>
                             </article>

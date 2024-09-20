@@ -1,3 +1,4 @@
+console.log("Footer Rendering")
 function Footer() {
     return (
         <div className="pt-16 mt-16 border-t border-gray-200">

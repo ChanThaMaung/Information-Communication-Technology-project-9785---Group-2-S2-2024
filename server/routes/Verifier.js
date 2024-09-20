@@ -27,13 +27,13 @@ function createRouter(pool) {
 
   // POST - Create a new verifier
   router.post('/create', async (req, res) => {
-    const { verifierAddress, transaction_updated, transaction_hash } = req.body;
+    const { verifierAddress, project_name, verification_date, transaction_updated, transaction_hash } = req.body;
     try {
       const [result] = await pool.query(
-        'INSERT INTO verifier (verifier_address, transaction_updated, transaction_hash) VALUES (?, ?, ?)',
-        [verifierAddress, transaction_updated, transaction_hash]
+        'INSERT INTO verifier (verifier_address, project_name, verification_date, transaction_updated, transaction_hash) VALUES (?, ?, ?, ?, ?)',
+        [verifierAddress, project_name, verification_date, transaction_updated, transaction_hash]
       );
-      res.status(201).json({ id: result.insertId, verifierAddress, transaction_updated, transaction_hash });
+      res.status(201).json({ verifierAddress, project_name, verification_date, transaction_updated, transaction_hash });
     } catch (error) {
       console.error('Error creating verifier:', error);
       res.status(500).json({ error: 'Internal server error', details: error.message });

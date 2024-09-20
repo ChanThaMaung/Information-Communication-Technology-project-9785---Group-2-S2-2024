@@ -1,4 +1,5 @@
 function Header() {
+    console.log("Header rendering");
     return (
         <div>
             <nav className="bg-black p-4 flex place-content-between fixed top-0 left-0 right-0 z-50">

@@ -9,26 +9,8 @@ export const IssuerContext = React.createContext();
 const { ethereum } = window;
 
 export const IssuerProvider = ({ children }) => {
-  const [issuerTransactions, setIssuerTransactions] = useState([]);
   const [isLoadingIssuer, setIsLoadingIssuer] = useState(false);
   const [currentIssuerAccount, setCurrentIssuerAccount] = useState("");
-  const [issuerTransactionCount, setIssuerTransactionCount] = useState(
-    localStorage.getItem("transactionCount")
-  );
-  const [formIssuerData, setFormIssuerData] = useState({
-    amount: 0,
-    end_date: 0,
-    status: 0,
-    issued_date: "",
-    verification_status: 0,
-  });
-
-  const handleChangeIssuer = (e, name) => {
-    setFormIssuerData((prevState) => ({
-      ...prevState,
-      [name]: e.target.value,
-    }));
-  };
 
   const checkIfWalletIsConnected = async () => {
     if (!ethereum) return alert("Please install Metamask");
@@ -38,31 +20,58 @@ export const IssuerProvider = ({ children }) => {
 
   const connectIssuerWallet = async (account) => {
     setCurrentIssuerAccount(account);
-  };
-
-  const sendIssuerTransaction = async () => {
+  }
+  const getContract = async () => {
+    const contract = await getEthereumContract(
+      contractAddress,
+      contractABI,
+      { ethereum }
+    );
+    return contract;
+  }
+  
+  const getIssuerCount = async () => {
+    const contract = await getContract();
+    const count = await contract.getTransactionCount();
+    return count;
+  }
+  const sendIssuerTransaction = async (formData) => {
     try {
       const accounts = await window.ethereum.request({
         method: "eth_accounts",
       });
       const currentAccount = accounts[0];
 
-      const { amount, end_date, status, issued_date, verification_status } = formIssuerData;
-      console.log(amount, end_date, status, issued_date, verification_status);
+      const { project_name, credit_amount, active_status, date_issued, period_covered, verification_status, prev_tx } = formData;
+      const string_status = active_status.toString();
+      const issuedDateInSeconds = Math.floor(new Date(date_issued).getTime() / 1000);
+      console.log('Form Data:', {
+        'Project Name': project_name,
+        'Amount': credit_amount,
+        'Status': string_status,
+        'Issued Date': issuedDateInSeconds,
+        'Period Covered': period_covered,
+        'Verification Status': verification_status,
+        'Previous Transaction': prev_tx 
+      });
+      const issuerContract = await getContract();
+      const parsedAmount = Math.floor(Number(credit_amount));
 
-      const issuerContract = await getEthereumContract(
-        contractAddress,
-        contractABI,
-        { ethereum }
-      );
-      const parsedAmount = Math.floor(Number(amount));
+      const issueData = {
+        credit_amount: parsedAmount,
+        project_name: project_name,
+        active_status: string_status,
+        date_covered: period_covered,
+        date_issued: issuedDateInSeconds,
+        verification_status: verification_status,
+        prev_tx: prev_tx,
+      }
+
+      console.log(verification_status);
+      console.log(formData.transaction_hash);
 
       const transactionHash = await issuerContract.addToBlockChain(
-        parsedAmount,
-        status,
-        end_date,
-        issued_date,
-        verification_status,
+        issueData,
         {
           from: currentAccount,
           gas: "0x5208",
@@ -75,23 +84,34 @@ export const IssuerProvider = ({ children }) => {
       setIsLoadingIssuer(false);
       console.log(`Success: ${transactionHash.hash}`);
 
-      const transactionCount = await issuerContract.getTransactionCount();
-
-      setIssuerTransactionCount(transactionCount.toNumber);
-      console.log(`Transaction Count: ${transactionCount}`);
-      const formattedRetirementDate = convertDateFormat(end_date);
-      const formattedIssuedDate = convertDateFormat(issued_date);
-
+      // const issuerTransactionCount = await issuerContract.getTransactionCount();
+      if (verification_status === "0") {
       const response = await axios.post('http://localhost:3000/issuer/create', {
-        issuerAddress: currentAccount,
-        credit_amount: amount,
-        active_status: status,
+        issuer_address: currentAccount,
+        project_name: project_name,
+        credit_amount: parsedAmount,
+        active_status: string_status,
         date_issued: formattedIssuedDate,
-        end_date: formattedRetirementDate,
+        period_covered: period_covered,
         verification_status: verification_status,
+        prev_tx: prev_tx,
         transaction_hash: transactionHash.hash
       });
       console.log('Data created:', response.data);
+    }
+    else if (verification_status === "1") {
+      const response = await axios.put(`http://localhost:3000/issuer/update/${formData.transaction_hash}`, {
+        project_name: project_name,
+        credit_amount: parsedAmount,
+        active_status: string_status,
+        date_issued: formattedIssuedDate,
+        period_covered: period_covered,
+        verification_status: verification_status,
+        prev_tx: formData.transaction_hash,
+        transaction_hash: transactionHash.hash
+      });
+      console.log('Data updated:', response.data);
+    }
     } catch (error) {
       console.log(error);
 
@@ -100,8 +120,6 @@ export const IssuerProvider = ({ children }) => {
   };
   useEffect(() => {
     checkIfWalletIsConnected();
-    if (currentIssuerAccount) {
-    }
   }, []);
 
   return (
@@ -109,11 +127,8 @@ export const IssuerProvider = ({ children }) => {
       value={{
         connectIssuerWallet,
         currentIssuerAccount,
-        formIssuerData,
-        setFormIssuerData,
         sendIssuerTransaction,
-        handleChangeIssuer,
-        issuerTransactions,
+        getIssuerCount,
       }}
     >
       {children}

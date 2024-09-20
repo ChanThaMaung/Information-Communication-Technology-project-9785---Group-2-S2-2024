@@ -12,24 +12,8 @@ export const EmitterContext = React.createContext();
 const { ethereum } = window;
 
 export const EmitterProvider = ({ children }) => {
-  const [emitterTransactions, setEmitterTransactions] = useState([]);
   const [isLoadingEmitter, setIsLoadingEmitter] = useState(false);
   const [currentEmitterAccount, setCurrentEmitterAccount] = useState("");
-  const [emitterTransactionCount, setEmitterTransactionCount] = useState(
-    localStorage.getItem("transactionCount")
-  );
-  const [formEmitterData, setFormEmitterData] = useState({
-    credit_amount: 0,
-    date_bought: 0,
-    verification_status: "",
-  });
-
-  const handleEmitterChange = (e, name) => {
-    setFormEmitterData((prevState) => ({
-      ...prevState,
-      [name]: e.target.value,
-    }));
-  };
 
   const checkIfWalletIsConnected = async () => {
     if (!ethereum) return alert("Please install Metamask");
@@ -43,26 +27,41 @@ export const EmitterProvider = ({ children }) => {
   const connectEmitterWallet = async (account) => {
     setCurrentEmitterAccount(account);
   };
-
-  const sendEmitterTransaction = async () => {
+  const getContract = async () => {
+    const contract = await getEthereumContract(
+      contractAddress,
+      contractABI,
+      { ethereum }
+    );
+    return contract;
+  };
+  const getEmitterCount = async () => {
+    const contract = await getContract();
+    const count = await contract.getTransactionCount();
+    return count;
+  }
+  const sendEmitterTransaction = async (formData) => {
     try {
       const accounts = await window.ethereum.request({
         method: "eth_accounts",
       });
       const currentAccount = accounts[0];
-      const { credit_amount, date_bought, verification_status } = formEmitterData;
-      console.log(credit_amount, date_bought, verification_status);
-      const emitterContract = await getEthereumContract(
-        contractAddress,
-        contractABI,
-        { ethereum }
-      );
+      const { project_name,credit_amount, date_bought, verification_status, prev_tx } = formData;
+      const emitterContract = await getContract();
       const parsedAmount = Math.floor(Number(credit_amount));
+      const dateBoughtInSeconds = Math.floor(new Date(date_bought).getTime() / 1000);
 
+      const emitterData = {
+        credit_amount: parsedAmount,
+        project_name: project_name,
+        end_date: dateBoughtInSeconds,
+        status: verification_status,
+        prev_tx: prev_tx,
+      }
+      console.log("Data at EmitterContext:", emitterData);
+      
       const transactionHash = await emitterContract.addToBlockChain(
-        parsedAmount,
-        verification_status,
-        date_bought,
+        emitterData,
         { from: currentAccount, gas: "0x5208", }
       );
 
@@ -73,17 +72,33 @@ export const EmitterProvider = ({ children }) => {
       console.log(`Success - ${transactionHash.hash}`);
 
       const transactionCount = await emitterContract.getTransactionCount();
-      setEmitterTransactionCount(transactionCount.toNumber);
-      const formattedDateBought = convertDateFormat(date_bought);
+      const formattedDateBought = convertDateFormat(dateBoughtInSeconds);
+
+
+      if (verification_status === "0") {
       const response = await axios.post('http://localhost:3000/emitter/create', {
         emitterAddress: currentAccount,
+        project_name: project_name,
         credit_amount: credit_amount,
         date_bought: formattedDateBought,
         verification_status: verification_status,
-        transaction_hash: transactionHash.hash
+        transaction_hash: transactionHash.hash,
+        prev_tx: prev_tx
       });
       console.log('Data created:', response.data);
-
+    }
+    else {
+      const response = await axios.put(`http://localhost:3000/emitter/update/${formData.transaction_hash}`, {
+        emitterAddress: currentAccount,
+        project_name: project_name,
+        credit_amount: credit_amount,
+        date_bought: formattedDateBought,
+        verification_status: verification_status,
+        prev_tx: formData.transaction_hash,
+        transaction_hash: transactionHash.hash
+      });
+      console.log('Data updated:', response.data);
+    }
     } catch (error) {
       console.log(error);
       throw new Error("No ethereum object.");
@@ -99,11 +114,8 @@ export const EmitterProvider = ({ children }) => {
       value={{
         connectEmitterWallet,
         currentEmitterAccount,
-        formEmitterData,
-        setFormEmitterData,
-        handleEmitterChange,
         sendEmitterTransaction,
-        emitterTransactions,
+        getEmitterCount,
       }}
     >
       {children}

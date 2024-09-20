@@ -14,6 +14,15 @@ function createRouter(pool) {
 		}
 	});
 
+	router.get('/unverified', async (req, res) => {
+		try {
+			const [rows] = await pool.query('SELECT * FROM emitter WHERE verification_status = "0"');
+			res.json(rows);
+		} catch (error) {
+			console.error('Error fetching emitters:', error);
+			res.status(500).json({ error: 'Internal server error', details: error.message });
+		}
+	});
 	router.get('/:txHash', async (req, res) => {
 		const { txHash } = req.params;
 		try {
@@ -27,13 +36,13 @@ function createRouter(pool) {
 	
 	// POST - Create a new emitter
 	router.post('/create', async (req, res) => {
-		const { emitterAddress, credit_amount, date_bought, verification_status, transaction_hash } = req.body;
+		const { emitterAddress, project_name, credit_amount, date_bought, verification_status, prev_tx, transaction_hash } = req.body;
 		try {
-			const [result] = await pool.query(
-				'INSERT INTO emitter (emitter_address, credit_amount, date_bought, verification_status, transaction_hash) VALUES (?, ?, ?, ?, ?)',
-				[emitterAddress, credit_amount, date_bought, verification_status, transaction_hash]
+			await pool.query(
+				'INSERT INTO emitter (emitter_address, project_name, credit_amount, date_bought, verification_status, prev_tx, transaction_hash) VALUES (?, ?, ?, ?, ?, ?, ?)',
+				[emitterAddress, project_name, credit_amount, date_bought, verification_status, prev_tx, transaction_hash]
 			);
-			res.status(201).json({ id: result.insertId, emitterAddress, credit_amount, date_bought, verification_status, transaction_hash });
+			res.status(201).json({ emitterAddress, project_name, credit_amount, date_bought, verification_status, prev_tx, transaction_hash });
 		} catch (error) {
 			console.error('Error creating emitter:', error);
 			res.status(500).json({ error: 'Internal server error', details: error.message });
@@ -43,13 +52,14 @@ function createRouter(pool) {
 	// PUT - Update an emitter
 	router.put('/update/:txHash', async (req, res) => {
 		const { txHash } = req.params;
-		const { emitterAddress, credit_amount, date_bought, verification_status } = req.body;
+		const { credit_amount, date_bought, verification_status, prev_tx, transaction_hash } = req.body;
 		try {
 			await pool.query(
-				'UPDATE emitter SET emitter_address = ?, credit_amount = ?, date_bought = ?, verification_status = ? WHERE transaction_hash = ?',
-				[emitterAddress, credit_amount, date_bought, verification_status, txHash]
+				'UPDATE emitter SET credit_amount = ?, date_bought = ?, verification_status = ?, prev_tx = ?, transaction_hash = ? WHERE transaction_hash = ?',
+				[credit_amount, date_bought, verification_status, prev_tx, transaction_hash, txHash]
+
 			);
-			res.json({ emitterAddress, credit_amount, date_bought, verification_status, txHash });
+			res.json({ credit_amount, date_bought, verification_status, prev_tx, transaction_hash, txHash });
 		} catch (error) {
 			console.error('Error updating emitter:', error);
 			res.status(500).json({ error: 'Internal server error', details: error.message });

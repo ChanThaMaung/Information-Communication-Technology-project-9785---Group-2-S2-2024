@@ -21,14 +21,16 @@ USE `capstone_database`;
 -- Table strPRIMARYucture for table `emitter`
 --
 
--- DROP TABLE IF EXISTS `emitter`;
+DROP TABLE IF EXISTS `emitter`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE IF NOT EXISTS `emitter` (
   `emitter_address` varchar(200) NOT NULL,
+  `project_name` varchar(200) NOT NULL,
   `credit_amount` int NOT NULL,
   `date_bought` date NOT NULL,
   `verification_status` tinyint(1) NOT NULL,
+  `prev_tx` varchar(200),	
   `transaction_hash` varchar(200) NOT NULL,
   PRIMARY KEY (`transaction_hash`),
   UNIQUE KEY `transaction_hash_UNIQUE` (`transaction_hash`)
@@ -48,16 +50,18 @@ UNLOCK TABLES;
 -- Table structure for table `issuer`
 --
 
--- DROP TABLE IF EXISTS `issuer`;
+DROP TABLE IF EXISTS `issuer`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE IF NOT EXISTS `issuer` (
   `issuer_address` varchar(200) NOT NULL,
+  `project_name` varchar(200) NOT NULL,
   `credit_amount` int NOT NULL,
   `active_status` tinyint(1) NOT NULL,
   `date_issued` date NOT NULL,
-  `end_date` date NOT NULL,
+  `period_covered` varchar(200) NOT NULL,
   `verification_status` tinyint(1) NOT NULL,
+  `prev_tx` varchar(200),
   `transaction_hash` varchar(200) NOT NULL,
   PRIMARY KEY (`transaction_hash`),
   UNIQUE KEY `transaction_hash_UNIQUE` (`transaction_hash`)
@@ -77,13 +81,15 @@ UNLOCK TABLES;
 -- Table structure for table `verifier`
 --
 
--- DROP TABLE IF EXISTS `verifier`;
+DROP TABLE IF EXISTS `verifier`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE IF NOT EXISTS `verifier` (
   `verifier_address` varchar(200) NOT NULL,
-  `transaction_hash` varchar(200) NOT NULL,
+  `project_name` varchar(200) NOT NULL,
+  `verification_date` varchar(200) NOT NULL,
   `transaction_updated` varchar(200) NOT NULL,
+  `transaction_hash` varchar(200) NOT NULL,
   PRIMARY KEY (`transaction_hash`),
   UNIQUE KEY `transaction_hash_UNIQUE` (`transaction_hash`),
   UNIQUE KEY `transaction_updated_UNIQUE` (`transaction_updated`)

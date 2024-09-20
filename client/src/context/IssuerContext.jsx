@@ -83,7 +83,7 @@ export const IssuerProvider = ({ children }) => {
       await transactionHash.wait();
       setIsLoadingIssuer(false);
       console.log(`Success: ${transactionHash.hash}`);
-
+      const formattedIssuedDate = convertDateFormat(issuedDateInSeconds);
       // const issuerTransactionCount = await issuerContract.getTransactionCount();
       if (verification_status === "0") {
       const response = await axios.post('http://localhost:3000/issuer/create', {

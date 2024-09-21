@@ -1,4 +1,5 @@
-import {Navbar, Footer, Dashboard } from './components';
+import {Navbar, Footer } from './components';
+import Dashboard from './dashboard/dashboard';
 import {useEffect, useState} from 'react';
 // import axios from 'axios';
 

@@ -3,8 +3,44 @@ const express = require('express');
 function createRouter(pool) {
   const router = express.Router();
 
+  // GET - Fetch the number of all issuer transactions
+  router.get('/count', async (req, res) => {
+    try {
+      const [rows] = await pool.query('SELECT COUNT(*) AS transaction_count FROM issuer');
+      res.json(rows);
+    } catch (error) {
+      console.error('Error fetching issuer count:', error);
+      res.status(500).json({ error: 'Internal server error', details: error.message });
+    }
+  });
+
+  // GET - Fetch the number of unique issuer addresses
+  router.get('/addresses', async (req, res) => {
+    try {
+      const [rows] = await pool.query('SELECT COUNT(DISTINCT issuer_address) AS address_count FROM issuer');
+      res.json(rows);
+    } catch (error) {
+      console.error('Error fetching unique issuer addresses:', error);
+      res.status(500).json({ error: 'Internal server error', details: error.message });
+    }
+  });
+
+  // GET - Fetch the total amount of verified credits issued
+  router.get('/total', async (req, res) => {
+    try {
+      const [rows] = await pool.query('SELECT SUM(credit_amount) AS credit_count FROM issuer WHERE verification_status = "1"');
+      res.json(rows);
+    } catch (error) {
+      console.error('Error fetching total verified credits:', error);
+      res.status(500).json({ error: 'Internal server error', details: error.message });
+    }
+  });
+  
   // GET - Fetch all issuers
   router.get('/all', async (req, res) => {
+
+
+
     try {
       const [rows] = await pool.query('SELECT * FROM issuer');
       res.json(rows);

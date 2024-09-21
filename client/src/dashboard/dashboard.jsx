@@ -7,9 +7,9 @@ import { connectWallet as connectWalletFunction } from "../context/GlobalFunctio
 import axios from "axios";
 import { formatDate } from "../scripts/handleDateFormat";
 
-import IssuerDashboard from "../dashboard/issuerDashboard";
-import EmitterDashboard from "../dashboard/emitterDashboard";
-import VerifierDashboard from "../dashboard/verifierDashboard";
+import IssuerDashboard from "./issuerDashboard";
+import EmitterDashboard from "./emitterDashboard";
+import VerifierDashboard from "./verifierDashboard";
 console.log("Dashboard rendering");
 
 function Dashboard() {
@@ -19,6 +19,9 @@ function Dashboard() {
   const [allTransactions, setAllTransactions] = useState([]);
   const [emitterTransactions, setEmitterTransactions] = useState([]);
   const [issuerTransactions, setIssuerTransactions] = useState([]);
+  const [issuerCount, setIssuerCount] = useState(0);
+  const [emitterCount, setEmitterCount] = useState(0);
+  const [verifierCount, setVerifierCount] = useState(0);
   // const [isWalletChecked, setIsWalletChecked] = useState(false);
 
   const {
@@ -93,7 +96,7 @@ function Dashboard() {
       console.log("Issuer");
       const rawIssuerCount = await getIssuerCount();
       const issuerCount = Number(rawIssuerCount);
-      console.log(issuerCount);
+      setIssuerCount(issuerCount);
     } else if (accountType === "verifier") {
       response = await axios.get("http://localhost:3000/verifier/all");
       issuerRes = await axios.get("http://localhost:3000/issuer/unverified");
@@ -102,7 +105,7 @@ function Dashboard() {
       const rawVerifierCount = await getVerifierCount();
       const verifierCount = Number(rawVerifierCount);
       console.log("Verifier");
-      console.log(verifierCount);
+      setVerifierCount(verifierCount);
 
     } else if (accountType === "emitter") {
       response = await axios.get("http://localhost:3000/emitter/all");
@@ -110,7 +113,7 @@ function Dashboard() {
       const rawEmitterCount = await getEmitterCount();
       const emitterCount = Number(rawEmitterCount);
       console.log("Emitter");
-      console.log(emitterCount);
+      setEmitterCount(emitterCount);
     }
     return { response, issuerRes, emitterRes, verifierRes };
   };
@@ -211,12 +214,58 @@ function Dashboard() {
   const renderContent = () => {
     if (!currentAccount) {
       return (
-        <button
-          onClick={handleConnectWallet}
-          className="mt-4 p-2 bg-blue-500 text-white hover:bg-blue-600 transition-colors duration-300 border border-black w-32"
-        >
-          Connect
-        </button>
+        <>
+      <button 
+        onClick={handleConnectWallet}
+        style={{
+          padding: '10px 20px',
+          fontSize: '16px',
+          color: 'white',
+          backgroundColor: '#007bff',
+          border: 'none',
+          borderRadius: '5px',
+          cursor: 'pointer'
+        }}
+      >
+        Connect Wallet
+      </button>
+      <div style={{ border: '1px solid #ccc', padding: '20px', borderRadius: '10px', width: '99%', margin: '0 auto 10px', display: 'flex' }}>
+        <div style={{ display: 'flex', border: '1px solid #ccc', borderRadius: '10px', flexDirection: 'column', width: '33%', marginRight: '20px' }}>
+          <div style={{ marginBottom: '10px', border: '1px solid #ccc', borderRadius: '10px', padding: '20px' }}>
+            {/* First div content */}
+            <span>{issuerCount+emitterCount+verifierCount}</span>
+            <p>Registered Users</p>
+          </div>
+          <hr style={{border: '1px solid #ccc', margin: '10px 10px'}}/>
+          <div style={{ border: '1px solid #ccc', borderRadius: '10px', padding: '20px', display: 'flex' }}>
+              <div style={{ width: '45%' }}>
+                Piechart
+              </div>
+              <div style={{ width: '55%' }}>
+                <p>Issuers</p>
+                <p>Emitters</p>
+                <p>Verifiers</p>
+              </div>
+            </div>
+        </div>
+        <div style={{ width: '33%', border: '1px solid #ccc', borderRadius: '10px', padding: '20px', marginRight: '20px' }}>
+          <p>Amount of Issuer Transactions</p>
+          <p>Amount of Verifier Transactions</p>
+          <p>Amount of Emitter Transactions</p>
+        </div>
+        <div style={{ width: '33%', border: '1px solid #ccc', borderRadius: '10px', padding: '20px' }}>
+          <p>Recent Transactions</p>
+        </div>
+      </div>
+      <div style={{ border: '1px solid #ccc', padding: '20px', borderRadius: '10px', width: '99%', margin: '10px auto 0', display: 'flex' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', width: '20%', marginRight: '10px' }}>
+          Issued/Retired
+        </div>
+        <div style={{ display: 'flex', flexDirection: 'column', width: '80%', marginRight: '10px' }}>
+          Graph
+        </div>
+      </div>
+      </>
       );
     }
     switch (accountType) {

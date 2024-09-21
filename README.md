@@ -1,6 +1,9 @@
 # Information-Communication-Technology-project-9785---Group-2-S2-2024
 Changlog 1.1: 
 - Added wireframes for the front-end design for verifiers and the public users.
+  ![image](https://github.com/user-attachments/assets/72dc6721-ce10-4940-84ec-e9653be1da62)
+  ![image](https://github.com/user-attachments/assets/afba6c7b-c550-4b78-ab5d-e1c150a0387a)
+
 Changelog 1.0.1: 
 - Integrated the add/fetch SQL functions for emitters and issuers to the front-end:
   - For emitters (& console log):

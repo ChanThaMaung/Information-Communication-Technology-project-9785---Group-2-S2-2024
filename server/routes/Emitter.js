@@ -14,6 +14,40 @@ function createRouter(pool) {
 		}
 	});
 
+	// GET - Fetch the number of all emitter transactions
+	router.get('/count', async (req, res) => {
+		try {
+			const [rows] = await pool.query('SELECT COUNT(*) AS transaction_count FROM emitter');
+			res.json(rows);
+		} catch (error) {
+			console.error('Error fetching emitter count:', error);
+			res.status(500).json({ error: 'Internal server error', details: error.message });
+		}
+	});
+
+	// GET - Fetch the number of unique emitter addresses 
+	router.get('/addresses', async (req, res) => {
+		try {
+			const [rows] = await pool.query('SELECT COUNT(DISTINCT emitter_address) AS address_count FROM emitter');
+			res.json(rows);
+		} catch (error) {
+			console.error('Error fetching unique emitter addresses:', error);
+			res.status(500).json({ error: 'Internal server error', details: error.message });
+		}
+	});
+
+	// GET - Fetch the total amount of verified credits bought
+	router.get('/total', async (req, res) => {
+		try {
+			const [rows] = await pool.query('SELECT SUM(credit_amount) AS credit_count FROM emitter WHERE verification_status = "1"');
+			res.json(rows);
+		} catch (error) {
+			console.error('Error fetching total verified credits:', error);
+			res.status(500).json({ error: 'Internal server error', details: error.message });
+		}
+	});
+
+	// GET - Fetch all unverified emitters
 	router.get('/unverified', async (req, res) => {
 		try {
 			const [rows] = await pool.query('SELECT * FROM emitter WHERE verification_status = "0"');
@@ -23,6 +57,8 @@ function createRouter(pool) {
 			res.status(500).json({ error: 'Internal server error', details: error.message });
 		}
 	});
+
+	// GET - Fetch a specific emitter by transaction hash
 	router.get('/:txHash', async (req, res) => {
 		const { txHash } = req.params;
 		try {
@@ -33,7 +69,6 @@ function createRouter(pool) {
 			res.status(500).json({ error: 'Internal server error', details: error.message });
 		}
 	});
-	
 	// POST - Create a new emitter
 	router.post('/create', async (req, res) => {
 		const { emitterAddress, project_name, credit_amount, date_bought, verification_status, prev_tx, transaction_hash } = req.body;

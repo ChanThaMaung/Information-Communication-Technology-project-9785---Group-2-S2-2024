@@ -3,8 +3,32 @@ const express = require('express');
 function createRouter(pool) {
   const router = express.Router();
 
+  // GET - Fetch the number of all verifier transactions
+  router.get('/count', async (req, res) => {
+    try {
+      const [rows] = await pool.query('SELECT COUNT(*) AS transaction_count FROM verifier');
+      res.json(rows);
+    } catch (error) {
+      console.error('Error fetching verifier count:', error);
+      res.status(500).json({ error: 'Internal server error', details: error.message });
+    }
+  });
+
+  // GET - Fetch the number of unique verifier addresses
+  router.get('/addresses', async (req, res) => {
+    try {
+      const [rows] = await pool.query('SELECT COUNT(DISTINCT verifier_address) AS address_count FROM verifier');
+      res.json(rows);
+    } catch (error) {
+      console.error('Error fetching unique verifier addresses:', error);
+      res.status(500).json({ error: 'Internal server error', details: error.message });
+    }
+  });
+  
   // GET - Fetch all verifiers
   router.get('/all', async (req, res) => {
+
+
     try {
       const [rows] = await pool.query('SELECT * FROM verifier');
       res.json(rows);

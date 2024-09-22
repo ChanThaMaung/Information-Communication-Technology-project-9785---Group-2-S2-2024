@@ -10,6 +10,10 @@
   background: linear-gradient(90deg, #01019B 0%, #770077 100%);
 }
 
+.bg--gradientDB {
+  background: radial-gradient(ellipse at 24% 64%, #030289 0%, #000208 100%);
+}
+
 @keyframes logo-spin {
   from {
     transform: rotate(0deg);

@@ -4,7 +4,7 @@ import {
   Routes,
   Route
 } from "react-router-dom";
-import { Dashboard, Home, NotFound, SignIn, SignUp, RTCryptoChart } from "./Pages";
+import { Dashboard, Home, NotFound, SignIn, SignUp, RTCryptoChart, DashboardforEmiiter } from "./Pages";
 // import React from 'react';
 
 function App() {
@@ -19,6 +19,7 @@ function App() {
           <Route path="/signUp" element={<SignUp/>}/>
           <Route path="/rtcryptochart" element={<RTCryptoChart/>}/>
           <Route path="*" element={<NotFound/>}/>
+          <Route path="/dashboardforemitter" element={<DashboardforEmiiter/>}/>
         </Routes>
       </BrowserRouter>
     </>

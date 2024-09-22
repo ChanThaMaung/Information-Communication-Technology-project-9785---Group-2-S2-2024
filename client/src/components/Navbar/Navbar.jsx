@@ -12,7 +12,7 @@ export default function Navbar() {
                             <Link className="font-semibold" to={"/"}>Home</Link>
                         </li>
                         <li className="text-white hover:text-gray-300 hover:cursor-pointer text-lg p-1">
-                            <Link to={"/dashboard"}>Dashboard</Link>
+                            <Link to={"/dashboardforemitter"}>Dashboard</Link>
                         </li>
                         <li className="text-white hover:text-gray-300 hover:cursor-pointer text-lg p-1">
                             <a href="#about">About</a>

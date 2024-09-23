@@ -54,7 +54,7 @@ export default function DashBoardforEmitter() {
 
     return (
         <>
-            <div className="relative right-0 left-0 top-0 z-50 w-full h-fit bg--gradientDB place-content-center">
+            <div className="relative right-0 left-0 top-0 z-50 w-full h-fit bg--gradientDB place-content-center shadow-lg"> {/* Added shadow-lg */}
                 <div className="text-center p-10">
                     <h1 className="text-6xl font-semibold font-mono text-white">Blockchain Payment</h1>
                 </div>
@@ -93,7 +93,7 @@ export default function DashBoardforEmitter() {
                 </div>
             </div>
             <div className="grid grid-cols-5 gap-4">
-                <div className="col-span-1 flex-col border">
+                <div className="col-span-1 flex-col border h-screen shadow-md"> {/* Added shadow-md */}
                     <ul className="flex flex-col gap-5 mt-2">
                         <li className="nav-item flex items-center gap-2 px-4 py-2">
                             <h1 className="text-2xl">Dashboard</h1>
@@ -117,7 +117,7 @@ export default function DashBoardforEmitter() {
                         </li>
                     </ul>
                 </div>
-                <div className="col-span-4 w-full border p-3 rounded">
+                <div className="col-span-4 w-full border p-3 rounded shadow-md"> {/* Added shadow-md */}
                     <div>
                         <h2 className="text-3xl mx-2">Carbon Credits Dashboard</h2>
                     </div>

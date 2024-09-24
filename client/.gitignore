@@ -1,3 +1,6 @@
+# Node modules
+
+
 # Logs
 logs
 *.log
@@ -22,4 +25,4 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
-Pages
+

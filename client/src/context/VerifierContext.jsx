@@ -30,7 +30,7 @@ export const VerifierProvider = ({ children }) => {
     return contract;
   }
   
-  const sendVerifierTransaction = async (formData) => {
+  const sendVerifierTransaction = async (formData, type) => {
     try {
       const accounts = await window.ethereum.request({
         method: "eth_accounts",
@@ -54,6 +54,7 @@ export const VerifierProvider = ({ children }) => {
 
       const response = await axios.post('http://localhost:3000/verifier/create', {  
         verifierAddress: currentAccount,
+        type: type,
         project_name: formData.project_name,
         verification_date: currentDate,
         transaction_updated: transaction_hash,

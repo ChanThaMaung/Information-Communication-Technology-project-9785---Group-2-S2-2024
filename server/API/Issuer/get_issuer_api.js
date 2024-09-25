@@ -1,6 +1,16 @@
 import axios from "axios";
 import { API_URL } from "./constants";
 
+export const getByAddress = async (address) => {
+    const response = await axios.get(API_URL + "/address/" + address);
+    return response.data;
+}
+
+export const getVerifiedByAddress = async (address) => {
+    const response = await axios.get(API_URL + "/verified/address/" + address);
+    return response.data;
+}
+
 export const getActiveRows = async () => {
     const response = await axios.get(API_URL + "/active-rows");
     return response.data;
@@ -57,7 +67,7 @@ export const getAllIssuer = async () => {
 
 // Fetch all unverified issuer transactions
 export const getVerifiedIssuer = async () => {
-    const response = await axios.get(API_URL + "/verified");
+    const response = await axios.get(API_URL + "/verified-count");
     return response.data;
 }
 

@@ -1,6 +1,15 @@
 import axios from "axios";
 import { API_URL } from "./constants";
 
+export const getByAddress = async (address) => {
+    const response = await axios.get(API_URL + "/address/" + address);
+    return response.data;
+}
+
+export const getVerifiedByAddress = async (address) => {
+    const response = await axios.get(API_URL + "/verified/address/" + address);
+    return response.data;
+}
 
 export const getVerifiedEmitterCount = async () => {
     const response = await axios.get(API_URL + "/verified/count");
@@ -33,7 +42,7 @@ export const getTotalEmitter = async () => {
 }
 
 export const getVerifiedEmitter = async () => {
-    const response = await axios.get(API_URL + "/verified");
+    const response = await axios.get(API_URL + "/verified-count");
     return response.data;
 }
 

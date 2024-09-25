@@ -149,10 +149,10 @@ function TransactionSection({
     const [searchInput, setSearchInput] = useState("");
     const [allTransactions, setAllTransactions] = useState([]);
     const transactions = isIssuer ? issuerTransactions : emitterTransactions;
-    const title = isIssuer ? "Issuer Transactions" : "Emitter Transactions";
+    const title = isIssuer ? "Unverified Issuer Transactions" : "Unverified Emitter Transactions";
     const totalVerifiedCredits = isIssuer ? totalVerifiedCreditsIssued : totalVerifiedCreditsBought;
     const totalVerifiedTransactions = isIssuer ? totalVerifiedIssuer : totalVerifiedEmitter;
-    const creditType = isIssuer ? "issued" : "bought";
+    const creditType = isIssuer ? "Issued" : "Bought";
 
     useEffect(() => {
         setAllTransactions(transactions);
@@ -231,17 +231,17 @@ function TransactionSection({
             <div className="wrapper">
                 <div className="verifier-upper-1">
                     <div className="verifier-upper-1-upper">
-                        <p className="bold-number">{(totalVerifiedCredits || 0).toLocaleString()}/20,000</p>
-                        <p className="text-sm">Number of verified {creditType.toLocaleString()} carbon credits</p>
+                        <p className="bold-text">{(totalVerifiedCredits || 0).toLocaleString()}</p>
+                        <p className="text-sm">{creditType.toLocaleString()} Carbon Credits Verified</p>
                     </div>
                     <div style={{ width: '100%', marginLeft: '1rem' }}>
                         <hr className="divider" />
                     </div>
                     <div style={{ borderRadius: '0.5rem', padding: '1rem', width: '100%', textAlign: 'center' }}>
-                        <p className="bold-number">
+                        <p className="bold-text">
                             {totalVerifiedTransactions.toLocaleString()}
                         </p>
-                        <p className="text-sm">Number of verified {isIssuer ? 'issuer' : 'emitter'} transactions</p>
+                        <p className="text-sm">{isIssuer ? 'Issuer' : 'Emitter'} Transactions Verified</p>
                     </div>
                 </div>
                 <div className="verifier-upper-2">
@@ -250,7 +250,7 @@ function TransactionSection({
                             <h2 className="text-3xl font-bold">{title}</h2>
                         </div>
 
-                        <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+                        <div style={{ display: 'flex', alignItems: 'center' }}>
                             <div style={{ width: '40%' }}>
                                 <Button
                                     variant="contained"

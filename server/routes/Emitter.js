@@ -3,7 +3,28 @@ const express = require('express');
 function createRouter(pool) {
 	const router = express.Router();
 
-	router.get('/verified', async (req, res) => {
+	router.get('/address/:address', async (req, res) => {
+		const { address } = req.params;
+		try {
+			const [rows] = await pool.query('SELECT * FROM emitter WHERE emitter_address = ?', [address]);
+			res.json(rows);
+		} catch (error) {
+			console.error('Error fetching emitter:', error);
+			res.status(500).json({ error: 'Internal server error', details: error.message });
+		}
+	});
+
+	router.get('/verified/address/:address', async (req, res) => {
+		const { address } = req.params;
+		try {
+			const [rows] = await pool.query('SELECT * FROM emitter WHERE emitter_address = ?', [address]);
+			res.json(rows);
+		} catch (error) {
+			console.error('Error fetching emitter:', error);
+			res.status(500).json({ error: 'Internal server error', details: error.message });
+		}
+	});
+	router.get('/verified-count', async (req, res) => {
 		try {
 			const [rows] = await pool.query('SELECT COUNT(*) AS verified_count FROM emitter WHERE verification_status = "1"');
 			res.json(rows);

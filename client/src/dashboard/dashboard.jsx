@@ -212,21 +212,31 @@ function Dashboard() {
       }
     } else if (accountType === "verifier") {
       try {
-        console.log("Sending transaction");
-        await sendVerifierTransaction(formData);
-        console.log("Transaction sent");
+        let transactionType;
 
         if (formData.date_bought) {
+          transactionType = 0;
+          console.log("Type:", transactionType);
           console.log("Sending transaction to emitter");
           await sendEmitterTransaction(formData);
           console.log("Transaction sent - emitter");
           setEmitterTransactions(await emitterAPI.getAllEmitter())
         } else if (formData.date_issued) {
+          transactionType = 1;
+          console.log("Type:", transactionType);
           console.log("Sending transaction to issuer");
           await sendIssuerTransaction(formData);
           console.log("Transaction sent - issuer");
           setIssuerTransactions(await issuerAPI.getAllIssuer())
         }
+
+        console.log("Sending transaction to verifier");
+        await sendVerifierTransaction(formData, transactionType);
+        console.log("Transaction sent - verifier");
+
+        // Update the state after all operations
+        setType(transactionType);
+
         // Optionally, refresh the transactions list
         setAllTransactions(await verifierAPI.getAllVerifier())
       } catch (error) {

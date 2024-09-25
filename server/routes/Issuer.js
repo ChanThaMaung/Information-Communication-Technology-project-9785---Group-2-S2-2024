@@ -3,6 +3,27 @@ const express = require('express');
 function createRouter(pool) {
   const router = express.Router();
 
+  router.get('/address/:address', async (req, res) => {
+    const { address } = req.params;
+    try {
+      const [rows] = await pool.query('SELECT * FROM issuer WHERE issuer_address = ?', [address]);
+      res.json(rows);
+    } catch (error) {
+      console.error('Error fetching issuer:', error);
+      res.status(500).json({ error: 'Internal server error', details: error.message });
+    }
+  });
+
+  router.get('/verified/address/:address', async (req, res) => {
+    const { address } = req.params;
+    try {
+      const [rows] = await pool.query('SELECT * FROM issuer WHERE issuer_address = ?', [address]);
+      res.json(rows);
+    } catch (error) {
+      console.error('Error fetching verified issuer:', error);
+      res.status(500).json({ error: 'Internal server error', details: error.message });
+    }
+  });
   router.get('/active-rows', async (req, res) => {
     try {
       const [rows] = await pool.query('SELECT credit_amount, date_issued FROM issuer WHERE active_status = "0" ORDER BY date_issued ASC');
@@ -34,7 +55,7 @@ function createRouter(pool) {
     }
   });
 
-  router.get('/verified', async (req, res) => {
+  router.get('/verified-count', async (req, res) => {
     try {
       const [rows] = await pool.query('SELECT COUNT(*) AS verified_count FROM issuer WHERE verification_status = "1"');
       res.json(rows);

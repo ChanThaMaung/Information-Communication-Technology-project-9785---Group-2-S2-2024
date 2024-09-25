@@ -64,7 +64,8 @@ CREATE TABLE IF NOT EXISTS `issuer` (
   `prev_tx` varchar(200),
   `transaction_hash` varchar(200) NOT NULL,
   PRIMARY KEY (`transaction_hash`),
-  UNIQUE KEY `transaction_hash_UNIQUE` (`transaction_hash`)
+  UNIQUE KEY `transaction_hash_UNIQUE` (`transaction_hash`),
+  UNIQUE KEY `project_name` (`project_name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -90,6 +91,7 @@ CREATE TABLE IF NOT EXISTS `verifier` (
   `verification_date` varchar(200) NOT NULL,
   `transaction_updated` varchar(200) NOT NULL,
   `transaction_hash` varchar(200) NOT NULL,
+  `type` tinyint(1) NOT NULL,
   PRIMARY KEY (`transaction_hash`),
   UNIQUE KEY `transaction_hash_UNIQUE` (`transaction_hash`),
   UNIQUE KEY `transaction_updated_UNIQUE` (`transaction_updated`)

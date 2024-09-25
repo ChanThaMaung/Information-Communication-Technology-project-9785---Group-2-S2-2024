@@ -3,6 +3,42 @@ const express = require('express');
 function createRouter(pool) {
   const router = express.Router();
 
+
+  router.get('/getRows/:address', async (req, res) => {
+    const { address } = req.params;
+    try {
+      const [rows] = await pool.query('SELECT * FROM verifier WHERE verifier_address = ?', [address]);
+      res.json(rows);
+    } catch (error) {
+      console.error('Error fetching verifier:', error);
+      res.status(500).json({ error: 'Internal server error', details: error.message });
+    }
+  });
+
+  // GET - Fetch the number of verified issuer transactions
+  router.get('/getTransactionCount/:address/:type', async (req, res) => {
+    const { address, type } = req.params;
+    try {
+      const [rows] = await pool.query('SELECT COUNT(*) AS transaction_count FROM verifier WHERE verifier_address = ? AND type = ?', [address, type]);
+      res.json(rows);
+    } catch (error) {
+      console.error('Error fetching verifier:', error);
+      res.status(500).json({ error: 'Internal server error', details: error.message });
+    }
+  });
+
+  // GET - Fetch rows verified by an address
+  router.get('/getByAddress/:address', async (req, res) => {
+    const { address } = req.params;
+    try {
+      const [rows] = await pool.query('SELECT * FROM verifier WHERE verifier_address = ?', [address]);
+      res.json(rows);
+    } catch (error) {
+      console.error('Error fetching verifier:', error);
+      res.status(500).json({ error: 'Internal server error', details: error.message });
+    }
+  });
+
   // GET - Fetch the number of all verifier transactions
   router.get('/count', async (req, res) => {
     try {
@@ -51,31 +87,15 @@ function createRouter(pool) {
 
   // POST - Create a new verifier
   router.post('/create', async (req, res) => {
-    const { verifierAddress, project_name, verification_date, transaction_updated, transaction_hash } = req.body;
+    const { verifierAddress, type, project_name, verification_date, transaction_updated, transaction_hash } = req.body;
     try {
       const [result] = await pool.query(
-        'INSERT INTO verifier (verifier_address, project_name, verification_date, transaction_updated, transaction_hash) VALUES (?, ?, ?, ?, ?)',
-        [verifierAddress, project_name, verification_date, transaction_updated, transaction_hash]
+        'INSERT INTO verifier (verifier_address, type, project_name, verification_date, transaction_updated, transaction_hash) VALUES (?, ?,  ?, ?, ?, ?)',
+        [verifierAddress, type, project_name, verification_date, transaction_updated, transaction_hash]
       );
-      res.status(201).json({ verifierAddress, project_name, verification_date, transaction_updated, transaction_hash });
+      res.status(201).json({ verifierAddress, type, project_name, verification_date, transaction_updated, transaction_hash });
     } catch (error) {
       console.error('Error creating verifier:', error);
-      res.status(500).json({ error: 'Internal server error', details: error.message });
-    }
-  });
-
-  // PUT - Update a verifier
-  router.put('/update/:txHash', async (req, res) => {
-    const { txHash } = req.params;
-    const { verifierAddress, transaction_updated } = req.body;
-    try {
-      await pool.query(
-        'UPDATE verifier SET verifier_address = ?, transaction_updated = ? WHERE transaction_hash = ?',
-        [verifierAddress, transaction_updated, txHash]
-      );
-      res.json({ txHash, verifierAddress, transaction_updated });
-    } catch (error) {
-      console.error('Error updating verifier:', error);
       res.status(500).json({ error: 'Internal server error', details: error.message });
     }
   });

@@ -124,7 +124,7 @@ function GuestDashboard({
         {/* Bottom Div */}
         <div className="guest-lower">
           <div className="guest-lower-1">
-            <ResponsiveContainer width="100%" height={500}>
+            <ResponsiveContainer width="100%" height={350}>
               <LineChart margin={{ top: 10, right: 30, bottom: 30, left: 30 }}>
                 <XAxis dataKey="formattedDate" tickFormatter={formatDate} axisLine={false} tickLine={false} tick={{ fontSize: 10 }} tickMargin={10} />
                 <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10 }} tickMargin={10} />
@@ -137,12 +137,12 @@ function GuestDashboard({
             <span className="bold-text">
               {activeRows.reduce((sum, row) => sum + row.credit_amount, 0).toLocaleString()}
             </span>
-            <p style={{ margin: '0 0 15px 0' }}>Carbon Credits Issued</p>
+            <p style={{ margin: '0 0 15px 0' }}>Issued credits recorded</p>
             <hr style={{ border: '1px solid #ccc', width: '80%', margin: '10px 0' }} />
             <span className="bold-text">
               {retiredRows.reduce((sum, row) => sum + row.credit_amount, 0).toLocaleString()}
             </span>
-            <p>Carbon Credits Retired</p>
+            <p>Retired credits recorded</p>
           </div>
         </div>
       </div >

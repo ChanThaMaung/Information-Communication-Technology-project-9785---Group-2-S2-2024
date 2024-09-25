@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { shortenAddress } from "../../scripts/shortenAddress";
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, Dialog, DialogTitle, DialogContent, DialogActions, IconButton, TextField, Select, MenuItem } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
-
+import { getRows} from "../../../../server/API/Verifier/get_by_address_api"
 // Add this mapping object outside of your component
 const propertyDisplayNames = {
     project_name: "Project Name",
@@ -14,26 +14,27 @@ const propertyDisplayNames = {
 };
 
 // Updated TransactionDetailsPopup component
-const TransactionDetailsPopup = ({ transaction, open, onClose, handleSubmit }) => {
+const TransactionDetailsPopup = ({ transaction, open, onClose, handleSubmit, refreshTransactions, isIssuer }) => {
     const [editedTransaction, setEditedTransaction] = useState({});
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     useEffect(() => {
         if (transaction) {
-            const { prev_tx, transaction_hash, verification_status, address, ...rest } = transaction;
+            const { verification_status, ...rest } = transaction;
             // Format dates for input fields
             const formattedTransaction = Object.entries(rest).reduce((acc, [key, value]) => {
                 if (key === 'date_issued' || key === 'date_bought') {
-                    // Ensure the date is in YYYY-MM-DD format for the input field
                     const date = new Date(value);
-                    console.log(date);
                     const year = date.getFullYear();
-                    const month = String(date.getMonth() + 1).padStart(2, '0'); // getMonth() is zero-based, so add 1
+                    const month = String(date.getMonth() + 1).padStart(2, '0');
                     const day = String(date.getDate()).padStart(2, '0');
                     acc[key] = `${year}-${month}-${day}`;
-                    console.log(acc[key]);
                 }
                 else if (key === 'active_status') {
                     acc[key] = value.toString();
+                }
+                else if (key === 'prev_tx') {
+                    acc[key] = value || 'N/A';
                 }
                 else {
                     acc[key] = value;
@@ -42,13 +43,14 @@ const TransactionDetailsPopup = ({ transaction, open, onClose, handleSubmit }) =
             }, {});
 
             setEditedTransaction(formattedTransaction);
-            console.log(formattedTransaction);
         }
     }, [transaction]);
 
     if (!transaction) return null;
 
     const getDisplayName = (key) => {
+        if (key === 'issuer_address') return 'Issuer Address';
+        if (key === 'emitter_address') return 'Emitter Address';
         return propertyDisplayNames[key] || key.charAt(0).toUpperCase() + key.slice(1).replace(/_/g, ' ');
     };
 
@@ -56,17 +58,26 @@ const TransactionDetailsPopup = ({ transaction, open, onClose, handleSubmit }) =
         setEditedTransaction(prev => ({ ...prev, [key]: value }));
     };
 
-    const verifyTransaction = () => {
-        editedTransaction.verification_status = "1";
-        editedTransaction.prev_tx = "";
-        editedTransaction.transaction_hash = transaction.transaction_hash;
-        // Here you would typically send the editedTransaction to your backend
-        console.log('Saving edited transaction:', editedTransaction);
-        handleSubmit(editedTransaction);
-        onClose();
+    const verifyTransaction = async () => {
+        if (isSubmitting) return;
+        setIsSubmitting(true);
+        const updatedTransaction = {
+            ...editedTransaction,
+            verification_status: "1",
+            prev_tx: transaction.prev_tx,
+            transaction_hash: transaction.transaction_hash
+        };
+        console.log('Saving edited transaction:', updatedTransaction);
+        try {
+            await handleSubmit(updatedTransaction);
+            await refreshTransactions();
+            onClose();
+        } catch (error) {
+            console.error("Error submitting edit:", error);
+        } finally {
+            setIsSubmitting(false);
+        }
     };
-
-
 
     return (
         <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
@@ -104,6 +115,14 @@ const TransactionDetailsPopup = ({ transaction, open, onClose, handleSubmit }) =
                                                 <MenuItem value="0">Active</MenuItem>
                                                 <MenuItem value="1">Retired</MenuItem>
                                             </Select>
+                                        ) : key === 'prev_tx' || key === 'transaction_hash' || key === 'issuer_address' || key === 'emitter_address' ? (
+                                            <TextField
+                                                fullWidth
+                                                value={value}
+                                                InputProps={{
+                                                    readOnly: true,
+                                                }}
+                                            />
                                         ) : (
                                             <TextField
                                                 fullWidth
@@ -120,11 +139,11 @@ const TransactionDetailsPopup = ({ transaction, open, onClose, handleSubmit }) =
                 </TableContainer>
             </DialogContent>
             <DialogActions>
-                <Button onClick={onClose} color="primary">
+                <Button onClick={onClose} color="primary" disabled={isSubmitting}>
                     Cancel
                 </Button>
-                <Button onClick={verifyTransaction} color="primary" variant="contained">
-                    Verify
+                <Button onClick={verifyTransaction} color="primary" variant="contained" disabled={isSubmitting}>
+                    {isSubmitting ? 'Verifying...' : 'Verify'}
                 </Button>
             </DialogActions>
         </Dialog>
@@ -144,16 +163,17 @@ function TransactionSection({
     showIssuerTransactions,
     setShowIssuerTransactions,
     handleViewMore,
+    refreshTransactions,
 }) {
     const [selectedTransaction, setSelectedTransaction] = useState(null);
     const [isPopupOpen, setIsPopupOpen] = useState(false);
     const [searchInput, setSearchInput] = useState("");
     const [allTransactions, setAllTransactions] = useState([]);
     const transactions = isIssuer ? issuerTransactions : emitterTransactions;
-    const title = isIssuer ? "Issuer Transactions" : "Emitter Transactions";
+    const title = isIssuer ? "Unverified Issuer Transactions" : "Unverified Emitter Transactions";
     const totalVerifiedCredits = isIssuer ? totalVerifiedCreditsIssued : totalVerifiedCreditsBought;
     const totalVerifiedTransactions = isIssuer ? totalVerifiedIssuer : totalVerifiedEmitter;
-    const creditType = isIssuer ? "issued" : "bought";
+    const creditType = isIssuer ? "Issued" : "Bought";
 
     useEffect(() => {
         setAllTransactions(transactions);
@@ -166,6 +186,7 @@ function TransactionSection({
 
     const handleClosePopup = () => {
         setIsPopupOpen(false);
+        setSelectedTransaction(null); // Reset selected transaction
     };
 
     const handleKeyUp = (event) => {
@@ -194,7 +215,7 @@ function TransactionSection({
                     <TableBody>
                         {allTransactions.length === 0 ? (
                             <TableRow>
-                                <TableCell colSpan={4} align="center">Empty</TableCell>
+                                <TableCell colSpan={4} align="center">No transactions</TableCell>
                             </TableRow>
                         ) : (
                             allTransactions.slice(0, 4).map((tx, index) => (
@@ -227,56 +248,64 @@ function TransactionSection({
 
     return (
         <div className="verifier-div">
-            <div style={{ width: '25%', marginRight: '1rem', paddingRight: '1rem', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
-                <div style={{ borderRadius: '0.5rem', padding: '1rem', width: '100%', textAlign: 'center' }}>
-                    <p className="bold-text">{(totalVerifiedCredits || 0).toLocaleString()}</p>
-                    <p className="text-sm">Number of verified {creditType.toLocaleString()} carbon credits</p>
-                </div>
-                <div style={{ width: '100%', marginLeft: '1rem' }}>
-                    <hr className="divider" />
-                </div>
-                <div style={{ borderRadius: '0.5rem', padding: '1rem', width: '100%', textAlign: 'center' }}>
-                    <p className="bold-text">{totalVerifiedTransactions}</p>
-                    <p className="text-sm">Number of verified {isIssuer ? 'issuer' : 'emitter'} transactions</p>
-                </div>
-            </div>
-            <div style={{ width: '100%', padding: '1rem', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                <div style={{ width: '100%', position: 'relative', textAlign: 'center', marginBottom: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <div>
-                        <h2 className="text-xl font-bold">{title}</h2>
+            <div className="wrapper">
+                <div className="verifier-upper-1">
+                    <div className="verifier-upper-1-upper">
+                        <p className="bold-text">{(totalVerifiedCredits || 0).toLocaleString()}</p>
+                        <p className="text-sm">{creditType.toLocaleString()} Carbon Credits Verified</p>
                     </div>
-
-                    <div style={{ display: 'flex', alignItems: 'center' }}>
-                        <div className="relative">
-                            <input
-                                type="text"
-                                placeholder="Search transactions"
-                                className="pl-8 pr-2 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                value={searchInput}
-                                onChange={handleKeyUp}
-                            />
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-400 absolute left-2 top-1/2 transform -translate-y-1/2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                            </svg>
+                    <div style={{ width: '100%', marginLeft: '1rem' }}>
+                        <hr className="divider" />
+                    </div>
+                    <div style={{ borderRadius: '0.5rem', padding: '1rem', width: '100%', textAlign: 'center' }}>
+                        <p className="bold-text">
+                            {totalVerifiedTransactions.toLocaleString()}
+                        </p>
+                        <p className="text-sm">{isIssuer ? 'Issuer' : 'Emitter'} Transactions Verified</p>
+                    </div>
+                </div>
+                <div className="verifier-upper-2">
+                    <div style={{ width: '100%', position: 'relative', marginBottom: '1rem', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                        <div>
+                            <h2 className="text-3xl font-bold">{title}</h2>
                         </div>
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            onClick={() => setShowIssuerTransactions(!showIssuerTransactions)}
-                            style={{ marginLeft: '1rem' }}
-                        >
-                            {showIssuerTransactions ? "Switch to Emitter Transactions" : "Switch to Issuer Transactions"}
-                        </Button>
+
+                        <div style={{ display: 'flex', alignItems: 'center' }}>
+                            <div style={{ width: '40%' }}>
+                                <Button
+                                    variant="contained"
+                                    color="primary"
+                                    onClick={() => setShowIssuerTransactions(!showIssuerTransactions)}
+                                    style={{ fontSize: '0.8rem' }}
+                                >
+                                    {showIssuerTransactions ? "Switch to Emitter Transactions" : "Switch to Issuer Transactions"}
+                                </Button>
+                            </div>
+                            <div className="verifier-upper-search-bar">
+                                <input
+                                    type="text"
+                                    placeholder="Search transactions"
+                                    className="search-input"
+                                    value={searchInput}
+                                    onChange={handleKeyUp}
+                                />
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-400 absolute left-2 top-1/2 transform -translate-y-1/2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                </svg>
+                            </div>
+                        </div>
                     </div>
+                    {renderTransactionTable(allTransactions, isIssuer ? "issuer" : "emitter")}
                 </div>
-                {renderTransactionTable(allTransactions, isIssuer ? "issuer" : "emitter")}
+                <TransactionDetailsPopup
+                    transaction={selectedTransaction}
+                    open={isPopupOpen}
+                    onClose={handleClosePopup}
+                    handleSubmit={handleSubmit}
+                    refreshTransactions={refreshTransactions}
+                    isIssuer={isIssuer}
+                />
             </div>
-            <TransactionDetailsPopup
-                transaction={selectedTransaction}
-                open={isPopupOpen}
-                onClose={handleClosePopup}
-                handleSubmit={handleSubmit}
-            />
         </div>
     );
 }

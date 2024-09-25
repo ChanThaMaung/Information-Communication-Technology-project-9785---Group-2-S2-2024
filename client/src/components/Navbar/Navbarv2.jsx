@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Link } from "react-router-dom";
 import Web3 from 'web3'; // {{ edit_1 }}
 
@@ -7,25 +7,34 @@ export default function Navbarv2() {
     const [web3, setWeb3] = useState(null);
     const [account, setAccount] = useState(null); // Changed initial state to null
     const [connectionStatus, setConnectionStatus] = useState('Disconnected'); // No change needed
+    const [loading, setLoading] = useState(false); // {{ edit_1 }}
+    const buttonRef = useRef(null);
 
     const connectWallet = async () => { // {{ edit_2 }}
-        if (window.ethereum) {
-            try {
-                const web3 = new Web3(window.ethereum);
-                await window.ethereum.request({ method: 'eth_requestAccounts' });
-                const accounts = await web3.eth.getAccounts();
-                setWeb3(web3);
-                setAccount(accounts[0]); // Ensure account is set correctly
-                setConnectionStatus('Connected'); // Update connection status
-            } catch (error) {
-                console.error("Could not connect to wallet", error);
-                alert('Connection failed. Please try again.'); // User feedback on error
-                setConnectionStatus('Disconnected'); // Update connection status on error
+        setLoading(true); // Start loading
+        // Simulate loading for 2 seconds
+        setTimeout(async () => {
+            if (window.ethereum) {
+                try {
+                    const web3 = new Web3(window.ethereum);
+                    await window.ethereum.request({ method: 'eth_requestAccounts' });
+                    const accounts = await web3.eth.getAccounts();
+                    setWeb3(web3);
+                    setAccount(accounts[0]); // Ensure account is set correctly
+                    setConnectionStatus('Connected'); // Update connection status
+                    alert('Successfully connected to wallet!'); // Alert on successful connection
+
+                } catch (error) {
+                    console.error("Could not connect to wallet", error);
+                    alert('Connection failed. Please try again.'); // Alert on connection failure
+                    setConnectionStatus('Disconnected'); // Update connection status on error
+                }
+            } else {
+                alert('Please install MetaMask!');
+                setConnectionStatus('Disconnected'); // Update connection status
             }
-        } else {
-            alert('Please install MetaMask!');
-            setConnectionStatus('Disconnected'); // Update connection status
-        }
+            setLoading(false); // End loading
+        }, 2000); // {{ edit_2 }}
     };
 
     useEffect(() => {
@@ -44,6 +53,7 @@ export default function Navbarv2() {
             window.removeEventListener("scroll", handleScroll);
         };
     }, [web3, account, connectionStatus]); // Dependencies for both effects
+
 
     return (
         <>
@@ -64,14 +74,16 @@ export default function Navbarv2() {
                         </li>
                     </ul>
                 </div>
-                <div className="hidden md:flex flex-col md:flex-row md:items-center md:space-x-4 mt-4 md:mt-0">
+                <div className=" md:flex flex-col md:flex-row md:items-center md:space-x-4 mt-4 md:mt-0">
                     <ul className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-4">
                         <li className="text-white font-light hover:text-gray-300 hover:cursor-pointer text-lg p-1">
                             <button
+                                ref={buttonRef}
                                 className="bg-gradient-to-r from-purple-500 to-blue-500 text-white p-2 rounded bg-opacity-30"
                                 onClick={connectWallet}
+                                disabled={loading} // Disable button while loading
                             >
-                                Connect
+                                {loading ? 'Connecting...' : 'Connect'} {/* {{ edit_3 }} */}
                             </button>
                         </li>
                     </ul>

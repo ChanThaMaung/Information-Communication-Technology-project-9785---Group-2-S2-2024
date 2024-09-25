@@ -1,8 +1,29 @@
+import { useState } from 'react';// Import the new modal component
 import { Link } from "react-router-dom";
-import { Navbarv2, Footer, PieChartWithCenterLabel } from "../../components";
+import { Navbarv2, Footer, PieChartWithCenterLabel, LearnMoreModal } from "../../components";
 
 
 export default function Homev2() {
+    const [showModal, setShowModal] = useState(false);
+    const [modalContent, setModalContent] = useState('');
+    const [modalTitle, setModalTitle] = useState(''); // New state for title
+
+    const handleShow = (title, content) => {
+        setModalTitle(title); // Set the title
+        setModalContent(content);
+        setShowModal(true);
+    };
+    const handleClose = () => setShowModal(false);
+
+    const documents = {
+        whatWeDo: "At the forefront of innovation, we are developing a blockchain-based platform that redefines how carbon offset taxes are managed. Our platform provides a fully transparent, verifiable system for tracking carbon emissions and offsets, ensuring accurate allocation of carbon credits and streamlined compliance with environmental regulations.",
+        whyBlockchain: "Blockchain technology offers an unparalleled level of security and transparency, making it the ideal solution for carbon offset management. Each transaction, whether initiated by carbon emitters, Verified Carbon Standard (VCS) regulators, or offset project developers, is securely logged in an immutable ledger. This not only eliminates the potential for double-selling carbon credits but also guarantees that every ton of offset is accounted for. With our platform, businesses can confidently meet their carbon tax obligations while maintaining full visibility and trust in the process.",
+        howItWorks: 'Our platform integrates three key participants in the carbon offset ecosystem: \
+                    Carbon Emitters: Companies seeking to offset their carbon footprint through certified projects. \
+                    Verified Carbon Standard (VCS): Regulatory bodies responsible for validating emissions reductions and offsets. \
+                    Offset Developers: Organizations developing carbon offset projects such as reforestation or renewable energy initiatives.'
+    };
+
     return (
         <>
             <Navbarv2 />
@@ -40,8 +61,8 @@ export default function Homev2() {
                         <div className="col-span-1 flex items-center justify-center">
                             <PieChartWithCenterLabel />
                         </div>
-                        <div className="col-span-1">
-                            <p className="text-black font-mono text-lg p-4 ">
+                        <div className="col-span-1 justify-items-center">
+                            <p className="text-black font-mono text-lg p-4 mt-6">
                                 Lorem ipsum dolor sit amet consectetur adipisicing elit. Autem aliquam, voluptas vitae eaque earum voluptatum mollitia culpa cumque. Incidunt, minus?
                             </p>
                             <Link to={"/dashboard"} className="btn btn-primary mt-4 ml-4 bg-orange-200 hover:bg-orange-300 px-4 py-2 rounded-full">
@@ -68,9 +89,14 @@ export default function Homev2() {
                                 </h1>
                             </div>
                             <div className="p-4">
-                                <p className="text-sm font-mono">
-                                    At the forefront of innovation, we are developing a blockchain-based platform that redefines how carbon offset taxes are managed. Our platform provides a fully transparent, verifiable system for tracking carbon emissions and offsets, ensuring accurate allocation of carbon credits and streamlined compliance with environmental regulations.
-                                </p>
+                                <div className="flex justify-center p-4">
+                                    <p className="text-sm font-mono ">
+                                        At the forefront of innovation...
+                                    </p>
+                                </div>
+                                <div className="flex justify-center">
+                                    <button onClick={() => handleShow("What We Do", documents.whatWeDo)} className="text-blue-500 font-mono bg-orange-200 hover:bg-orange-300 px-4 py-2 rounded-full">Learn More</button>
+                                </div>
                             </div>
                         </div>
                         <div className="col-span-1 border-2 border-orange-200 rounded-xl">
@@ -80,9 +106,14 @@ export default function Homev2() {
                                 </h1>
                             </div>
                             <div className="p-4">
-                                <p className="text-sm font-mono">
-                                    Blockchain technology offers an unparalleled level of security and transparency, making it the ideal solution for carbon offset management. Each transaction, whether initiated by carbon emitters, Verified Carbon Standard (VCS) regulators, or offset project developers, is securely logged in an immutable ledger. This not only eliminates the potential for double-selling carbon credits but also guarantees that every ton of offset is accounted for. With our platform, businesses can confidently meet their carbon tax obligations while maintaining full visibility and trust in the process.
-                                </p>
+                                <div className="flex justify-center p-4">
+                                    <p className="text-sm font-mono">
+                                        Blockchain technology offers an unparalleled level of security...
+                                    </p>
+                                </div>
+                                <div className="flex justify-center">
+                                    <button onClick={() => handleShow("Why Blockchain?", documents.whyBlockchain)} className="text-blue-500 font-mono bg-orange-200 hover:bg-orange-300 px-4 py-2 rounded-full">Learn More</button>
+                                </div>
                             </div>
                         </div>
                         <div className="col-span-1 border-2 border-orange-200 rounded-xl">
@@ -92,13 +123,14 @@ export default function Homev2() {
                                 </h1>
                             </div>
                             <div className="p-4">
-                                <p className="text-sm font-mono">
-                                    Our platform integrates three key participants in the carbon offset ecosystem:
-                                    Carbon Emitters: Companies seeking to offset their carbon footprint through certified projects.
-                                    Verified Carbon Standard (VCS): Regulatory bodies responsible for validating emissions reductions and offsets.
-                                    Offset Developers: Organizations developing carbon offset projects such as reforestation or renewable energy initiatives.
-                                    Through the use of smart contracts, each carbon offset transaction is automated and securely verified, offering an efficient, reliable solution for managing compliance and tracking environmental impact.
-                                </p>
+                                <div className="flex justify-center p-4">
+                                    <p className="text-sm font-mono">
+                                        Our platform integrates three key participants...
+                                    </p>
+                                </div>
+                                <div className="flex justify-center">
+                                    <button onClick={() => handleShow("How It Works", documents.howItWorks)} className="text-blue-500 font-mono bg-orange-200 hover:bg-orange-300 px-4 py-2 rounded-full">Learn More</button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -167,7 +199,12 @@ export default function Homev2() {
             </div>
 
             <Footer />
-        </>
 
-    )
+
+
+            {/* Modal for Learn More */}
+            <LearnMoreModal show={showModal} handleClose={handleClose} content={modalContent} title={modalTitle} />
+
+        </>
+    );
 }

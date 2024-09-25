@@ -1,3 +1,218 @@
+/* Import Inter and Lato fonts from Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Lato:wght@700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Set Inter as the default font */
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #f8f9fa;
+    /* A darker white */
+}
+
+.guest-lower-1 {
+    padding-top: 2rem;
+    display: flex;
+    flex-direction: column;
+    width: 80%;
+    margin-right: 10px;
+}
+
+.guest-lower-2 {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    width: 20%;
+    margin-right: 10px;
+}
+
+.guest-lower {
+    background-color: white;
+    /* border: 1px solid #ccc; */
+    padding: 20px;
+    /* border-radius: 5px; */
+    width: 100%;
+    margin: 10px auto 0;
+    display: flex;
+    box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
+}
+
+.Dashboard {
+    width: 85%;
+    margin-left: auto;
+    justify-content: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+}
+
+.bold-text {
+    font-family: 'Lato', sans-serif;
+    font-weight: bold;
+    font-size: 2.5em;
+    margin-bottom: 5px;
+    color: #030514;
+}
+
+.verifier-div-lower {
+    border-radius: 10px;
+    width: 80%;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.verifier-div-upper {
+    margin-right: 1rem;
+    width: 20%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.navbar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 15%;
+    /* Adjust the width as needed */
+    height: 100%;
+    background-color: #1a77d3;
+    /* Adjust the background color as needed */
+    padding: 20px;
+    /* Adjust the padding as needed */
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    /* Optional: add a shadow for better visual separation */
+}
+
+.navbar h1 {
+    margin-bottom: 20px;
+}
+
+.nav-links {
+    list-style-type: none;
+    padding: 0;
+}
+
+.nav-links li {
+    margin: 10px 0;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: #333;
+    /* Adjust the text color as needed */
+    font-size: 18px;
+    /* Adjust the font size as needed */
+}
+
+.nav-links a:hover {
+    color: #007bff;
+    /* Adjust the hover color as needed */
+}
+
+.guest-upper {
+    background-color: white;
+    /* border: 1px solid #ccc;
+    border-radius: 5px; */
+    width: 100%;
+    padding: 1rem;
+    margin-bottom: 2rem;
+    display: flex;
+    box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
+
+}
+
+.guest-upper-1 {
+    display: flex;
+    flex-direction: column;
+    /* border: 1px solid #ccc;
+    border-radius: 10px; */
+    padding: 20px;
+    width: 20%;
+    margin-right: 20px;
+}
+
+.guest-upper-2 {
+    width: 20%;
+    /* border: 1px solid #ccc;
+    border-radius: 10px; */
+    padding: 20px;
+    margin-right: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.guest-upper-3 {
+    width: 60%;
+    /* border: 1px solid #ccc; */
+    /* border-radius: 10px; */
+    padding: 20px;
+}
+
+.guest-upper-3-upper {
+    width: 100%;
+    margin-bottom: 1rem;
+    margin-top: 1rem;
+}
+
+.guest-upper-1-upper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.guest-upper-1-lower {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .guest-upper-1-lower-piechart {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    align-items: center;
+}
+
+.guest-upper-1-lower-legend {
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+    align-items: center;
+    flex-direction: row;
+  }
+
+  .guest-upper-1-lower-legend-item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: row;
+    padding: 2px;
+    text-align: center;
+    
+  }
+
+  .guest-upper-1-lower-legend-color {
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    margin-right: 5px;
+  }
+
+  .divider {
+    border: 1px solid #ccc;
+    width: 80%;
+    margin: 20px auto 0;
+  }

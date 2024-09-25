@@ -29,11 +29,6 @@ export const VerifierProvider = ({ children }) => {
     );
     return contract;
   }
-  const getVerifierCount = async () => {
-    const contract = await getContract();
-    const count = await contract.getTransactionCount();
-    return count;
-  }
   
   const sendVerifierTransaction = async (formData) => {
     try {
@@ -79,7 +74,6 @@ export const VerifierProvider = ({ children }) => {
       currentVerifierAccount,
       connectVerifierWallet,
       sendVerifierTransaction,
-      getVerifierCount,
 
     }}>
       {children}    

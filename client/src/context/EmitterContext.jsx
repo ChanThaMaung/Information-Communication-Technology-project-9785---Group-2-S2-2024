@@ -35,11 +35,7 @@ export const EmitterProvider = ({ children }) => {
     );
     return contract;
   };
-  const getEmitterCount = async () => {
-    const contract = await getContract();
-    const count = await contract.getTransactionCount();
-    return count;
-  }
+  
   const sendEmitterTransaction = async (formData) => {
     try {
       const accounts = await window.ethereum.request({
@@ -71,7 +67,6 @@ export const EmitterProvider = ({ children }) => {
       setIsLoadingEmitter(false);
       console.log(`Success - ${transactionHash.hash}`);
 
-      const transactionCount = await emitterContract.getTransactionCount();
       const formattedDateBought = convertDateFormat(dateBoughtInSeconds);
 
 
@@ -115,7 +110,6 @@ export const EmitterProvider = ({ children }) => {
         connectEmitterWallet,
         currentEmitterAccount,
         sendEmitterTransaction,
-        getEmitterCount,
       }}
     >
       {children}

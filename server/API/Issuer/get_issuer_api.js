@@ -1,13 +1,24 @@
 import axios from "axios";
 import { API_URL } from "./constants";
 
+
+export const getActiveRows = async () => {
+    const response = await axios.get(API_URL + "/active-rows");
+    return response.data;
+}
+
+export const getRetiredRows = async () => {
+    const response = await axios.get(API_URL + "/retired-rows");
+    return response.data;
+}
+
 export const getRetiredCredits = async () => {
-    const response = await axios.get(API_URL + "/retired_credits");
+    const response = await axios.get(API_URL + "/retired");
     return response.data;
 }
 
 export const getActiveCredits = async () => {
-    const response = await axios.get(API_URL + "/active_credits");
+    const response = await axios.get(API_URL + "/issued");  
     return response.data;
 }
 

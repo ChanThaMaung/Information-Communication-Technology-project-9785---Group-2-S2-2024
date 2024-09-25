@@ -2,15 +2,14 @@ import { PieChart, Pie, Cell, ResponsiveContainer, LineChart, Line, XAxis, YAxis
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
 
 function GuestDashboard({
-  handleConnectWallet,
   totalUniqueEmitter,
   totalUniqueIssuer,
   totalUniqueVerifier,
   totalIssuerCount,
   totalEmitterCount,
   totalVerifierCount,
-  retiredRows,
   activeRows,
+  retiredRows,
 }) {
   const pieData = [
     { name: 'Issuers', value: totalUniqueIssuer },
@@ -42,20 +41,20 @@ function GuestDashboard({
   return (
     <>
 
-      <div className="parent-div">
-        <div className="guest-dashboard-upper">
-          <div className="user-types-container">
-            <div className="user-types-content">
+      <div className="Dashboard">
+        <div className="guest-upper">
+          <div className="guest-upper-1">
+            <div className="guest-upper-1-upper">
               <span className="bold-text">
                 {(totalUniqueEmitter + totalUniqueIssuer + totalUniqueVerifier).toLocaleString()}
               </span>
               <p>Registered Users</p>
             </div>
             <hr className="divider" />
-            <div style={{ borderRadius: '10px', padding: '20px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <div className="guest-upper-1-lower">
               <h1 style={{ marginBottom: '0px', fontWeight: 'bold' }}>User Types</h1>
-              <div style={{ display: 'flex', flexDirection: 'column', width: '100%', alignItems: 'center' }}>
-                <div style={{ width: '55%', height: '200px' }}>
+              <div className="guest-upper-1-lower-piechart">
+                <div style={{ width: '100%', height: '200px' }}>
                   <ResponsiveContainer width="100%" height="100%">
                     <PieChart>
                       <Pie
@@ -70,7 +69,7 @@ function GuestDashboard({
                         label={false}
                       >
                         {pieData.map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                          <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} style={{outline: 'none'}} />
                         ))}
                       </Pie>
                       <Tooltip
@@ -81,10 +80,10 @@ function GuestDashboard({
                     </PieChart>
                   </ResponsiveContainer>
                 </div>
-                <div style={{ display: 'flex', justifyContent: 'center', marginTop: '10px' }}>
+                <div className="guest-upper-1-lower-legend">
                   {pieData.map((item, index) => (
-                    <div key={item.name} style={{ display: 'flex', alignItems: 'center', marginRight: '10px' }}>
-                      <div style={{ width: '20px', height: '20px', backgroundColor: COLORS[index], marginRight: '5px', borderRadius: '50%' }}></div>
+                    <div key={item.name} className="guest-upper-1-lower-legend-item">
+                      <div className="guest-upper-1-lower-legend-color" style={{ backgroundColor: COLORS[index] }}></div>
                       <span style={{ fontSize: '0.8em' }}>{item.name}</span>
                     </div>
                   ))}
@@ -92,7 +91,7 @@ function GuestDashboard({
               </div>
             </div>
           </div>
-          <div style={{ width: '20%', borderRadius: '10px', padding: '20px', marginRight: '20px', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
+          <div className="guest-upper-2">
             <span className="bold-text">{totalIssuerCount.toLocaleString()}</span>
             <p className="mb-[15px]">Transactions made by Issuers</p>
             <span className="bold-text">{totalEmitterCount.toLocaleString()}</span>
@@ -100,9 +99,9 @@ function GuestDashboard({
             <span className="bold-text">{totalVerifierCount.toLocaleString()}</span>
             <p className="mb-[15px]">Transactions made by Verifiers</p>
           </div>
-          <div className="guest-dashboard-recent">
-            <div style={{ width: '100%', marginBottom: '1rem' }}>
-              <h2 className="text-xl font-bold">Recent Transactions</h2>
+          <div className="guest-upper-3">
+            <div className="guest-upper-3-upper">
+              <h2 className="text-2xl font-bold">Recent Transactions</h2>
             </div>
             <div style={{ width: '100%' }}>
               <TableContainer component={Paper} style={{ width: '100%' }}>
@@ -123,8 +122,8 @@ function GuestDashboard({
         </div>
 
         {/* Bottom Div */}
-        <div className="guest-dashboard-lower">
-          <div className="guest-dashboard-line">
+        <div className="guest-lower">
+          <div className="guest-lower-1">
             <ResponsiveContainer width="100%" height={500}>
               <LineChart margin={{ top: 10, right: 30, bottom: 30, left: 30 }}>
                 <XAxis dataKey="formattedDate" tickFormatter={formatDate} axisLine={false} tickLine={false} tick={{ fontSize: 10 }} tickMargin={10} />
@@ -134,7 +133,7 @@ function GuestDashboard({
               </LineChart>
             </ResponsiveContainer>
           </div>
-          <div className="guest-dashboard-credit">
+          <div className="guest-lower-2">
             <span className="bold-text">
               {activeRows.reduce((sum, row) => sum + row.credit_amount, 0).toLocaleString()}
             </span>

@@ -2,5 +2,11 @@
     "editor.defaultFormatter": "anysphere.cursor-shadow-workspace",
     "[solidity]": {
         "editor.defaultFormatter": "NomicFoundation.hardhat-solidity"
+    },
+    "[javascriptreact]": {
+        "editor.defaultFormatter": "vscode.typescript-language-features"
+    },
+    "[css]": {
+        "editor.defaultFormatter": "HookyQR.beautify"
     }
 }

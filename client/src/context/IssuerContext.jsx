@@ -30,11 +30,6 @@ export const IssuerProvider = ({ children }) => {
     return contract;
   }
   
-  const getIssuerCount = async () => {
-    const contract = await getContract();
-    const count = await contract.getTransactionCount();
-    return count;
-  }
   const sendIssuerTransaction = async (formData) => {
     try {
       const accounts = await window.ethereum.request({
@@ -84,7 +79,6 @@ export const IssuerProvider = ({ children }) => {
       setIsLoadingIssuer(false);
       console.log(`Success: ${transactionHash.hash}`);
       const formattedIssuedDate = convertDateFormat(issuedDateInSeconds);
-      // const issuerTransactionCount = await issuerContract.getTransactionCount();
       if (verification_status === "0") {
       const response = await axios.post('http://localhost:3000/issuer/create', {
         issuer_address: currentAccount,
@@ -128,7 +122,6 @@ export const IssuerProvider = ({ children }) => {
         connectIssuerWallet,
         currentIssuerAccount,
         sendIssuerTransaction,
-        getIssuerCount,
       }}
     >
       {children}

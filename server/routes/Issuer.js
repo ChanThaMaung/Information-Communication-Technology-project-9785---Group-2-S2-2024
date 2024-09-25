@@ -3,6 +3,46 @@ const express = require('express');
 function createRouter(pool) {
   const router = express.Router();
 
+  router.get('/active-rows', async (req, res) => {
+    try {
+      const [rows] = await pool.query('SELECT credit_amount, date_issued FROM issuer WHERE active_status = "0" ORDER BY date_issued ASC');
+      res.json(rows);
+    } catch (error) {
+      console.error('Error fetching active rows:', error);
+      res.status(500).json({ error: 'Internal server error', details: error.message });
+    }
+  });
+
+  router.get('/retired-rows', async (req, res) => {
+    try {
+      const [rows] = await pool.query('SELECT credit_amount, date_issued FROM issuer WHERE active_status = "1" ORDER BY date_issued ASC');
+      res.json(rows);
+    } catch (error) {
+      console.error('Error fetching retired rows:', error);
+      res.status(500).json({ error: 'Internal server error', details: error.message });
+    }
+  });
+  
+  // GET - fetch amount of credits retired 
+  router.get('/retired', async (req, res) => {
+    try {
+      const [rows] = await pool.query('SELECT SUM(credit_amount) AS credit_retired FROM issuer WHERE active_status = "1"');
+      res.json(rows);
+    } catch (error) {
+      console.error('Error fetching total verified credits:', error);
+      res.status(500).json({ error: 'Internal server error', details: error.message });
+    }
+  });
+  // GET - fetch amount of credits issued
+  router.get('/issued', async (req, res) => {
+    try {
+      const [rows] = await pool.query('SELECT SUM(credit_amount) AS credit_issued FROM issuer WHERE active_status = "0"');
+      res.json(rows);
+    } catch (error) {
+      console.error('Error fetching total verified credits:', error);
+      res.status(500).json({ error: 'Internal server error', details: error.message });
+    }
+  });
   // GET - Fetch the number of all issuer transactions
   router.get('/count', async (req, res) => {
     try {
@@ -38,9 +78,6 @@ function createRouter(pool) {
   
   // GET - Fetch all issuers
   router.get('/all', async (req, res) => {
-
-
-
     try {
       const [rows] = await pool.query('SELECT * FROM issuer');
       res.json(rows);

@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Navbarv2, Footer } from "../../components";
+import { Navbarv2, Footer, PieChartWithCenterLabel } from "../../components";
 
 
 export default function Homev2() {
@@ -37,11 +37,8 @@ export default function Homev2() {
                         </div>
                     </div>
                     <div className="col-span-2 flex-col border bg--gradientDBv2 shadow-md rounded-xl grid grid-cols-2">
-                        <div className="col-span-1">
-                            <img
-                                className="w-full h-full object-cover rounded-s-xl"
-                                src={"https://science.nasa.gov/wp-content/uploads/2023/12/co2-graph-083122_scaled_scrunched.jpg?w=2560&format=webp"} alt="Dashboard"
-                            />
+                        <div className="col-span-1 flex items-center justify-center">
+                            <PieChartWithCenterLabel />
                         </div>
                         <div className="col-span-1">
                             <p className="text-black font-mono text-lg p-4 ">
@@ -105,6 +102,67 @@ export default function Homev2() {
                             </div>
                         </div>
                     </div>
+                </div>
+            </div>
+
+            {/* Contact */}
+            <div className="mt-16 ">
+                <div className="container mx-auto">
+                    <div className="flex justify-center bg-slate-100 shadow-md rounded-xl">
+                        <div className="py-12">
+                            <div className=" rounded-t-lg items-center justify-center pt-1">
+                                <h1 className="text-4xl font-mono text-center">
+                                    Contact Us
+                                </h1>
+                            </div>
+                            <div className="p-4">
+                                <p className="text-sm font-mono">
+                                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Autem aliquam, voluptas vitae eaque earum voluptatum mollitia culpa cumque. Incidunt, minus?
+                                </p>
+                            </div>
+                            <div className="grid grid-cols-2 gap-4 mx-auto">
+                                <div className="col-span-1 p-4 flex items-center">
+                                    <div className="border-2 border-slate-300 bg-white rounded-md w-14 h-14 flex items-center justify-center">
+                                        <i className="fab fa-facebook-f text-2xl m-2"></i>
+                                    </div>
+                                    <div className="p-2">
+                                        <p className="text-sm font-mono text-black">Facebook</p>
+                                        <p className="text-sm font-mono text-black">lorem ipsum dolor sit amet consectetur adipisicing ?</p>
+                                    </div>
+
+                                </div>
+                                <div className="col-span-1 p-4 flex items-center">
+                                    <div className="flex items-center border-2 border-slate-300 bg-white rounded-md w-14 h-14 justify-center">
+                                        <i className="fab fa-x-twitter text-2xl m-2"></i>
+                                    </div>
+                                    <div className="p-2">
+                                        <p className="text-sm font-mono text-black">X</p>
+                                        <p className="text-sm font-mono text-black">lorem ipsum dolor sit amet consectetur adipisicing ?</p>
+                                    </div>
+                                </div>
+                                <div className="col-span-1 p-4 flex items-center">
+
+                                    <div className="flex items-center border-2 border-slate-300 bg-white rounded-md w-14 h-14 justify-center">
+                                        <i className="fab fa-linkedin-in text-2xl m-2"></i>
+                                    </div>
+                                    <div className="p-2">
+                                        <p className="text-sm font-mono text-black">LinkedIn</p>
+                                        <p className="text-sm font-mono text-black">lorem ipsum dolor sit amet consectetur adipisicing ?</p>
+                                    </div>
+                                </div>
+                                <div className="col-span-1 p-4 flex items-center">
+                                    <div className="flex items-center border-2 border-slate-300 bg-white rounded-md w-14 h-14 justify-center">
+                                        <i className="fab fa-discord text-2xl m-2"></i> {/* Added Yahoo icon */}
+                                    </div>
+                                    <div className="p-2">
+                                        <p className="text-sm font-mono text-black">Discord</p>
+                                        <p className="text-sm font-mono text-black">lorem ipsum dolor sit amet consectetur adipisicing ?</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
             </div>
 

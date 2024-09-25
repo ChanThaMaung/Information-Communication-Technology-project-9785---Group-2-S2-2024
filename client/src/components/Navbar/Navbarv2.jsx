@@ -34,16 +34,16 @@ export default function Navbarv2() {
             console.log('Account:', account);
             console.log('Connection Status:', connectionStatus);
         }
-    }, [web3, account, connectionStatus]);
 
-    useEffect(() => {
         const handleScroll = () => {
             setSticky(window.scrollY > 0); // Set sticky if scrolled down
         };
 
         window.addEventListener("scroll", handleScroll);
-        return () => window.removeEventListener("scroll", handleScroll);
-    }, [isSticky]); // Consider adding isSticky if needed
+        return () => {
+            window.removeEventListener("scroll", handleScroll);
+        };
+    }, [web3, account, connectionStatus]); // Dependencies for both effects
 
     return (
         <>
@@ -68,7 +68,7 @@ export default function Navbarv2() {
                     <ul className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-4">
                         <li className="text-white font-light hover:text-gray-300 hover:cursor-pointer text-lg p-1">
                             <button
-                                className="bg-gradient-to-r from-purple-500 to-blue-500 text-white p-2 rounded"
+                                className="bg-gradient-to-r from-purple-500 to-blue-500 text-white p-2 rounded bg-opacity-30"
                                 onClick={connectWallet}
                             >
                                 Connect

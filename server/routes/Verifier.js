@@ -3,10 +3,35 @@ const express = require('express');
 function createRouter(pool) {
   const router = express.Router();
 
-  router.get('/address/:verifierAddress', async (req, res) => {
-    const { verifierAddress } = req.params;
+
+  router.get('/getRows/:address', async (req, res) => {
+    const { address } = req.params;
     try {
-      const [rows] = await pool.query('SELECT * FROM verifier WHERE verifier_address = ?', [verifierAddress]);
+      const [rows] = await pool.query('SELECT * FROM verifier WHERE verifier_address = ?', [address]);
+      res.json(rows);
+    } catch (error) {
+      console.error('Error fetching verifier:', error);
+      res.status(500).json({ error: 'Internal server error', details: error.message });
+    }
+  });
+
+  // GET - Fetch the number of verified issuer transactions
+  router.get('/getTransactionCount/:address/:type', async (req, res) => {
+    const { address, type } = req.params;
+    try {
+      const [rows] = await pool.query('SELECT COUNT(*) AS transaction_count FROM verifier WHERE verifier_address = ? AND type = ?', [address, type]);
+      res.json(rows);
+    } catch (error) {
+      console.error('Error fetching verifier:', error);
+      res.status(500).json({ error: 'Internal server error', details: error.message });
+    }
+  });
+
+  // GET - Fetch rows verified by an address
+  router.get('/getByAddress/:address', async (req, res) => {
+    const { address } = req.params;
+    try {
+      const [rows] = await pool.query('SELECT * FROM verifier WHERE verifier_address = ?', [address]);
       res.json(rows);
     } catch (error) {
       console.error('Error fetching verifier:', error);

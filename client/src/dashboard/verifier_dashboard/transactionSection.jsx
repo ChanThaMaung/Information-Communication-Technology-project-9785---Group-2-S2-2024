@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { shortenAddress } from "../../scripts/shortenAddress";
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, Dialog, DialogTitle, DialogContent, DialogActions, IconButton, TextField, Select, MenuItem } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
-
+import { getRows} from "../../../../server/API/Verifier/get_by_address_api"
 // Add this mapping object outside of your component
 const propertyDisplayNames = {
     project_name: "Project Name",
@@ -14,26 +14,27 @@ const propertyDisplayNames = {
 };
 
 // Updated TransactionDetailsPopup component
-const TransactionDetailsPopup = ({ transaction, open, onClose, handleSubmit }) => {
+const TransactionDetailsPopup = ({ transaction, open, onClose, handleSubmit, refreshTransactions, isIssuer }) => {
     const [editedTransaction, setEditedTransaction] = useState({});
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     useEffect(() => {
         if (transaction) {
-            const { prev_tx, transaction_hash, verification_status, address, ...rest } = transaction;
+            const { verification_status, ...rest } = transaction;
             // Format dates for input fields
             const formattedTransaction = Object.entries(rest).reduce((acc, [key, value]) => {
                 if (key === 'date_issued' || key === 'date_bought') {
-                    // Ensure the date is in YYYY-MM-DD format for the input field
                     const date = new Date(value);
-                    console.log(date);
                     const year = date.getFullYear();
-                    const month = String(date.getMonth() + 1).padStart(2, '0'); // getMonth() is zero-based, so add 1
+                    const month = String(date.getMonth() + 1).padStart(2, '0');
                     const day = String(date.getDate()).padStart(2, '0');
                     acc[key] = `${year}-${month}-${day}`;
-                    console.log(acc[key]);
                 }
                 else if (key === 'active_status') {
                     acc[key] = value.toString();
+                }
+                else if (key === 'prev_tx') {
+                    acc[key] = value || 'N/A';
                 }
                 else {
                     acc[key] = value;
@@ -42,13 +43,14 @@ const TransactionDetailsPopup = ({ transaction, open, onClose, handleSubmit }) =
             }, {});
 
             setEditedTransaction(formattedTransaction);
-            console.log(formattedTransaction);
         }
     }, [transaction]);
 
     if (!transaction) return null;
 
     const getDisplayName = (key) => {
+        if (key === 'issuer_address') return 'Issuer Address';
+        if (key === 'emitter_address') return 'Emitter Address';
         return propertyDisplayNames[key] || key.charAt(0).toUpperCase() + key.slice(1).replace(/_/g, ' ');
     };
 
@@ -56,16 +58,26 @@ const TransactionDetailsPopup = ({ transaction, open, onClose, handleSubmit }) =
         setEditedTransaction(prev => ({ ...prev, [key]: value }));
     };
 
-    const verifyTransaction = () => {
-        editedTransaction.verification_status = "1";
-        editedTransaction.prev_tx = "";
-        editedTransaction.transaction_hash = transaction.transaction_hash;
-        // Here you would typically send the editedTransaction to your backend
-        console.log('Saving edited transaction:', editedTransaction);
-        handleSubmit(editedTransaction);
-        onClose();
+    const verifyTransaction = async () => {
+        if (isSubmitting) return;
+        setIsSubmitting(true);
+        const updatedTransaction = {
+            ...editedTransaction,
+            verification_status: "1",
+            prev_tx: transaction.prev_tx,
+            transaction_hash: transaction.transaction_hash
+        };
+        console.log('Saving edited transaction:', updatedTransaction);
+        try {
+            await handleSubmit(updatedTransaction);
+            await refreshTransactions();
+            onClose();
+        } catch (error) {
+            console.error("Error submitting edit:", error);
+        } finally {
+            setIsSubmitting(false);
+        }
     };
-
 
     return (
         <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
@@ -103,6 +115,14 @@ const TransactionDetailsPopup = ({ transaction, open, onClose, handleSubmit }) =
                                                 <MenuItem value="0">Active</MenuItem>
                                                 <MenuItem value="1">Retired</MenuItem>
                                             </Select>
+                                        ) : key === 'prev_tx' || key === 'transaction_hash' || key === 'issuer_address' || key === 'emitter_address' ? (
+                                            <TextField
+                                                fullWidth
+                                                value={value}
+                                                InputProps={{
+                                                    readOnly: true,
+                                                }}
+                                            />
                                         ) : (
                                             <TextField
                                                 fullWidth
@@ -119,11 +139,11 @@ const TransactionDetailsPopup = ({ transaction, open, onClose, handleSubmit }) =
                 </TableContainer>
             </DialogContent>
             <DialogActions>
-                <Button onClick={onClose} color="primary">
+                <Button onClick={onClose} color="primary" disabled={isSubmitting}>
                     Cancel
                 </Button>
-                <Button onClick={verifyTransaction} color="primary" variant="contained">
-                    Verify
+                <Button onClick={verifyTransaction} color="primary" variant="contained" disabled={isSubmitting}>
+                    {isSubmitting ? 'Verifying...' : 'Verify'}
                 </Button>
             </DialogActions>
         </Dialog>
@@ -143,6 +163,7 @@ function TransactionSection({
     showIssuerTransactions,
     setShowIssuerTransactions,
     handleViewMore,
+    refreshTransactions,
 }) {
     const [selectedTransaction, setSelectedTransaction] = useState(null);
     const [isPopupOpen, setIsPopupOpen] = useState(false);
@@ -165,9 +186,8 @@ function TransactionSection({
 
     const handleClosePopup = () => {
         setIsPopupOpen(false);
+        setSelectedTransaction(null); // Reset selected transaction
     };
-
-
 
     const handleKeyUp = (event) => {
         const inputValue = event.target.value;
@@ -282,6 +302,8 @@ function TransactionSection({
                     open={isPopupOpen}
                     onClose={handleClosePopup}
                     handleSubmit={handleSubmit}
+                    refreshTransactions={refreshTransactions}
+                    isIssuer={isIssuer}
                 />
             </div>
         </div>

@@ -6,33 +6,51 @@ import { shortenAddress } from "../../scripts/shortenAddress";
 import TransactionSection from "./transactionSection";
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button } from '@mui/material';
 import { useNavigate } from "react-router-dom";
-import * as verifierAPI from "../../../../server/API/Verifier/get_verifier_api"
+import * as verifierAPI from "../../../../server/API/Verifier/get_by_address_api"
+import {getUnverifiedIssuer} from "../../../../server/API/Issuer/get_issuer_api"
+import {getUnverifiedEmitter} from "../../../../server/API/Emitter/get_emitter_api"
 function VerifierDashboard({
   handleSubmit,
-  emitterTransactions,
-  issuerTransactions,
-  allTransactions,
   formatDate,
   currentVerifierAccount,
-  totalVerifiedCreditsIssued,
   totalVerifiedCreditsBought,
-  totalVerifiedEmitter,
-  totalVerifiedIssuer,
+  totalVerifiedCreditsIssued,
+
 }) {
-  console.log(currentVerifierAccount);
   const [showIssuerTransactions, setShowIssuerTransactions] = useState(true);
   const [searchInput, setSearchInput] = useState("");
   const navigate = useNavigate();
   const [transactions, setTransactions] = useState([]);
 
+  const [allTransactions, setAllTransactions] = useState([]);
+  const [totalVerifiedEmitter, setTotalVerifiedEmitter] = useState(0);
+  const [totalVerifiedIssuer, setTotalVerifiedIssuer] = useState(0);
+  const [emitterTransactions, setEmitterTransactions] = useState([]);
+  const [issuerTransactions, setIssuerTransactions] = useState([]);
+
+
   useEffect(() => {
     const fetchTransactions = async () => {
+      setEmitterTransactions(await getUnverifiedEmitter())
+      setIssuerTransactions(await getUnverifiedIssuer())
       setTransactions(await verifierAPI.getByAddress(currentVerifierAccount));
-      console.log(transactions);
+      setAllTransactions(await verifierAPI.getByAddress(currentVerifierAccount));
     };
     fetchTransactions();
+    fetchTransactionCount(0);
+    fetchTransactionCount(1);
+
   }, []);
 
+  const fetchTransactionCount = async (type) => {
+    if (type === 0) {
+      const response = await verifierAPI.getTransactionCount(currentVerifierAccount, type);
+       setTotalVerifiedEmitter(response[0].transaction_count);
+    } else {  
+      const response = await verifierAPI.getTransactionCount(currentVerifierAccount, type);
+       setTotalVerifiedIssuer(response[0].transaction_count);
+    }
+  }
   const data = [
     { name: 'Verified Emitter', value: totalVerifiedEmitter },
     { name: 'Verified Issuer', value: totalVerifiedIssuer },
@@ -54,6 +72,24 @@ function VerifierDashboard({
     setTransactions(filtered);
   };
 
+  const refreshTransactions = async () => {
+    // Fetch updated transactions
+    const updatedIssuerTransactions = await getUnverifiedIssuer();
+    const updatedEmitterTransactions = await getUnverifiedEmitter();
+    const updatedAllTransactions = await verifierAPI.getByAddress(currentVerifierAccount);
+
+    setEmitterTransactions(updatedEmitterTransactions); 
+    setIssuerTransactions(updatedIssuerTransactions);
+    setAllTransactions(updatedAllTransactions);
+
+    // Optionally, update other related data
+    // For example, update transaction counts
+    const updatedIssuerCount = await verifierAPI.getTransactionCount(currentVerifierAccount, 1);
+    const updatedEmitterCount = await verifierAPI.getTransactionCount(currentVerifierAccount, 0);
+    setTotalVerifiedIssuer(updatedIssuerCount[0].transaction_count || 0);
+    setTotalVerifiedEmitter(updatedEmitterCount[0].transaction_count || 0);
+  };
+
   return (
     <>
       <div className="Dashboard">
@@ -70,13 +106,14 @@ function VerifierDashboard({
           showIssuerTransactions={showIssuerTransactions}
           setShowIssuerTransactions={setShowIssuerTransactions}
           handleViewMore={handleViewMore}
+          refreshTransactions={refreshTransactions}
         />
 
         <div className="verifier-div">
           <div className="wrapper">
             <div className="verifier-lower-1">
               <div className="text-center">
-                <p className="text-2xl font-bold">Transactions Verified By You</p>
+                <p className="text-2xl font-bold">Transactions Verified</p>
               </div>
               <div className="text-center">
                 <PieChart width={200} height={200}>

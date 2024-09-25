@@ -155,18 +155,7 @@ function Dashboard() {
       setCurrentAccount(accounts[0]);
     }
   };
-
-  const handleConnectWallet = async () => {
-    try {
-      const account = await connectWalletFunction();
-      if (account) {
-        setCurrentAccount(account);
-      }
-    } catch (error) {
-      console.error("Failed to connect wallet:", error);
-    }
-  };
-
+  
   const determineAccountType = async () => {
     let accountType = "";
     if (currentAccount.toLowerCase() === issuerAcc.toLowerCase()) {
@@ -180,8 +169,6 @@ function Dashboard() {
       setAccountType(accountType);
       connectVerifierWallet(currentAccount);
       setAllTransactions(await verifierAPI.getAllVerifier())
-      setEmitterTransactions(await emitterAPI.getUnverifiedEmitter())
-      setIssuerTransactions(await issuerAPI.getUnverifiedIssuer())
 
     } else if (currentAccount.toLowerCase() === emitterAcc.toLowerCase()) {
       accountType = "emitter";
@@ -220,25 +207,18 @@ function Dashboard() {
           console.log("Sending transaction to emitter");
           await sendEmitterTransaction(formData);
           console.log("Transaction sent - emitter");
-          setEmitterTransactions(await emitterAPI.getAllEmitter())
         } else if (formData.date_issued) {
           transactionType = 1;
           console.log("Type:", transactionType);
           console.log("Sending transaction to issuer");
           await sendIssuerTransaction(formData);
           console.log("Transaction sent - issuer");
-          setIssuerTransactions(await issuerAPI.getAllIssuer())
         }
 
         console.log("Sending transaction to verifier");
         await sendVerifierTransaction(formData, transactionType);
         console.log("Transaction sent - verifier");
 
-        // Update the state after all operations
-        setType(transactionType);
-
-        // Optionally, refresh the transactions list
-        setAllTransactions(await verifierAPI.getAllVerifier())
       } catch (error) {
         console.error("Error:", error);
       }
@@ -290,16 +270,10 @@ function Dashboard() {
         return (
           <VerifierDashboard
             handleSubmit={handleSubmit}
-            emitterTransactions={emitterTransactions}
-            issuerTransactions={issuerTransactions}
-            allTransactions={allTransactions}
             formatDate={formatDate}
             currentVerifierAccount={currentVerifierAccount}
-            totalVerifiedCreditsIssued={totalVerifiedCreditsIssued}
             totalVerifiedCreditsBought={totalVerifiedCreditsBought}
-            totalVerifiedEmitter={totalVerifiedEmitter}
-            totalVerifiedIssuer={totalVerifiedIssuer}
-            totalTransactionCount={totalTransactionCount}
+            totalVerifiedCreditsIssued={totalVerifiedCreditsIssued}
           />
         );
       case "emitter":

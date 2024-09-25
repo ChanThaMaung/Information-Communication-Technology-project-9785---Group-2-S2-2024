@@ -1,10 +1,9 @@
 function Footer() {
     return (
         <div className="pt-8 pb-10 mt-16 border-t border-gray-200">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <div className="text-center md:text-left">
-                    <i className="fa-solid fa-coins text-indigo-600 text-2xl"></i>
-                    <small className="block text-gray-500">© 2017-2018</small>
+                    <small className="block text-gray-500">© 2024 Enabling Transparent Carbon Offset Tax Compliance with Blockchain. </small>
                 </div>
                 <div>
                     <h5 className="font-semibold p-5 pl-0 text-lg">Features</h5>

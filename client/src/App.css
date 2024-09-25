@@ -4,14 +4,30 @@
   padding: 2rem;
   text-align: center;
 } */
-
+:root {
+  --primary-color: linear-gradient(90deg, #01019B 0%, #770077 100%);
+  --secondary-color: radial-gradient(ellipse at 24% 64%, #030289 0%, #000208 100%);
+  --third-color: linear-gradient(90deg, rgba(251, 214, 115, 0.32) 0%, rgba(64, 198, 227, 1) 100%);
+}
 .bg--gradientCarousel {
   /* global 94%+ browsers support */
-  background: linear-gradient(90deg, #01019B 0%, #770077 100%);
+  background: var(--primary-color);
 }
 
 .bg--gradientDB {
-  background: radial-gradient(ellipse at 24% 64%, #030289 0%, #000208 100%);
+  background: var(--secondary-color);
+}
+
+.bg--gradientDBv2 {
+  background: var(--third-color);
+}
+
+.fixed {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000; /* Ensure it stays above other content */
 }
 
 @keyframes logo-spin {

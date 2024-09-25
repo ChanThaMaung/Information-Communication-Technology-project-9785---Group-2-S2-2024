@@ -1,5 +1,5 @@
 export { default as Footer } from './Footer';
-export { default as Navbar } from './Navbar';
+// export { default as Navbar } from './Navbar/Navbar';
 // export { default as InputPage} from './InputPage';
 // export { default as Header} from './Header';
 // export { default as Dashboard} from '../dashboard/publicDashboard';

@@ -23,7 +23,11 @@ function VerifierDashboard({
   const [showIssuerTransactions, setShowIssuerTransactions] = useState(true);
   const [searchInput, setSearchInput] = useState("");
   const navigate = useNavigate();
-  const [transactions, setTransactions] = useState(allTransactions);
+  const [transactions, setTransactions] = useState([]);
+
+  useEffect(() => {
+    setTransactions(allTransactions); // Update the transactions state when allTransactions changes
+  }, [allTransactions]);
 
   const data = [
     { name: 'Verified Emitter', value: totalVerifiedEmitter },
@@ -49,28 +53,25 @@ function VerifierDashboard({
 
   return (
     <>
-      <div>
+      <div className="Dashboard">
+        <TransactionSection
+          handleSubmit={handleSubmit}
+          formatDate={formatDate}
+          isIssuer={showIssuerTransactions}
+          issuerTransactions={issuerTransactions}
+          emitterTransactions={emitterTransactions}
+          totalVerifiedCreditsIssued={Number(totalVerifiedCreditsIssued)}
+          totalVerifiedCreditsBought={Number(totalVerifiedCreditsBought)}
+          totalVerifiedIssuer={Number(totalVerifiedIssuer)}
+          totalVerifiedEmitter={Number(totalVerifiedEmitter)}
+          showIssuerTransactions={showIssuerTransactions}
+          setShowIssuerTransactions={setShowIssuerTransactions}
+          handleViewMore={handleViewMore}
+        />
 
-        <div className="parent-div">
-          <TransactionSection
-            handleSubmit={handleSubmit}
-            formatDate={formatDate}
-            isIssuer={showIssuerTransactions}
-            issuerTransactions={issuerTransactions}
-            emitterTransactions={emitterTransactions}
-            totalVerifiedCreditsIssued={totalVerifiedCreditsIssued}
-            totalVerifiedCreditsBought={totalVerifiedCreditsBought}
-            totalVerifiedIssuer={totalVerifiedIssuer}
-            totalVerifiedEmitter={totalVerifiedEmitter}
-            showIssuerTransactions={showIssuerTransactions}
-            setShowIssuerTransactions={setShowIssuerTransactions}
-            handleViewMore={handleViewMore}
-          />
-        </div>
-
-        <div className="parent-div">
-          <div className="verifier-div">
-            <div className="verifier-div-upper">
+        <div className="verifier-div">
+          <div className="wrapper">
+            <div className="verifier-lower-1">
               <div className="text-center">
                 <p className="text-2xl font-bold">Transactions</p>
               </div>
@@ -80,8 +81,8 @@ function VerifierDashboard({
                     data={data}
                     cx="50%"
                     cy="50%"
-                    innerRadius={60}
-                    outerRadius={80}
+                    innerRadius={70}
+                    outerRadius={90}
                     fill="#8884d8"
                     paddingAngle={0}
                     dataKey="value"
@@ -117,8 +118,8 @@ function VerifierDashboard({
                 </div>
               </div>
             </div>
-            <div className="verifier-div-lower">
-              <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+            <div className="verifier-lower-2">
+              <div style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
                 <h2 className="text-xl font-bold">Recent Transactions</h2>
                 <div className="relative">
                   <input
@@ -133,6 +134,7 @@ function VerifierDashboard({
                   </svg>
                 </div>
               </div>
+
               <TableContainer component={Paper} sx={{ borderTop: '2px solid rgba(224, 224, 224, 1)' }}>
                 <Table aria-label="recent transactions table">
                   <TableHead>
@@ -143,7 +145,7 @@ function VerifierDashboard({
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    { transactions.length === 0 ? (
+                    {transactions.length === 0 ? (
                       <TableRow>
                         <TableCell colSpan={3} align="center">No transactions found</TableCell>
                       </TableRow>

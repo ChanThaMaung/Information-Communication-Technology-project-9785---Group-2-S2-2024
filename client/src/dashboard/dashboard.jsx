@@ -41,6 +41,12 @@ function Dashboard() {
   const [activeRows, setActiveRows] = useState([]);
   const [retiredRows, setRetiredRows] = useState([]);
 
+  const [totalVerifiedCreditsIssued, setTotalVerifiedCreditsIssued] = useState(0);
+  const [totalVerifiedCreditsBought, setTotalVerifiedCreditsBought] = useState(0);
+  const [totalVerifiedEmitter, setTotalVerifiedEmitter] = useState(0);
+  const [totalVerifiedIssuer, setTotalVerifiedIssuer] = useState(0);
+  const [totalTransactionCount, setTotalTransactionCount] = useState(0);
+
   const {
     connectIssuerWallet,
     currentIssuerAccount,
@@ -87,8 +93,23 @@ function Dashboard() {
     getCredits();
     getActiveRows();
     getRetiredRows();
+    getTotalVerified();
+    getVerifiedCredits();
   }, [currentAccount]);
 
+  const getTotalVerified = async () => {
+    const verifiedIssuerCount = await issuerAPI.getVerifiedIssuer();
+    const verifiedEmitterCount = await emitterAPI.getVerifiedEmitter();
+    setTotalVerifiedIssuer(verifiedIssuerCount[0].verified_count);
+    setTotalVerifiedEmitter(verifiedEmitterCount[0].verified_count);
+  }
+
+  const getVerifiedCredits = async () => {  
+    const verifiedCreditsIssued = await issuerAPI.getVerifiedIssuerCount();
+    const verifiedCreditsBought = await emitterAPI.getVerifiedEmitterCount();
+    setTotalVerifiedCreditsIssued(verifiedCreditsIssued[0].verified_credits);
+    setTotalVerifiedCreditsBought(verifiedCreditsBought[0].verified_credits);
+  }
   const getUserCount = async () => {
     const emitterCount = await emitterAPI.getUniqueEmitter();
     const issuerCount = await issuerAPI.getUniqueIssuer();
@@ -105,13 +126,13 @@ function Dashboard() {
     setTotalEmitterTransactions(emitterCount[0].transaction_count);
     setTotalIssuerTransactions(issuerCount[0].transaction_count);
     setTotalVerifierTransactions(verifierCount[0].transaction_count);
+    setTotalTransactionCount(emitterCount[0].transaction_count + issuerCount[0].transaction_count);
   }
 
   const getCredits = async () => {
     const creditsRetired = await issuerAPI.getRetiredCredits();
     const creditsIssued = await issuerAPI.getActiveCredits();
-    console.log(creditsRetired)
-    console.log(creditsIssued)
+
     setTotalCreditsRetired(creditsRetired[0].credit_retired);
     setTotalCreditsIssued(creditsIssued[0].credit_issued);
   }
@@ -152,19 +173,21 @@ function Dashboard() {
       accountType = "issuer";
       setAccountType(accountType);
       connectIssuerWallet(currentAccount);
-      setIssuerTransactions(await issuerAPI.getAllIssuer())
+      setAllTransactions(await issuerAPI.getAllIssuer())
 
     } else if (currentAccount.toLowerCase() === verifierAcc.toLowerCase()) {
       accountType = "verifier";
       setAccountType(accountType);
       connectVerifierWallet(currentAccount);
-      setVerifierTransactions(await verifierAPI.getAllVerifier())
+      setAllTransactions(await verifierAPI.getAllVerifier())
+      setEmitterTransactions(await emitterAPI.getUnverifiedEmitter())
+      setIssuerTransactions(await issuerAPI.getUnverifiedIssuer())
 
     } else if (currentAccount.toLowerCase() === emitterAcc.toLowerCase()) {
       accountType = "emitter";
       setAccountType(accountType);
       connectEmitterWallet(currentAccount);
-      setEmitterTransactions(await emitterAPI.getAllEmitter())
+      setAllTransactions(await emitterAPI.getAllEmitter())
 
     } else {
       accountType = "Guest";
@@ -237,6 +260,7 @@ function Dashboard() {
           totalVerifierCount={totalVerifierTransactions}
           activeRows={activeRows}
           retiredRows={retiredRows}
+          allTransactions={allTransactions}
         />
         </>
       );
@@ -261,6 +285,11 @@ function Dashboard() {
             allTransactions={allTransactions}
             formatDate={formatDate}
             currentVerifierAccount={currentVerifierAccount}
+            totalVerifiedCreditsIssued={totalVerifiedCreditsIssued}
+            totalVerifiedCreditsBought={totalVerifiedCreditsBought}
+            totalVerifiedEmitter={totalVerifiedEmitter}
+            totalVerifiedIssuer={totalVerifiedIssuer}
+            totalTransactionCount={totalTransactionCount}
           />
         );
       case "emitter":

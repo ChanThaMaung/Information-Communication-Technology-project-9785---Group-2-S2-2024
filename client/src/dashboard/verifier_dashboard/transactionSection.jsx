@@ -67,7 +67,6 @@ const TransactionDetailsPopup = ({ transaction, open, onClose, handleSubmit }) =
     };
 
 
-
     return (
         <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
             <DialogTitle>
@@ -168,6 +167,8 @@ function TransactionSection({
         setIsPopupOpen(false);
     };
 
+
+
     const handleKeyUp = (event) => {
         const inputValue = event.target.value;
         setSearchInput(inputValue);
@@ -194,7 +195,7 @@ function TransactionSection({
                     <TableBody>
                         {allTransactions.length === 0 ? (
                             <TableRow>
-                                <TableCell colSpan={4} align="center">Empty</TableCell>
+                                <TableCell colSpan={4} align="center">No transactions</TableCell>
                             </TableRow>
                         ) : (
                             allTransactions.slice(0, 4).map((tx, index) => (
@@ -227,56 +228,62 @@ function TransactionSection({
 
     return (
         <div className="verifier-div">
-            <div style={{ width: '25%', marginRight: '1rem', paddingRight: '1rem', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
-                <div style={{ borderRadius: '0.5rem', padding: '1rem', width: '100%', textAlign: 'center' }}>
-                    <p className="bold-text">{(totalVerifiedCredits || 0).toLocaleString()}</p>
-                    <p className="text-sm">Number of verified {creditType.toLocaleString()} carbon credits</p>
-                </div>
-                <div style={{ width: '100%', marginLeft: '1rem' }}>
-                    <hr className="divider" />
-                </div>
-                <div style={{ borderRadius: '0.5rem', padding: '1rem', width: '100%', textAlign: 'center' }}>
-                    <p className="bold-text">{totalVerifiedTransactions}</p>
-                    <p className="text-sm">Number of verified {isIssuer ? 'issuer' : 'emitter'} transactions</p>
-                </div>
-            </div>
-            <div style={{ width: '100%', padding: '1rem', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                <div style={{ width: '100%', position: 'relative', textAlign: 'center', marginBottom: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <div>
-                        <h2 className="text-xl font-bold">{title}</h2>
+            <div className="wrapper">
+                <div className="verifier-upper-1">
+                    <div className="verifier-upper-1-upper">
+                        <p className="bold-number">{(totalVerifiedCredits || 0).toLocaleString()}/20,000</p>
+                        <p className="text-sm">Number of verified {creditType.toLocaleString()} carbon credits</p>
                     </div>
-
-                    <div style={{ display: 'flex', alignItems: 'center' }}>
-                        <div className="relative">
-                            <input
-                                type="text"
-                                placeholder="Search transactions"
-                                className="pl-8 pr-2 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                value={searchInput}
-                                onChange={handleKeyUp}
-                            />
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-400 absolute left-2 top-1/2 transform -translate-y-1/2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                            </svg>
+                    <div style={{ width: '100%', marginLeft: '1rem' }}>
+                        <hr className="divider" />
+                    </div>
+                    <div style={{ borderRadius: '0.5rem', padding: '1rem', width: '100%', textAlign: 'center' }}>
+                        <p className="bold-number">
+                            {totalVerifiedTransactions.toLocaleString()}
+                        </p>
+                        <p className="text-sm">Number of verified {isIssuer ? 'issuer' : 'emitter'} transactions</p>
+                    </div>
+                </div>
+                <div className="verifier-upper-2">
+                    <div style={{ width: '100%', position: 'relative', marginBottom: '1rem', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                        <div>
+                            <h2 className="text-3xl font-bold">{title}</h2>
                         </div>
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            onClick={() => setShowIssuerTransactions(!showIssuerTransactions)}
-                            style={{ marginLeft: '1rem' }}
-                        >
-                            {showIssuerTransactions ? "Switch to Emitter Transactions" : "Switch to Issuer Transactions"}
-                        </Button>
+
+                        <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+                            <div style={{ width: '40%' }}>
+                                <Button
+                                    variant="contained"
+                                    color="primary"
+                                    onClick={() => setShowIssuerTransactions(!showIssuerTransactions)}
+                                    style={{ fontSize: '0.8rem' }}
+                                >
+                                    {showIssuerTransactions ? "Switch to Emitter Transactions" : "Switch to Issuer Transactions"}
+                                </Button>
+                            </div>
+                            <div className="verifier-upper-search-bar">
+                                <input
+                                    type="text"
+                                    placeholder="Search transactions"
+                                    className="search-input"
+                                    value={searchInput}
+                                    onChange={handleKeyUp}
+                                />
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-400 absolute left-2 top-1/2 transform -translate-y-1/2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                </svg>
+                            </div>
+                        </div>
                     </div>
+                    {renderTransactionTable(allTransactions, isIssuer ? "issuer" : "emitter")}
                 </div>
-                {renderTransactionTable(allTransactions, isIssuer ? "issuer" : "emitter")}
+                <TransactionDetailsPopup
+                    transaction={selectedTransaction}
+                    open={isPopupOpen}
+                    onClose={handleClosePopup}
+                    handleSubmit={handleSubmit}
+                />
             </div>
-            <TransactionDetailsPopup
-                transaction={selectedTransaction}
-                open={isPopupOpen}
-                onClose={handleClosePopup}
-                handleSubmit={handleSubmit}
-            />
         </div>
     );
 }

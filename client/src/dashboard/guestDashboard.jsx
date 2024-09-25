@@ -124,7 +124,7 @@ function GuestDashboard({
         {/* Bottom Div */}
         <div className="guest-lower">
           <div className="guest-lower-1">
-            <ResponsiveContainer width="100%" height={500}>
+            <ResponsiveContainer width="100%" height={350}>
               <LineChart margin={{ top: 10, right: 30, bottom: 30, left: 30 }}>
                 <XAxis dataKey="formattedDate" tickFormatter={formatDate} axisLine={false} tickLine={false} tick={{ fontSize: 10 }} tickMargin={10} />
                 <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10 }} tickMargin={10} />

@@ -1,7 +1,6 @@
 import axios from "axios";
 import { API_URL } from "./constants";
 
-
 export const getActiveRows = async () => {
     const response = await axios.get(API_URL + "/active-rows");
     return response.data;

@@ -33,6 +33,26 @@ function createRouter(pool) {
       res.status(500).json({ error: 'Internal server error', details: error.message });
     }
   });
+
+  router.get('/verified', async (req, res) => {
+    try {
+      const [rows] = await pool.query('SELECT COUNT(*) AS verified_count FROM issuer WHERE verification_status = "1"');
+      res.json(rows);
+    } catch (error) {
+      console.error('Error fetching verified issuer:', error);
+      res.status(500).json({ error: 'Internal server error', details: error.message });
+    }
+  });
+  router.get('/verified/count', async (req, res) => {
+    try {
+      const [rows] = await pool.query('SELECT SUM(credit_amount) AS verified_credits FROM issuer WHERE verification_status = "1"');
+      res.json(rows);
+    } catch (error) {
+      console.error('Error fetching verified issuer count:', error);
+      res.status(500).json({ error: 'Internal server error', details: error.message });
+    }
+  });
+
   // GET - fetch amount of credits issued
   router.get('/issued', async (req, res) => {
     try {

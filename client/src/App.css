@@ -1,22 +1,35 @@
-#root {
+/* #root {
   max-width: 1280px;
   margin: 0 auto;
   padding: 2rem;
   text-align: center;
+} */
+:root {
+  --primary-color: linear-gradient(90deg, #01019B 0%, #770077 100%);
+  --secondary-color: radial-gradient(ellipse at 24% 64%, #030289 0%, #000208 100%);
+  --third-color: linear-gradient(90deg, rgba(251, 214, 115, 0.32) 0%, rgba(64, 198, 227, 1) 100%);
 }
 
-/* // <uniquifier>: Use a unique and descriptive class name
-// <weight>: Use a value from 300 to 800 */
-
-.open-sans{
-  font-family: "Open Sans", sans-serif;
-  font-optical-sizing: auto;
-  font-style: normal;
-  font-variation-settings:
-    "wdth" 100;
+.bg--gradientCarousel {
+  /* global 94%+ browsers support */
+  background: var(--primary-color);
 }
 
+.bg--gradientDB {
+  background: var(--secondary-color);
+}
 
+.bg--gradientDBv2 {
+  background: var(--third-color);
+}
+
+.fixed {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000; /* Ensure it stays above other content */
+}
 
 @keyframes logo-spin {
   from {
@@ -39,4 +52,20 @@
 
 .read-the-docs {
   color: #888;
+}
+
+.header-item {
+  width: 60%;
+  margin: 0 auto;  /* Center horizontally */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.carousel-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;  /* Full viewport height */
 }

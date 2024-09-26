@@ -271,7 +271,7 @@ function TransactionSection({
                         </div>
 
                         <div style={{ display: 'flex', alignItems: 'center' }}>
-                            <div style={{ width: '40%' }}>
+                            <div style={{ width: '50%' }}>
                                 <Button
                                     variant="contained"
                                     color="primary"

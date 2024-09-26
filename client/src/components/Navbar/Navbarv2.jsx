@@ -57,7 +57,7 @@ export default function Navbarv2() {
 
     return (
         <>
-            <nav className={`flex p-4 transition-all duration-300 ${isSticky ? 'fixed top-0' : 'relative'} right-0 left-0 z-50 place-content-between bg--gradientCarousel `}>
+            <nav className={`flex p-4  ${isSticky ? 'fixed top-0' : 'relative'} right-0 left-0 z-50 place-content-between bg--gradientCarousel `}>
                 <div className="hidden md:flex flex-col md:flex-row md:items-center md:space-x-4 mt-4 md:mt-0">
                     <ul className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-4">
                         <li className="text-white font-light text-xl p-1">

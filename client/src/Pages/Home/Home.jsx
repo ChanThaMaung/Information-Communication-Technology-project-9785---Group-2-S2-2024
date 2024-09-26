@@ -1,150 +1,207 @@
-import Header from "../../components/Header/Header";
-import Footer from "../../components/Footer/Footer";
+import { useState } from 'react';// Import the new modal component
+import { Link } from "react-router-dom";
+import { HomeNavbar, Footer, PieChartWithCenterLabel, LearnMoreModal } from "../../components";
+import '../../App.css'
 
+export default function Homev2() {
+    const [showModal, setShowModal] = useState(false);
+    const [modalContent, setModalContent] = useState('');
+    const [modalTitle, setModalTitle] = useState(''); // New state for title
 
+    const handleShow = (title, content) => {
+        setModalTitle(title); // Set the title
+        setModalContent(content);
+        setShowModal(true);
+    };
+    const handleClose = () => setShowModal(false);
 
-export default function Home() {
+    const documents = {
+        whatWeDo: "At the forefront of innovation, we are developing a blockchain-based platform that redefines how carbon offset taxes are managed. Our platform provides a fully transparent, verifiable system for tracking carbon emissions and offsets, ensuring accurate allocation of carbon credits and streamlined compliance with environmental regulations.",
+        whyBlockchain: "Blockchain technology offers an unparalleled level of security and transparency, making it the ideal solution for carbon offset management. Each transaction, whether initiated by carbon emitters, Verified Carbon Standard (VCS) regulators, or offset project developers, is securely logged in an immutable ledger. This not only eliminates the potential for double-selling carbon credits but also guarantees that every ton of offset is accounted for. With our platform, businesses can confidently meet their carbon tax obligations while maintaining full visibility and trust in the process.",
+        howItWorks: 'Our platform integrates three key participants in the carbon offset ecosystem: \
+                    Carbon Emitters: Companies seeking to offset their carbon footprint through certified projects. \
+                    Verified Carbon Standard (VCS): Regulatory bodies responsible for validating emissions reductions and offsets. \
+                    Offset Developers: Organizations developing carbon offset projects such as reforestation or renewable energy initiatives.'
+    };
+
     return (
         <>
-            {/* Header */}
-            <Header />
+            <HomeNavbar />
 
             {/* Carousel */}
-            <div id="carouselExampleIndicators" className="relative overflow-hidden mt-18">
-                <div className="carousel-inner relative w-full h-fit overflow-hidden flex transition-transform duration-700">
-                    <div className="carousel-item active w-full flex-none">
-                        <img className="w-full h-full object-cover" src="https://tse2.mm.bing.net/th?id=OIP.yEinwMqB6YvkbDnqTciTDQHaEK&pid=Api&P=0&h=180" alt="First slide" />
-                    </div>
+            <div className="relative w-full h-auto bg--gradientCarousel carousel-container "> {/* Added margin-top */}
+                <div className=" text-center p-10">
+                    <h1 className="text-4xl font-semibold font-mono text-white">
+                        Transforming the Carbon Industry with Blockchain
+                    </h1>
+                </div>
+                <div className=" text-center md:block mb-12 header-item">
+                    <p className="text-white font-mono text-lg">
+                    Discover how blockchain technology can help you make a real difference in the fight against climate change. Join the movement for a greener future today.
+                    </p>
                 </div>
             </div>
 
-
-
             {/* Dashboard */}
-            <div className="container mx-auto px-4 mt-8 mb-4">
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-6 text-center mb-8">
-                    <div className="bg-white rounded-lg shadow-md">
-                        <div className="bg-gray-100 p-4 rounded-t-lg">
-                            <i className="fa-solid fa-fire"></i>
-                            <h4 className="text-lg font-normal">Bitcoin BTC</h4>
-                        </div>
-                        <div className="p-4">
-                            <h1 className="text-4xl font-bold">$60,573.39 <small className="text-green-500 text-base">+1%</small></h1>
-                        </div>
-                    </div>
-                    <div className="bg-white rounded-lg shadow-md">
-                        <div className="bg-gray-100 p-4 rounded-t-lg">
-                            <i className="fa-solid fa-fire"></i>
-                            <h4 className="text-lg font-normal">Ethereum ETH</h4>
-                        </div>
-                        <div className="p-4">
-                            <h1 className="text-4xl font-bold">$2,659.77<small className="text-green-500 text-base">+1%</small></h1>
+            <div className="relative w-full h-auto bg-white place-content-center mt-16 p-10">
+                <div className="grid grid-cols-3 gap-4 container mx-auto">
+                    <div className="col-span-1 flex-col p-4">
+                        <div className="items-center justify-center flex px-6 py-2">
+                            <div className="mt-4">
+                                <h1 className="text-5xl font-semibold font-mono">
+                                    Solving with Blockchain
+                                </h1>
+                            </div>
                         </div>
                     </div>
-                    <div className="bg-white rounded-lg shadow-md">
-                        <div className="bg-gray-100 p-4 rounded-t-lg">
-                            <i className="fa-solid fa-fire"></i>
-                            <h4 className="text-lg font-normal">Stellar XLM</h4>
+                    <div className="col-span-2 border bg--gradientDBv2 shadow-md rounded-xl grid grid-cols-5">
+                        <div className="col-span-2 flex items-center justify-center">
+                            <PieChartWithCenterLabel />
                         </div>
-                        <div className="p-4">
-                            <h1 className="text-4xl font-bold">$0.10 <small className="text-red-500 text-base">-1%</small></h1>
-                        </div>
-                    </div>
-                    <div className="bg-white rounded-lg shadow-md">
-                        <div className="bg-gray-100 p-4 rounded-t-lg">
-                            <i className="fa-solid fa-fire"></i>
-                            <h4 className="text-lg font-normal">Solana SOL</h4>
-                        </div>
-                        <div className="p-4">
-                            <h1 className="text-4xl font-bold">$146.47 <small className="text-red-500 text-base">-1%</small></h1>
+                        <div className="col-span-3 flex flex-col justify-center p-4">
+                            <p className="text-black font-mono text-lg mb-4">
+                                A study by the World Resources Institute (WRI) in 2020 showed that double counting could occur in up to 40% of global transactions under certain scenarios. <span className="font-bold">Our platform solves that.</span>
+                            </p>
+                            <Link to={"/dashboard"} className="btn btn-primary bg-orange-200 hover:bg-orange-300 px-4 py-2 rounded-full self-start">
+                                Go To Dashboard
+                            </Link>
                         </div>
                     </div>
-                </div>
-                <div className="bg-cyan-500 p-4 rounded-t-lg">
-                    <a className="text-lg font-normal">
-                        Explore more on Dashboard
-                        <i className="fa-solid fa-arrow-right pl-2"></i>
-                    </a>
                 </div>
             </div>
 
             {/* About */}
-            <div className="mt-20">
-                <div className="w-full md:w-auto blue-card-parent relative">
-                    <div className="w-3/5 ml-auto mr-auto">
-                        <h1 className=" text-center text-2xl font-semibold item-title ">About</h1>
+            <div className="mt-16">
+                <div className="container mx-auto">
+                    <div className="flex justify-center">
+                        <h1 className="text-5xl font-thin font-mono ">
+                            About
+                        </h1>
                     </div>
-                    <div className="flex flex-wrap justify-center items-center mt-8 space-y-4 md:space-y-0 md:space-x-4">
-                        <div className="w-full md:w-1/2 lg:w-1/3 p-4 item-box">
-                            <article className="item">
-                                <div className="item-content">
-                                    <h3 className="item-title font-semibold text-lg">Protected &amp; secure</h3>
-                                    <div className="item-desc text-sm">
-                                        Lorem, ipsum dolor sit amet consectetur adipisicing elit. Culpa iure, animi molestiae minus quas quam ad unde qui impedit atque.
-                                    </div>
+                    <div className="grid grid-cols-3 gap-8 justify-items-center mt-8">
+                        <div className="col-span-1 border-2 border-orange-200 rounded-xl">
+                            <div className="bg-orange-200 rounded-t-lg items-center justify-center">
+                                <h1 className="text-2xl font-mono p-4 text-center">
+                                    What We Do
+                                </h1>
+                            </div>
+                            <div className="p-4">
+                                <div className="flex justify-center p-4">
+                                    <p className="text-sm font-mono ">
+                                        At the forefront of innovation...
+                                    </p>
                                 </div>
-                            </article>
+                                <div className="flex justify-center">
+                                    <button onClick={() => handleShow("What We Do", documents.whatWeDo)} className="text-blue-500 font-mono bg-orange-200 hover:bg-orange-300 px-4 py-2 rounded-full">Learn More</button>
+                                </div>
+                            </div>
                         </div>
-                        <div className="w-full md:w-1/2 lg:w-1/3 p-4 item-box">
-                            <article className="item">
-                                <div className="item-content">
-                                    <h3 className="item-title font-semibold text-lg">Professional support</h3>
-                                    <div className="item-desc text-sm">
-                                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Labore, veniam!
-                                    </div>
+                        <div className="col-span-1 border-2 border-orange-200 rounded-xl">
+                            <div className="bg-orange-200 rounded-t-lg items-center justify-center">
+                                <h1 className="text-2xl font-mono p-4 text-center">
+                                    Why Blockchain?
+                                </h1>
+                            </div>
+                            <div className="p-4">
+                                <div className="flex justify-center p-4">
+                                    <p className="text-sm font-mono">
+                                        Blockchain technology offers an unparalleled level of security...
+                                    </p>
                                 </div>
-                            </article>
+                                <div className="flex justify-center">
+                                    <button onClick={() => handleShow("Why Blockchain?", documents.whyBlockchain)} className="text-blue-500 font-mono bg-orange-200 hover:bg-orange-300 px-4 py-2 rounded-full">Learn More</button>
+                                </div>
+                            </div>
                         </div>
-                        <div className="w-full md:w-1/2 lg:w-1/3 p-4 item-box">
-                            <article className="item">
-                                <div className="item-content">
-                                    <h3 className="item-title font-semibold text-lg">Regulated</h3>
-                                    <div className="item-desc text-sm">
-                                        Lorem ipsum dolor sit amet consectetur, adipisicing elit. Nesciunt rem earum veniam obcaecati ea, corporis ducimus delectus tenetur autem dolores! <a href="/en-au/tradingacademy/faq/regulators/throughwhichsubsdoyouoperate" className="text-blue-500 underline">Learn more</a>.
-                                    </div>
+                        <div className="col-span-1 border-2 border-orange-200 rounded-xl">
+                            <div className="bg-orange-200 rounded-t-lg items-center justify-center">
+                                <h1 className="text-2xl font-mono p-4 text-center">
+                                    How It Works:
+                                </h1>
+                            </div>
+                            <div className="p-4">
+                                <div className="flex justify-center p-4">
+                                    <p className="text-sm font-mono">
+                                        Our platform integrates three key participants...
+                                    </p>
                                 </div>
-                            </article>
-                        </div>
-                        <div className="w-full md:w-1/2 lg:w-1/3 p-4 item-box">
-                            <article className="item">
-                                <div className="item-content">
-                                    <h3 className="item-title font-semibold text-lg">Reliable</h3>
-                                    <div className="item-desc text-sm">
-                                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Placeat, doloribus pariatur architecto sint officiis expedita culpa nisi saepe eos mollitia.
-                                    </div>
+                                <div className="flex justify-center">
+                                    <button onClick={() => handleShow("How It Works", documents.howItWorks)} className="text-blue-500 font-mono bg-orange-200 hover:bg-orange-300 px-4 py-2 rounded-full">Learn More</button>
                                 </div>
-                            </article>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
 
             {/* Contact */}
-            <div className="w-full mt-6 mb-6">
-                <div className="w-3/5 ml-auto mr-auto p-10">
-                    <h1 className=" text-center text-2xl font-semibold item-title ">Contact</h1>
-                </div>
-                <div className="flex flex-wrap -mx-4 w-3/4 ml-auto mr-auto">
-                    <div className="w-full lg:w-1/3 px-4 mb-8 lg:mb-0">
-                        <img className="rounded-full mx-auto" src="https://tse2.mm.bing.net/th?id=OIP.loCwsn7u3iAGhlFClCumdgHaHa&pid=Api&P=0&h=180" alt="Generic placeholder image" width="140" height="140" />
-                        <h2 className="text-center text-xl font-semibold mt-4">Gmail</h2>
-                        <p className="text-center mt-4"><a className="text-indigo-600 hover:text-indigo-800 font-semibold" href="#" role="button">Join in »</a></p>
+            <div className="mt-16">
+                <div className="container mx-auto">
+                    <div className="flex justify-center bg-slate-100 shadow-md rounded-xl">
+                        <div className="py-12">
+                            <div className=" rounded-t-lg items-center justify-center pt-1">
+                                <h1 className="text-4xl font-mono text-center">
+                                    Contact Us
+                                </h1>
+                            </div>
+                            <div className="p-4">
+                                <p className="text-sm font-mono text-center">
+                                    Need a hand? Connect with us on our social media platforms.
+                                </p>
+                            </div>
+                            <div className="grid grid-cols-2 gap-4 mx-auto">
+                                <div className="col-span-1 p-4 flex items-center">
+                                    <div className="border-2 border-slate-300 bg-white rounded-md w-14 h-14 flex items-center justify-center">
+                                        <i className="fab fa-facebook-f text-2xl m-2"></i>
+                                    </div>
+                                    <div className="p-2">
+                                        <p className="text-sm font-mono text-black">Facebook</p>
+                                        <p className="text-sm font-mono text-black">Be the first to know about our latest news and updates.</p>
+                                    </div>
+
+                                </div>
+                                <div className="col-span-1 p-4 flex items-center">
+                                    <div className="flex items-center border-2 border-slate-300 bg-white rounded-md w-14 h-14 justify-center">
+                                        <i className="fab fa-x-twitter text-2xl m-2"></i>
+                                    </div>
+                                    <div className="p-2">
+                                        <p className="text-sm font-mono text-black">X</p>
+                                        <p className="text-sm font-mono text-black">Socialize with us on X.</p>
+                                    </div>
+                                </div>
+                                <div className="col-span-1 p-4 flex items-center">
+
+                                    <div className="flex items-center border-2 border-slate-300 bg-white rounded-md w-14 h-14 justify-center">
+                                        <i className="fab fa-linkedin-in text-2xl m-2"></i>
+                                    </div>
+                                    <div className="p-2">
+                                        <p className="text-sm font-mono text-black">LinkedIn</p>
+                                        <p className="text-sm font-mono text-black">See our latest news and progress on LinkedIn.</p>
+                                    </div>
+                                </div>
+                                <div className="col-span-1 p-4 flex items-center">
+                                    <div className="flex items-center border-2 border-slate-300 bg-white rounded-md w-14 h-14 justify-center">
+                                        <i className="fab fa-discord text-2xl m-2"></i> {/* Added Yahoo icon */}
+                                    </div>
+                                    <div className="p-2">
+                                        <p className="text-sm font-mono text-black">Discord</p>
+                                        <p className="text-sm font-mono text-black">Join our Discord server to stay updated on our latest news and updates.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div className="w-full lg:w-1/3 px-4 mb-8 lg:mb-0">
-                        <img className="rounded-full mx-auto" src="https://tse2.mm.bing.net/th?id=OIP.HmkQj-92MxoQ2vtSToEk6QHaHa&pid=Api&P=0&h=180" alt="Generic placeholder image" width="140" height="140" />
-                        <h2 className="text-center text-xl font-semibold mt-4">X</h2>
-                        <p className="text-center mt-4"><a className="text-indigo-600 hover:text-indigo-800 font-semibold" href="#" role="button">Join in »</a></p>
-                    </div>
-                    <div className="w-full lg:w-1/3 px-4 mb-8 lg:mb-0">
-                        <img className="rounded-full mx-auto" src="https://tse2.mm.bing.net/th?id=OIP.2sdDiTIXNLSBVUup0dUpCgHaHa&pid=Api&P=0&h=180" alt="Generic placeholder image" width="140" height="140" />
-                        <h2 className="text-center text-xl font-semibold mt-4">Discoin</h2>
-                        <p className="text-center mt-4"><a className="text-indigo-600 hover:text-indigo-800 font-semibold" href="#" role="button">Join in »</a></p>
-                    </div>
+
                 </div>
             </div>
 
-            {/* Footer */}
             <Footer />
+
+
+
+            {/* Modal for Learn More */}
+            <LearnMoreModal show={showModal} handleClose={handleClose} content={modalContent} title={modalTitle} />
+
         </>
-    )
+    );
 }

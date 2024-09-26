@@ -3,13 +3,14 @@ import { IssuerContext } from "../context/IssuerContext";
 import { EmitterContext } from "../context/EmitterContext";
 import { VerifierContext } from "../context/VerifierContext";
 
-import { connectWallet as connectWalletFunction } from "../context/GlobalFunctions/connectWallet";
-import axios from "axios";
-import { formatDate } from "../scripts/handleDateFormat";
+import Navbar from "../components/Navbar/Navbar";
+import DashboardNavbar from "../components/Navbar/DashboardNavbar";
 
+import { formatDate } from "../scripts/handleDateFormat";
 import IssuerDashboard from "./issuerDashboard";
 import EmitterDashboard from "./emitterDashboard";
 import GuestDashboard from "./guestDashboard";
+
 import VerifierDashboard from "./verifier_dashboard/verifierDashboard";
 import * as issuerAPI from "../../../server/API/Issuer/get_issuer_api"
 import * as emitterAPI from "../../../server/API/Emitter/get_emitter_api"
@@ -22,9 +23,6 @@ function Dashboard() {
   const [currentAccount, setCurrentAccount] = useState("");
   const [accountType, setAccountType] = useState("");
   const [allTransactions, setAllTransactions] = useState([]);
-  const [emitterTransactions, setEmitterTransactions] = useState([]);
-  const [issuerTransactions, setIssuerTransactions] = useState([]);
-  const [verifierTransactions, setVerifierTransactions] = useState([]);
 
   const [totalUniqueEmitter, setTotalUniqueEmitter] = useState(0);
   const [totalUniqueIssuer, setTotalUniqueIssuer] = useState(0);
@@ -46,6 +44,7 @@ function Dashboard() {
   const [totalVerifiedEmitter, setTotalVerifiedEmitter] = useState(0);
   const [totalVerifiedIssuer, setTotalVerifiedIssuer] = useState(0);
   const [totalTransactionCount, setTotalTransactionCount] = useState(0);
+
 
   const {
     connectIssuerWallet,
@@ -71,23 +70,7 @@ function Dashboard() {
   const emitterAcc = "0x21B4B54911cFA548C153daA6605161cBAa1eb878";
 
   useEffect(() => {
-    // Listen for account changes
-    if (window.ethereum) {
-      window.ethereum.on("accountsChanged", handleAccountsChanged);
-    }
 
-    return () => {
-      if (window.ethereum) {
-        window.ethereum.removeListener(
-          "accountsChanged",
-          handleAccountsChanged
-        );
-      }
-    };
-  }, []);
-
-  useEffect(() => {
-    determineAccountType();
     getUserCount();
     getTransactionCount();
     getCredits();
@@ -104,7 +87,7 @@ function Dashboard() {
     setTotalVerifiedEmitter(verifiedEmitterCount[0].verified_count);
   }
 
-  const getVerifiedCredits = async () => {  
+  const getVerifiedCredits = async () => {
     const verifiedCreditsIssued = await issuerAPI.getVerifiedIssuerCount();
     const verifiedCreditsBought = await emitterAPI.getVerifiedEmitterCount();
     setTotalVerifiedCreditsIssued(verifiedCreditsIssued[0].verified_credits);
@@ -155,25 +138,27 @@ function Dashboard() {
       setCurrentAccount(accounts[0]);
     }
   };
-  
-  const determineAccountType = async () => {
+
+  const determineAccountType = async (account) => {
     let accountType = "";
-    if (currentAccount.toLowerCase() === issuerAcc.toLowerCase()) {
+
+    if (account.toLowerCase() === issuerAcc.toLowerCase()) {
       accountType = "issuer";
       setAccountType(accountType);
-      connectIssuerWallet(currentAccount);
+      connectIssuerWallet(account);
       setAllTransactions(await issuerAPI.getAllIssuer())
 
-    } else if (currentAccount.toLowerCase() === verifierAcc.toLowerCase()) {
+    } else if (account.toLowerCase() === verifierAcc.toLowerCase()) {
+
       accountType = "verifier";
       setAccountType(accountType);
-      connectVerifierWallet(currentAccount);
+      connectVerifierWallet(account);
       setAllTransactions(await verifierAPI.getAllVerifier())
 
-    } else if (currentAccount.toLowerCase() === emitterAcc.toLowerCase()) {
+    } else if (account.toLowerCase() === emitterAcc.toLowerCase()) {
       accountType = "emitter";
       setAccountType(accountType);
-      connectEmitterWallet(currentAccount);
+      connectEmitterWallet(account);
       setAllTransactions(await emitterAPI.getAllEmitter())
 
     } else {
@@ -238,23 +223,7 @@ function Dashboard() {
   };
 
   const renderContent = () => {
-    if (!currentAccount) {
-      return (
-        <>
-        <GuestDashboard 
-          totalUniqueEmitter={totalUniqueEmitter}
-          totalUniqueIssuer={totalUniqueIssuer}
-          totalUniqueVerifier={totalUniqueVerifier}
-          totalIssuerCount={totalIssuerTransactions}
-          totalEmitterCount={totalEmitterTransactions}
-          totalVerifierCount={totalVerifierTransactions}
-          activeRows={activeRows}
-          retiredRows={retiredRows}
-          allTransactions={allTransactions}
-        />
-        </>
-      );
-    }
+
     switch (accountType) {
       case "issuer":
         return (
@@ -286,10 +255,29 @@ function Dashboard() {
           />
         );
       default:
-        return <p>Unknown account type</p>;
+        return (
+          <>
+            <GuestDashboard
+              totalUniqueEmitter={totalUniqueEmitter}
+              totalUniqueIssuer={totalUniqueIssuer}
+              totalUniqueVerifier={totalUniqueVerifier}
+              totalIssuerCount={totalIssuerTransactions}
+              totalEmitterCount={totalEmitterTransactions}
+              totalVerifierCount={totalVerifierTransactions}
+              activeRows={activeRows}
+              retiredRows={retiredRows}
+              allTransactions={allTransactions}
+            />
+          </>
+        )
     }
   };
-  return <>{renderContent()}</>;
+  return <>
+
+    <DashboardNavbar onConnect={determineAccountType} />
+    <Navbar />
+    {renderContent()}
+  </>;
 }
 
 export default Dashboard;

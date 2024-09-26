@@ -1,7 +1,7 @@
 import { PieChart, Pie, Cell, ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, Legend } from 'recharts';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
 
-function GuestDashboard({
+  function GuestDashboard({
   totalUniqueEmitter,
   totalUniqueIssuer,
   totalUniqueVerifier,
@@ -17,7 +17,7 @@ function GuestDashboard({
     { name: 'Verifiers', value: totalUniqueVerifier },
   ];
 
-  const COLORS = ['#488A99', '#AC3E31', '#DBAE58'];
+  const COLORS = ['#06C', '#73C5C5', '#4CB140'];
 
   function formatDate(date) {
     const options = { year: 'numeric', month: 'short' };
@@ -92,12 +92,12 @@ function GuestDashboard({
             </div>
           </div>
           <div className="guest-upper-2">
-            <span className="bold-text">{totalIssuerCount.toLocaleString()}</span>
-            <p className="mb-[15px]">Transactions made by Issuers</p>
-            <span className="bold-text">{totalEmitterCount.toLocaleString()}</span>
-            <p className="mb-[15px]">Transactions made by Emitters</p>
-            <span className="bold-text">{totalVerifierCount.toLocaleString()}</span>
-            <p className="mb-[15px]">Transactions made by Verifiers</p>
+              <span className="bold-text">{totalIssuerCount.toLocaleString()}</span>
+              <p className="mb-[15px]">Transactions made by Issuers</p>
+              <span className="bold-text">{totalEmitterCount.toLocaleString()}</span>
+              <p className="mb-[15px]">Transactions made by Emitters</p>
+              <span className="bold-text">{totalVerifierCount.toLocaleString()}</span>
+              <p className="mb-[15px]">Transactions made by Verifiers</p>
           </div>
           <div className="guest-upper-3">
             <div className="guest-upper-3-upper">

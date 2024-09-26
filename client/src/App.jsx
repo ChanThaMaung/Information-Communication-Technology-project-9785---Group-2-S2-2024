@@ -1,21 +1,21 @@
 import Dashboard from './dashboard/dashboard';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import { useEffect, useState } from 'react';
 import TransactionPage from './Pages/TransactionPage/TransactionPage';
-import DashboardNavbar from './components/Navbar/dashboard-nav';
-import Navbar from './components/Navbar/Navbar';
-// import axios from 'axios';
+import Home from './Pages/Home/Home';
+
 
 function App() {
-  
+
   return (
     <Router>
       <div className="App">
-        <Navbar />
-        <DashboardNavbar />
+        {/* <Navbar /> */}
+        {/* <DashboardNavbar /> */}
         <Routes>
-          <Route path="/" element={<Dashboard />} />
+          <Route index element={<Home />} />
+          <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/transaction_page" element={<TransactionPage />} />
+          {/* <Route path="/guest-dashboard" element={<GuestDashboard />} /> */}
         </Routes>
       </div>
     </Router>

@@ -5,10 +5,11 @@ import "./index.css";
 import { IssuerProvider } from "./context/IssuerContext";
 import { EmitterProvider } from "./context/EmitterContext";
 import { VerifierProvider } from "./context/VerifierContext";
+  
 
 createRoot(document.getElementById("root")).render(
-  <EmitterProvider>
-    <IssuerProvider>
+    <EmitterProvider>
+      <IssuerProvider>
       <VerifierProvider>
         <StrictMode>
           <App />

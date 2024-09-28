@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { shortenAddress } from "../../scripts/shortenAddress";
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, Dialog, DialogTitle, DialogContent, DialogActions, IconButton, TextField, Select, MenuItem } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
-import { getRows} from "../../../../server/API/Verifier/get_by_address_api"
+import { getRows } from "../../../../server/API/Verifier/get_by_address_api"
 // Add this mapping object outside of your component
 const propertyDisplayNames = {
     project_name: "Project Name",
@@ -60,13 +60,26 @@ const TransactionDetailsPopup = ({ transaction, open, onClose, handleSubmit, ref
 
     const verifyTransaction = async () => {
         if (isSubmitting) return;
+        let updatedTransaction = {};
         setIsSubmitting(true);
-        const updatedTransaction = {
-            ...editedTransaction,
-            verification_status: "1",
-            prev_tx: transaction.prev_tx,
-            transaction_hash: transaction.transaction_hash
-        };
+        if (transaction.date_bought) {
+            updatedTransaction = {
+                ...editedTransaction,
+                verification_status: "1",
+                prev_tx: transaction.prev_tx,
+                transaction_hash: transaction.transaction_hash,
+                emitter_address: transaction.emitter_address,
+            };
+        }
+        else if (transaction.date_issued) {
+            updatedTransaction = {
+                ...editedTransaction,
+                verification_status: "1",
+                prev_tx: transaction.prev_tx,
+                transaction_hash: transaction.transaction_hash,
+                issuer_address: transaction.issuer_address,
+            };
+        }
         console.log('Saving edited transaction:', updatedTransaction);
         try {
             await handleSubmit(updatedTransaction);

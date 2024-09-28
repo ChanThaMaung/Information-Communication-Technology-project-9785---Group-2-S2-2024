@@ -26,6 +26,7 @@ export const EmitterProvider = ({ children }) => {
 
   const connectEmitterWallet = async (account) => {
     setCurrentEmitterAccount(account);
+    return currentEmitterAccount;
   };
   const getContract = async () => {
     const contract = await getEthereumContract(
@@ -42,12 +43,13 @@ export const EmitterProvider = ({ children }) => {
         method: "eth_accounts",
       });
       const currentAccount = accounts[0];
-      const { project_name,credit_amount, date_bought, verification_status, prev_tx } = formData;
+      const { emitter_address, project_name,credit_amount, date_bought, verification_status, prev_tx } = formData;
       const emitterContract = await getContract();
       const parsedAmount = Math.floor(Number(credit_amount));
       const dateBoughtInSeconds = Math.floor(new Date(date_bought).getTime() / 1000);
 
       const emitterData = {
+        emitter_address: emitter_address,
         credit_amount: parsedAmount,
         project_name: project_name,
         end_date: dateBoughtInSeconds,
@@ -57,8 +59,7 @@ export const EmitterProvider = ({ children }) => {
       console.log("Data at EmitterContext:", emitterData);
       
       const transactionHash = await emitterContract.addToBlockChain(
-        emitterData,
-        { from: currentAccount, gas: "0x5208", }
+        emitterData, {from: currentAccount}
       );
 
       setIsLoadingEmitter(true);
@@ -94,6 +95,7 @@ export const EmitterProvider = ({ children }) => {
       });
       console.log('Data updated:', response.data);
     }
+    return transactionHash.hash;
     } catch (error) {
       console.log(error);
       throw new Error("No ethereum object.");

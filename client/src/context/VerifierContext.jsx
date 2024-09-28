@@ -19,6 +19,7 @@ export const VerifierProvider = ({ children }) => {
 
   const connectVerifierWallet = async (account) => {
     setCurrentVerifierAccount(account);
+    return currentVerifierAccount;
   };
 
   const getContract = async () => {
@@ -61,6 +62,7 @@ export const VerifierProvider = ({ children }) => {
         transaction_hash: transactionHash.hash
       });
       console.log('Data created:', response.data);
+      return transactionHash.hash;
     } catch (error) {
       console.error("Error sending transaction:", error);
     }

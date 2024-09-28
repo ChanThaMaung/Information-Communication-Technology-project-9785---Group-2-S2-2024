@@ -3,6 +3,62 @@ const express = require('express');
 function createRouter(pool) {
   const router = express.Router();
 
+
+  router.get('/getYearlyAverage/:address', async (req, res) => {
+    const { address } = req.params;
+    try {
+      const [rows] = await pool.query('SELECT AVG(credit_amount) AS yearly_average FROM issuer WHERE issuer_address = ?', [address]);
+      res.json(rows);
+    } catch (error) {
+      console.error('Error fetching yearly average:', error);
+      res.status(500).json({ error: 'Internal server error', details: error.message });
+    }
+  });
+  
+  router.get('/getVerifiedCredits/:address', async (req, res) => {
+    const { address } = req.params;
+    try {
+      const [rows] = await pool.query('SELECT SUM(credit_amount) AS credits_issued FROM issuer WHERE issuer_address = ? AND verification_status = "1"', [address]);
+      res.json(rows);
+    } catch (error) {
+      console.error('Error fetching issuer:', error);
+      res.status(500).json({ error: 'Internal server error', details: error.message });
+    }
+  })
+
+  router.get('/getRetiredCredits/:address', async (req, res) => {
+    const { address } = req.params;
+    try {
+      const [rows] = await pool.query('SELECT SUM(credit_amount) AS credits_retired FROM issuer WHERE issuer_address = ? AND active_status = "1"', [address]);
+      res.json(rows);
+    } catch (error) {
+      console.error('Error fetching issuer:', error);
+      res.status(500).json({ error: 'Internal server error', details: error.message });
+    }
+  })
+
+  router.get('/getTotalCredits/:address', async (req, res) => {
+    const { address } = req.params;
+    try {
+      const [rows] = await pool.query('SELECT SUM(credit_amount) AS total_credits FROM issuer WHERE issuer_address = ?', [address]);
+      res.json(rows);
+    } catch (error) {
+      console.error('Error fetching issuer:', error);
+      res.status(500).json({ error: 'Internal server error', details: error.message });
+    }
+  })
+
+  router.get('/getYearlyCredits/:address', async (req, res) => {
+    const { address } = req.params;
+    try {
+      const [rows] = await pool.query('SELECT SUM(credit_amount) AS yearly_credits FROM issuer WHERE issuer_address = ? AND YEAR(date_issued) = YEAR(CURRENT_DATE())', [address]);
+      res.json(rows);
+    } catch (error) {
+      console.error('Error fetching issuer:', error);
+      res.status(500).json({ error: 'Internal server error', details: error.message });
+    }
+  })
+
   router.get('/address/:address', async (req, res) => {
     const { address } = req.params;
     try {

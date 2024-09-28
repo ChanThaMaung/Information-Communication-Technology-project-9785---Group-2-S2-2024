@@ -8,7 +8,7 @@ const pool = require('./database/db');
 const emitterRouter = require('./routes/Emitter');
 const issuerRouter = require('./routes/Issuer');
 const verifierRouter = require('./routes/Verifier');
-
+const allTransactionsRouter = require('./routes/all_transactions');
 
 app.use(cors());
 app.use(express.json()); // Add this line to parse JSON request bodies
@@ -16,6 +16,7 @@ app.use(express.json()); // Add this line to parse JSON request bodies
 app.use('/emitter', emitterRouter(pool));
 app.use('/issuer', issuerRouter(pool));
 app.use('/verifier', verifierRouter(pool));
+app.use('/all_transactions', allTransactionsRouter(pool));
 
 // app.get("/api", async (req, res) => {
 //   try {

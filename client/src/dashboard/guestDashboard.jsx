@@ -1,7 +1,8 @@
 import { PieChart, Pie, Cell, ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, Legend } from 'recharts';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
-
-  function GuestDashboard({
+import * as transactionsAPI from '../../../server/API/get_all_transactions';
+import { useState, useEffect } from 'react';
+function GuestDashboard({
   totalUniqueEmitter,
   totalUniqueIssuer,
   totalUniqueVerifier,
@@ -11,6 +12,7 @@ import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper
   activeRows,
   retiredRows,
 }) {
+  const [transactions, setTransactions] = useState([]);
   const pieData = [
     { name: 'Issuers', value: totalUniqueIssuer },
     { name: 'Emitters', value: totalUniqueEmitter },
@@ -29,6 +31,16 @@ import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper
     return new Date(date).toLocaleDateString(undefined, options);
   }
 
+  const getRecentTransactions = async () => {
+    let transaction = [];
+    transaction = await transactionsAPI.getAllTransactions();
+    setTransactions(transaction);
+  }
+
+  useEffect(() => {
+    getRecentTransactions();
+  }, []);
+
   // Preprocess the activeRows data to include formatted dates
   const processedActiveRows = (activeRows || []).map(row => ({
     ...row,
@@ -38,6 +50,8 @@ import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper
   const startDate = new Date('2020-01-01');
   const formattedStartDate = formatDate(startDate);
 
+
+  console.log(transactions);
   return (
     <>
 
@@ -69,7 +83,7 @@ import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper
                         label={false}
                       >
                         {pieData.map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} style={{outline: 'none'}} />
+                          <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} style={{ outline: 'none' }} />
                         ))}
                       </Pie>
                       <Tooltip
@@ -92,12 +106,12 @@ import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper
             </div>
           </div>
           <div className="guest-upper-2">
-              <span className="bold-text">{totalIssuerCount.toLocaleString()}</span>
-              <p className="mb-[15px]">Transactions made by Issuers</p>
-              <span className="bold-text">{totalEmitterCount.toLocaleString()}</span>
-              <p className="mb-[15px]">Transactions made by Emitters</p>
-              <span className="bold-text">{totalVerifierCount.toLocaleString()}</span>
-              <p className="mb-[15px]">Transactions made by Verifiers</p>
+            <span className="bold-text">{totalIssuerCount.toLocaleString()}</span>
+            <p className="mb-[15px]">Transactions made by Issuers</p>
+            <span className="bold-text">{totalEmitterCount.toLocaleString()}</span>
+            <p className="mb-[15px]">Transactions made by Emitters</p>
+            <span className="bold-text">{totalVerifierCount.toLocaleString()}</span>
+            <p className="mb-[15px]">Transactions made by Verifiers</p>
           </div>
           <div className="guest-upper-3">
             <div className="guest-upper-3-upper">
@@ -113,7 +127,12 @@ import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {/* Add table rows here */}
+                    {transactions.map((transaction, index) => (
+                      <TableRow key={index}>
+                        <TableCell align="center">{transaction.address}</TableCell>
+                        <TableCell align="center">{transaction.transaction_hash}</TableCell>
+                      </TableRow>
+                    ))}
                   </TableBody>
                 </Table>
               </TableContainer>

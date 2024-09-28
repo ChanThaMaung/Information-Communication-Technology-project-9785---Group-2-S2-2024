@@ -3,4 +3,4 @@ import abi from './Emitter.json';
 
 export const contractABI = abi.abi;
 
-export const contractAddress = '0xf902DD7d0D18D14052894D09A546bE6724A8D384';
+export const contractAddress = '0x3373782e96eB18Bdb6b41aFB9A239AB775c57061';

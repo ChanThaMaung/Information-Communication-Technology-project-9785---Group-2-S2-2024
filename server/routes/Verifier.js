@@ -25,16 +25,27 @@ function createRouter(pool) {
     }
   });
   
-  // GET - Fetch all verifiers
+  // GET - Fetch all verifiers with optional filtering
   router.get('/all', async (req, res) => {
+    const { project_name, verification_date } = req.query;
+    let query = 'SELECT * FROM verifier WHERE 1=1';
+    const params = [];
 
+    if (project_name) {
+        query += ' AND project_name LIKE ?';
+        params.push(`%${project_name}%`);
+    }
+    if (verification_date) {
+        query += ' AND verification_date = ?';
+        params.push(verification_date);
+    }
 
     try {
-      const [rows] = await pool.query('SELECT * FROM verifier');
-      res.json(rows);
+        const [rows] = await pool.query(query, params);
+        res.json(rows);
     } catch (error) {
-      console.error('Error fetching verifiers:', error);
-      res.status(500).json({ error: 'Internal server error', details: error.message });
+        console.error('Error fetching verifiers:', error);
+        res.status(500).json({ error: 'Internal server error', details: error.message });
     }
   });
 

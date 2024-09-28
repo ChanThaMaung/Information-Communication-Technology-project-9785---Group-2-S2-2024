@@ -19,7 +19,8 @@ export default function Navbar() {
                             <Link to={"/homev2"}>About</Link>
                         </li>
                         <li className="text-white hover:text-gray-300 hover:cursor-pointer text-lg p-1">
-                            <a href="#contact">Contact</a>
+                            {/* <a href="#contact">Contact</a> */}
+                            <Link to={"/transactionpage"}>Contact</Link>
                         </li>
                     </ul>
                 </div>

@@ -1,4 +1,4 @@
-import  { useState, useEffect } from "react";
+import  { useState, useEffect, useCallback } from "react";
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TextField, MenuItem, Button } from '@mui/material';
 // import FilterListIcon from '@mui/icons-material/FilterList'; IconButton
 // import SortIcon from '@mui/icons-material/Sort';
@@ -7,6 +7,8 @@ import * as issuerAPI from "../../../../server/API/Issuer/get_issuer_api";
 import * as emitterAPI from "../../../../server/API/Emitter/get_emitter_api";
 import * as verifierAPI from "../../../../server/API/Verifier/get_verifier_api";
 import { shortenAddress } from "../../scripts/shortenAddress";
+
+
 
 const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -24,23 +26,49 @@ function TransactionPage() {
     const [allIssuers, setAllIssuers] = useState([]);
     const [allEmitters, setAllEmitters] = useState([]);
     const [allVerifiers, setAllVerifiers] = useState([]);
+    const [filters, setFilters] = useState({
+        project_name: '',
+        date_issued: '',
+        period_covered: '',
+        verification_status: '',
+        active_status: ''
+    });
+
+    const fetchData = useCallback(async () => {
+        let data;
+        if (selectedMenu === "issuer") {
+            data = await issuerAPI.getAllIssuer(filters);
+            setAllIssuers(data);
+        } else if (selectedMenu === "emitter") {
+            data = await emitterAPI.getAllEmitter(filters);
+            setAllEmitters(data);
+        } else if (selectedMenu === "verifier") {
+            data = await verifierAPI.getAllVerifier(filters);
+            setAllVerifiers(data);
+        }
+    }, [selectedMenu, filters]);
 
     useEffect(() => {
-        const fetchInitialData = async () => {
-            setAllIssuers(await issuerAPI.getAllIssuer());
-        };
-        fetchInitialData();
-    }, []);
+        fetchData();
+    }, [fetchData]);
 
-    const handleMenuChange = async (event) => {
+    const handleFilterChange = (e) => {
+        setFilters({ ...filters, [e.target.name]: e.target.value });
+    };
+
+    const handleMenuChange = (event) => {
         setSelectedMenu(event.target.value);
-        if (event.target.value === "issuer") {
-            setAllIssuers(await issuerAPI.getAllIssuer());
-        } else if (event.target.value === "emitter") {
-            setAllEmitters(await emitterAPI.getAllEmitter());
-        } else if (event.target.value === "verifier") {
-            setAllVerifiers(await verifierAPI.getAllVerifier());
-        }
+        setFilters({
+            project_name: '',
+            date_issued: '',
+            period_covered: '',
+            verification_status: '',
+            active_status: ''
+        });
+    };
+
+    const handleSearch = () => {
+        fetchData();
     };
 
     const renderTableContent = () => {
@@ -139,129 +167,117 @@ function TransactionPage() {
     };
 
     return (
-        <>
-            <div className="Dashboard">
-                <div className="transaction-page">
-                    <h1 className="bold-text">Transactions</h1>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-                        <div>
-                            <TextField
-                                select
-                                variant="outlined"
-                                defaultValue="issuer"
-                                onChange={handleMenuChange}
-                            >
-                                <MenuItem value="emitter">Emitter</MenuItem>
-                                <MenuItem value="issuer">Issuer</MenuItem>
-                                <MenuItem value="verifier">Verifier</MenuItem>
-                            </TextField>
-                        </div>
-                        <div>
-                            <TextField
-                                select
-                                variant="outlined"
-                                label="Name"
-                                defaultValue=""
-                                style={{ minWidth: '150px', marginRight: '10px' }}
-                            >
-                                <MenuItem value="registry1">Registry 1</MenuItem>
-                                <MenuItem value="registry2">Registry 2</MenuItem>
-                            </TextField>
-                            <TextField
-                                select
-                                variant="outlined"
-                                label="Date"
-                                defaultValue=""
-                                style={{ minWidth: '150px', marginRight: '10px' }}
-                            >
-                                <MenuItem value="methodology1">Methodology 1</MenuItem>
-                                <MenuItem value="methodology2">Methodology 2</MenuItem>
-                            </TextField>
-                            <TextField
-                                select
-                                variant="outlined"
-                                label="Period Covered"
-                                defaultValue=""
-                                style={{ minWidth: '150px', marginRight: '10px' }}
-                            >
-                                <MenuItem value="sector1">Sector 1</MenuItem>
-                                <MenuItem value="sector2">Sector 2</MenuItem>
-                            </TextField>
-                            <TextField
-                                select
-                                variant="outlined"
-                                label="Status"
-                                defaultValue=""
-                                style={{ minWidth: '150px', marginRight: '10px' }}
-                            >
-                                <MenuItem value="country1">Country 1</MenuItem>
-                                <MenuItem value="country2">Country 2</MenuItem>
-                            </TextField>
-                            <TextField
-                                select
-                                variant="outlined"
-                                label="Verified Status"
-                                defaultValue=""
-                                style={{ minWidth: '175px', marginRight: '10px' }}
-                            >
-                                <MenuItem value="period1">Period 1</MenuItem>
-                                <MenuItem value="period2">Period 2</MenuItem>
-                            </TextField>
-                            <Button
-                                variant="contained"
-                                color="primary"
-                                startIcon={<SearchIcon />}
-                                style={{ backgroundColor: 'transparent', color: '#000000' }}
-                            >
-                                Search
-                            </Button>
-                        </div>
-                    </div>
-                    <TableContainer component={Paper}>
-                        <Table>
-                            <TableHead>
-                                <TableRow>
-                                    {selectedMenu === "issuer" && (
-                                        <>
-                                            <TableCell align="center">Project Name</TableCell>
-                                            <TableCell align="center">Address</TableCell>
-                                            <TableCell align="center">Credit Amount</TableCell>
-                                            <TableCell align="center">Issued Date</TableCell>
-                                            <TableCell align="center">Period Covered</TableCell>
-                                            <TableCell align="center">Verification Status</TableCell>
-                                            <TableCell align="center">Active Status</TableCell>
-                                            <TableCell align="center">Prev. Transaction</TableCell>
-                                            <TableCell align="center">Transaction Hash</TableCell>
-                                        </>
-                                    )}
-                                    {selectedMenu === "emitter" && (
-                                        <>
-                                            <TableCell align="center">Project Name</TableCell>
-                                            <TableCell align="center">Address</TableCell>
-                                            <TableCell align="center">Carbon Credit Amount</TableCell>
-                                            <TableCell align="center">Date Bought</TableCell>
-                                            <TableCell align="center">Verification Status</TableCell>
-                                            <TableCell align="center">Active Status</TableCell>
-                                            <TableCell align="center">Prev Transaction</TableCell>
-                                            <TableCell align="center">Transaction Hash</TableCell>
-                                        </>
-                                    )}
-                                    {selectedMenu === "verifier" && (
-                                        <>
-                                            <TableCell align="center">Project Name</TableCell>
-                                            <TableCell align="center">Verification Date</TableCell>
-                                            <TableCell align="center">Verifier Address</TableCell>
-                                            <TableCell align="center">Transaction Hash</TableCell>
-                                        </>
-                                    )}
-                                </TableRow>
-                            </TableHead>
-                            {renderTableContent()}
-                        </Table>
-                    </TableContainer>
+        <div className="p-6 bg-gray-100 min-h-screen">
+            <h1 className="text-3xl font-bold mb-4 text-gray-800">Transactions</h1>
+            <div className="grid grid-cols-1 md:grid-cols-5 gap-4 justify-between items-center mb-4">
+                <div className="col-span-1 gap-4 justify-between items-center mb-2">
+                    <TextField
+                        select
+                        variant="outlined"
+                        defaultValue="issuer"
+                        onChange={handleMenuChange}
+                        className="mr-2 w-full max-w-xs bg-white border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-500 py-2 px-3"
+                    >
+                        <MenuItem value="emitter">Emitter</MenuItem>
+                        <MenuItem value="issuer">Issuer</MenuItem>
+                        <MenuItem value="verifier">Verifier</MenuItem>
+                    </TextField>
+                </div>
+                <div className="col-span-4 space-x-2 grid grid-cols-7">
+                    <TextField
+                        variant="outlined"
+                        label="Project Name"
+                        name="project_name"
+                        value={filters.project_name}
+                        onChange={handleFilterChange}
+                        className="mb-2 bg-white border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-500 py-2 px-3"
+                    />
+                    <TextField
+                        variant="outlined"
+                        label="Date"
+                        name="date_issued"
+                        value={filters.date_issued}
+                        onChange={handleFilterChange}
+                        className="min-w-[150px] mb-2 bg-white border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-500"
+                    />
+                    <TextField
+                        variant="outlined"
+                        label="Period Covered"
+                        name="period_covered"
+                        value={filters.period_covered}
+                        onChange={handleFilterChange}
+                        className="min-w-[150px] mb-2 bg-white border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-500"
+                    />
+                    <TextField
+                        variant="outlined"
+                        label="Verified Status"
+                        name="verification_status"
+                        value={filters.verification_status}
+                        onChange={handleFilterChange}
+                        className="min-w-[175px] mb-2 bg-white border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-500"
+                    />
+                    <TextField
+                        variant="outlined"
+                        label="Active Status"
+                        name="active_status"
+                        value={filters.active_status}
+                        onChange={handleFilterChange}
+                        className="min-w-[175px] mb-2 bg-white border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-500"
+                    />
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        startIcon={<SearchIcon />}
+                        onClick={handleSearch}
+                        className="col-span-2 bg-blue-600 text-white hover:bg-blue-700 mb-2"
+                    >
+                        Search
+                    </Button>
                 </div>
             </div>
-        </>
+            <TableContainer component={Paper} className="shadow-lg">
+                <Table>
+                    <TableHead>
+                        <TableRow className="bg-blue-600 text-white">
+                            {selectedMenu === "issuer" && (
+                                <>
+                                    <TableCell align="center">Project Name</TableCell>
+                                    <TableCell align="center">Address</TableCell>
+                                    <TableCell align="center">Credit Amount</TableCell>
+                                    <TableCell align="center">Issued Date</TableCell>
+                                    <TableCell align="center">Period Covered</TableCell>
+                                    <TableCell align="center">Verification Status</TableCell>
+                                    <TableCell align="center">Active Status</TableCell>
+                                    <TableCell align="center">Prev. Transaction</TableCell>
+                                    <TableCell align="center">Transaction Hash</TableCell>
+                                </>
+                            )}
+                            {selectedMenu === "emitter" && (
+                                <>
+                                    <TableCell align="center">Project Name</TableCell>
+                                    <TableCell align="center">Address</TableCell>
+                                    <TableCell align="center">Carbon Credit Amount</TableCell>
+                                    <TableCell align="center">Date Bought</TableCell>
+                                    <TableCell align="center">Verification Status</TableCell>
+                                    <TableCell align="center">Active Status</TableCell>
+                                    <TableCell align="center">Prev Transaction</TableCell>
+                                    <TableCell align="center">Transaction Hash</TableCell>
+                                </>
+                            )}
+                            {selectedMenu === "verifier" && (
+                                <>
+                                    <TableCell align="center">Project Name</TableCell>
+                                    <TableCell align="center">Verification Date</TableCell>
+                                    <TableCell align="center">Verifier Address</TableCell>
+                                    <TableCell align="center">Transaction Hash</TableCell>
+                                </>
+                            )}
+                        </TableRow>
+                    </TableHead>
+                    {renderTableContent()}
+                </Table>
+            </TableContainer>
+        </div>
     );
 }
 

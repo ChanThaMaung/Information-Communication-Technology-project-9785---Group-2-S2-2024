@@ -36,17 +36,39 @@ function createRouter(pool) {
     }
   });
   
-  // GET - Fetch all issuers
+  // GET - Fetch all issuers with optional filtering
   router.get('/all', async (req, res) => {
+    const { project_name, date_issued, period_covered, verification_status, active_status } = req.query;
+    let query = 'SELECT * FROM issuer WHERE 1=1';
+    const params = [];
 
-
+    if (project_name) {
+        query += ' AND project_name LIKE ?';
+        params.push(`%${project_name}%`);
+    }
+    if (date_issued) {
+        query += ' AND date_issued = ?';
+        params.push(date_issued);
+    }
+    if (period_covered) {
+        query += ' AND period_covered LIKE ?';
+        params.push(`%${period_covered}%`);
+    }
+    if (verification_status) {
+        query += ' AND verification_status = ?';
+        params.push(verification_status);
+    }
+    if (active_status) {
+        query += ' AND active_status = ?';
+        params.push(active_status);
+    }
 
     try {
-      const [rows] = await pool.query('SELECT * FROM issuer');
-      res.json(rows);
+        const [rows] = await pool.query(query, params);
+        res.json(rows);
     } catch (error) {
-      console.error('Error fetching issuers:', error);
-      res.status(500).json({ error: 'Internal server error', details: error.message });
+        console.error('Error fetching issuers:', error);
+        res.status(500).json({ error: 'Internal server error', details: error.message });
     }
   });
 

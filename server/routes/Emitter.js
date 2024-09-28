@@ -3,10 +3,27 @@ const express = require('express');
 function createRouter(pool) {
 	const router = express.Router();
 
-	// GET - Fetch all emitters
+	// GET - Fetch all emitters with optional filtering
 	router.get('/all', async (req, res) => {
+		const { project_name, date_bought, verification_status } = req.query;
+		let query = 'SELECT * FROM emitter WHERE 1=1';
+		const params = [];
+
+		if (project_name) {
+			query += ' AND project_name LIKE ?';
+			params.push(`%${project_name}%`);
+		}
+		if (date_bought) {
+			query += ' AND date_bought = ?';
+			params.push(date_bought);
+		}
+		if (verification_status) {
+			query += ' AND verification_status = ?';
+			params.push(verification_status);
+		}
+
 		try {
-			const [rows] = await pool.query('SELECT * FROM emitter');
+			const [rows] = await pool.query(query, params);
 			res.json(rows);
 		} catch (error) {
 			console.error('Error fetching emitters:', error);

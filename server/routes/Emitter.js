@@ -4,6 +4,16 @@ function createRouter(pool) {
 	const router = express.Router();
 
 
+	router.get('/get_address_unverified_credits/:address', async (req, res) => {
+		const { address } = req.params;
+		try {
+			const [rows] = await pool.query('SELECT SUM(credit_amount) AS unverified_credits FROM emitter WHERE emitter_address = ? AND verification_status = "0"', [address]);
+			res.json(rows);
+		} catch (error) {
+			console.error('Error fetching unverified credits by address:', error);
+			res.status(500).json({ error: 'Internal server error', details: error.message });
+		}
+	});
 	router.get('/get_total_trans/:address', async (req, res) => {
 		const { address } = req.params;
 		try {

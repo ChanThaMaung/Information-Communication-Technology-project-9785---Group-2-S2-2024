@@ -37,3 +37,7 @@ export const getTotalTransactions = async (address) => {
     return response.data;
 }
 
+export const getAddressUnverifiedCredits = async (address) => {
+    const response = await axios.get(API_URL + "/get_address_unverified_credits/" + address);
+    return response.data;
+}

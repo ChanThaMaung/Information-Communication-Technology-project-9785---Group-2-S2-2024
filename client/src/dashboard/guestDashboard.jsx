@@ -2,6 +2,7 @@ import { PieChart, Pie, Cell, ResponsiveContainer, LineChart, Line, XAxis, YAxis
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
 import * as transactionsAPI from '../../../server/API/get_all_transactions';
 import { useState, useEffect } from 'react';
+import { shortenAddress } from '../scripts/shortenAddress';
 function GuestDashboard({
   totalUniqueEmitter,
   totalUniqueIssuer,
@@ -47,11 +48,6 @@ function GuestDashboard({
     formattedDate: formatDateDDMonYYYY(row.date_issued),
   }));
 
-  const startDate = new Date('2020-01-01');
-  const formattedStartDate = formatDate(startDate);
-
-
-  console.log(transactions);
   return (
     <>
 
@@ -129,8 +125,8 @@ function GuestDashboard({
                   <TableBody>
                     {transactions.map((transaction, index) => (
                       <TableRow key={index}>
-                        <TableCell align="center">{transaction.address}</TableCell>
-                        <TableCell align="center">{transaction.transaction_hash}</TableCell>
+                        <TableCell align="center">{shortenAddress(transaction.address)}</TableCell>
+                        <TableCell align="center">{shortenAddress(transaction.transaction_hash)}</TableCell>
                       </TableRow>
                     ))}
                   </TableBody>

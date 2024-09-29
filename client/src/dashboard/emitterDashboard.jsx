@@ -24,6 +24,11 @@ function emitterDashboard({
   const [yearlyAverage, setYearlyAverage] = useState(0);
   const [verifiedCredits, setVerifiedCredits] = useState(0);
   const [allTransactions, setAllTransactions] = useState([]);
+  const [unverifiedCredits, setUnverifiedCredits] = useState(0);
+
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filteredTransactions, setFilteredTransactions] = useState([]);
+
   const [pieData, setPieData] = useState([
     {
       name: 'Verified Credits',
@@ -34,8 +39,7 @@ function emitterDashboard({
       value: 0
     }
   ]);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [filteredTransactions, setFilteredTransactions] = useState([]);
+
 
   const handleChange = (e, field) => {
     const { value } = e.target;
@@ -51,25 +55,19 @@ function emitterDashboard({
     console.log("Sending data");
     handleSubmit(formData);
   };
-  
+
   const [showAllTransactions, setShowAllTransactions] = useState(false);
 
   const getTotalCredits = async () => {
     const response = await getByAddressAPI.getTotalCredits(currentEmitterAccount);
     if (response[0].total_credits) {
       setTotalCredits(response[0].total_credits);
-      setPieData([
-
-        {
-          name: 'Unverified Credits',
-          value: response[0].total_credits - pieData[0].value
-        }
-      ]);
     }
     else {
       setTotalCredits(0);
     }
   }
+
   const getCreditsByYear = async () => {
     const response = await getByAddressAPI.getCreditsByYear(currentEmitterAccount);
     if (response[0].total_credits) {
@@ -87,23 +85,39 @@ function emitterDashboard({
 
   useEffect(() => {
     getTotalTransactions();
-    getAddressVerifiedCredits();
     getTotalCredits();
     getCreditsByYear();
     getYearlyTransactions();
     getYearlyAverage();
-  }, []);
 
-  const getAddressVerifiedCredits = async () => {
-    const response = await getByAddressAPI.getAddressVerifiedCredits(currentEmitterAccount);
-    setVerifiedCredits(response[0].verified_credits);
-    setPieData([
-      {
-        name: 'Verified Credits',
-        value: response[0].verified_credits
-      },
-    ]);
-  }
+  }, [currentEmitterAccount]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const verifiedCreditsResponse = await getByAddressAPI.getAddressVerifiedCredits(currentEmitterAccount);
+      const unverifiedCreditsResponse = await getByAddressAPI.getAddressUnverifiedCredits(currentEmitterAccount);
+
+      const verifiedCredits = verifiedCreditsResponse[0].verified_credits;
+      const unverifiedCredits = unverifiedCreditsResponse[0].unverified_credits;
+
+      setVerifiedCredits(verifiedCredits);
+      setUnverifiedCredits(unverifiedCredits);
+
+      setPieData([
+        {
+          name: 'Verified Credits',
+          value: Number(verifiedCredits)
+        },
+        {
+          name: 'Unverified Credits',
+          value: Number(unverifiedCredits)
+        }
+      ]);
+    };
+
+    fetchData();
+
+  }, [currentEmitterAccount])
 
   const getYearlyAverage = async () => {
     const response = await getByAddressAPI.getYearlyAverage(currentEmitterAccount);
@@ -125,7 +139,7 @@ function emitterDashboard({
   const getTotalTransactions = async () => {
     const response = await getByAddressAPI.getTotalTransactions(currentEmitterAccount);
     setAllTransactions(response);
-  } 
+  }
 
   const COLORS = ['#06C', '#8BC1F7'];
 
@@ -152,22 +166,46 @@ function emitterDashboard({
     setSearchTerm(event.target.value);
   };
 
+  const transactionsToDisplay = searchTerm 
+    ? (showAllTransactions ? filteredTransactions : filteredTransactions.slice(0, 4))
+    : (showAllTransactions ? allTransactions : allTransactions.slice(0, 4));
+
+  console.log(pieData);
   return (
     <>
       <div className="Dashboard">
         <div className="emitter-upper">
           <div className="emitter-upper-1">
             <div className="emitter-upper-1-1">
-              <p>This year's offset</p>
-              <p>{Number(creditsByYear).toLocaleString()}</p>
+              <p className="emitter-item-header">This year's offset</p>
+              <p className="emitter-item-data">{Number(creditsByYear).toLocaleString()}</p>
             </div>
             <div className="emitter-upper-1-2">
-              <p>Yearly Average</p>
-              <p>{Number(Math.round(yearlyAverage)).toLocaleString()}</p>
+              <p className="emitter-item-header">Yearly Average</p>
+              <p className="emitter-item-data">{Number(Math.round(yearlyAverage)).toLocaleString()}</p>
+            </div>
+            <div>
+              <p style={{
+                color: Number(creditsByYear) > yearlyAverage ? 'green' : 'red',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '5px'
+              }}>
+                {Number(creditsByYear) !== 0 && (
+                  <>
+                    <span style={{ fontSize: '0.9em' }}>
+                      {Number(creditsByYear) > yearlyAverage ? '▲' : '▼'}
+                    </span>
+                    {`${((creditsByYear / yearlyAverage) * 100).toFixed(2)}%`}
+                  </>
+                )} (Last Year's)
+              </p>
             </div>
           </div>
           <div className="emitter-upper-2">
-            <h2>Total Credits Bought Over Time</h2>
+            <div className="emitter-upper-2-1">
+              <h2>Graph of this year's purchased credits</h2>
+            </div>
             <ResponsiveContainer width="100%" height={150}>
               <BarChart accessibilityLayer data={chartData}>
                 <CartesianGrid vertical={false} />
@@ -176,7 +214,7 @@ function emitterDashboard({
                   tickLine={false}
                   tickMargin={10}
                   axisLine={false}
-                  tickFormatter={(value) => value.slice(0,6)}
+                  tickFormatter={(value) => value.slice(0, 6)}
                 />
                 <YAxis
                   tickLine={false}
@@ -196,12 +234,12 @@ function emitterDashboard({
         <div className="emitter-lower">
           <div className="emitter-lower-1">
             <div className="emitter-lower-1-1">
-              <p>Total Credits Bought</p>
-              <p>{totalCredits}</p>
+              <p className="emitter-item-header">Total Credits Bought</p>
+              <p className="emitter-item-data">{totalCredits}</p>
             </div>
             <div className="emitter-lower-1-2">
-              <p>Verified Credits</p>
-              
+              <p className="emitter-item-header" style={{ alignItems: 'center', width: '100%', justifyContent: 'center' }}>Verified Credits</p>
+
               <ResponsiveContainer width="100%" height={200}>
                 <PieChart>
                   <Pie
@@ -216,7 +254,7 @@ function emitterDashboard({
                     dataKey="value"
                   >
                     {pieData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                      <Cell key={`cell-${index}`} style={{outline: 'none'}} fill={COLORS[index % COLORS.length]} />
                     ))}
                     <Label
                       value={Number(verifiedCredits).toLocaleString()}
@@ -237,8 +275,8 @@ function emitterDashboard({
           <div className="emitter-lower-2">
             <div className="emitter-lower-2-heading flex justify-between items-center mb-4">
               <h2 className="text-2xl font-bold">Recent Transactions</h2>
-              <Button 
-                variant="contained" 
+              <Button
+                variant="contained"
                 onClick={handleOpenCreateDialog}
               >
                 Create New Transaction
@@ -264,7 +302,7 @@ function emitterDashboard({
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {(searchTerm ? filteredTransactions : displayedTransactions).map((transaction, index) => (
+                  {transactionsToDisplay.map((transaction, index) => (
                     <TableRow
                       key={index}
                       sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
@@ -287,9 +325,9 @@ function emitterDashboard({
                 </TableBody>
               </Table>
             </TableContainer>
-            {allTransactions.length > 5 && (
-              <Button 
-                variant="contained" 
+            {((searchTerm && filteredTransactions.length > 4) || (!searchTerm && allTransactions.length > 4)) && (
+              <Button
+                variant="contained"
                 onClick={() => setShowAllTransactions(!showAllTransactions)}
                 sx={{ mt: 2 }}
               >

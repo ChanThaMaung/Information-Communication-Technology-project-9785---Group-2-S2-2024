@@ -243,8 +243,18 @@ function TransactionSection({
                                 >
                                     <TableCell align="center" component="th" scope="row">{tx.project_name}</TableCell>
                                     <TableCell align="center">{formatDate(tx.date_issued || tx.date_bought)}</TableCell>
-                                    <TableCell align="center">{tx.prev_tx ? shortenAddress(tx.prev_tx) : "N/A"}</TableCell>
-                                    <TableCell align="center">{shortenAddress(tx.transaction_hash)}</TableCell>
+                                    <TableCell align="center">
+                                        {tx.prev_tx ? (
+                                            <a href={`https://etherscan.io/tx/${tx.prev_tx}`} target="_blank" rel="noopener noreferrer" style={{ color: 'blue', textDecoration: 'underline' }}>
+                                                {shortenAddress(tx.prev_tx)}
+                                            </a>
+                                        ) : "N/A"}
+                                    </TableCell>
+                                    <TableCell align="center">
+                                        <a href={`https://etherscan.io/tx/${tx.transaction_hash}`} target="_blank" rel="noopener noreferrer" style={{ color: 'blue', textDecoration: 'underline' }}>
+                                            {shortenAddress(tx.transaction_hash)}
+                                        </a>
+                                    </TableCell>
                                 </TableRow>
                             ))
                         )}
@@ -265,7 +275,7 @@ function TransactionSection({
                 <div className="verifier-upper-1">
                     <div className="verifier-upper-1-upper">
                         <p className="bold-text">{(totalVerifiedCredits || 0).toLocaleString()}</p>
-                        <p className="text-sm">{creditType.toLocaleString()} Carbon Credits Verified</p>
+                        <p className="emitter-item-header text-sm justify-center">{creditType.toLocaleString()} Carbon Credits Verified</p>
                     </div>
                     <div style={{ width: '100%', marginLeft: '1rem' }}>
                         <hr className="divider" />
@@ -274,7 +284,7 @@ function TransactionSection({
                         <p className="bold-text">
                             {totalVerifiedTransactions.toLocaleString()}
                         </p>
-                        <p className="text-sm">{isIssuer ? 'Issuer' : 'Emitter'} Transactions Verified</p>
+                        <p className="emitter-item-header text-sm justify-center">{isIssuer ? 'Issuer' : 'Emitter'} Transactions Verified</p>
                     </div>
                 </div>
                 <div className="verifier-upper-2">

@@ -47,18 +47,18 @@ body {
 .Dashboard {
   width: 85%;
   margin-left: auto;
-  justify-content: center;
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   padding: 2rem;
-  margin-top: 3rem;
+  padding-top: 1rem;
   margin-bottom: 3rem;
   /* background-color: white; */
 }
 
 .bold-text {
-  font-family: 'Overpass Mono', monospace;
+  /* font-family: 'Overpass Mono', monospace; */
   font-weight: bold;
   font-size: 2.5em;
   margin-bottom: 5px;
@@ -70,7 +70,7 @@ body {
   position: fixed;
   left: 0;
   top: 0;
-  width: 15%;
+  width: auto;
   /* Adjust the width as needed */
   height: 100%;
   background-color: white;
@@ -78,7 +78,7 @@ body {
   padding: 1.5rem;
   /* Adjust the padding as needed */
   box-shadow: 5px 0 5px rgba(0, 0, 0, 0.2);
-  /* Optional: add a shadow for better visual separation */
+  /* Optional: add a shadow for better visual separaton */
 }
 
 .navbar h1 {
@@ -91,7 +91,7 @@ body {
 }
 
 .nav-links li {
-  margin: 10px 0;
+  margin: 1.5rem 0;
 }
 
 .nav-links a {
@@ -293,7 +293,7 @@ body {
 }
 
 .bold-number {
-  font-family: 'Overpass Mono', monospace;
+  /* font-family: 'Overpass Mono', monospace; */
   font-weight: bold;
   font-size: 1.5em;
   margin-bottom: 5px;
@@ -342,14 +342,18 @@ body {
   display: flex;
   padding: 1rem;
   right: 0;
-  left: 0;
   top: 0;
   z-index: 50;
   justify-content: space-between;
+  margin-left: auto;
+  width: 85%;
 }
 
+.dashboard-navbar__spacer {
+  display: flex;
+  align-items: center;
+}
 .dashboard-navbar__container {
-
   display: flex;
   flex-direction: column;
 }
@@ -383,4 +387,260 @@ body {
 
 .dashboard-navbar__connect-button:hover {
   opacity: 0.3;
+}
+
+.emitter-upper {
+  display: flex;
+  flex-direction: row;
+  /* align-items: flex-start; */
+  padding: 2rem;
+  width: 95%;
+  /* border: 1px solid #ccc; */
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  background-color: white;
+  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.4);
+}
+
+.emitter-upper-1 {
+  width: 25%;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.emitter-upper-1-1 {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.emitter-upper-1-2 {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.emitter-upper-2 {
+  width: 75%;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* border: 1px solid #ccc; */
+}
+.emitter-upper-2-1 {
+  width: 100%;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+.emitter-lower {
+  display: flex;
+  flex-direction: row;
+  /* align-items: flex-start; */
+  padding: 2rem;
+  width: 95%;
+  /* border: 1px solid #ccc; */
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  background-color: white;
+  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.4);
+}
+
+.emitter-lower-1 {
+  width: 25%;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.emitter-lower-2 {
+  width: 75%;
+  height: 450px;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* border: 1px solid #ccc; */
+}
+
+.emitter-lower-2-heading {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  margin-bottom: 1rem;
+}
+.emitter-lower-1-1 {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.emitter-lower-1-2 {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.emitter-item-header {
+  display: flex;
+  /* justify-content: center; */
+  width: 100%;
+  color: #9d9191;
+  font-weight: bold;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+.emitter-item-data {
+  width: 100%;
+  padding: 0.7rem;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  font-weight: bold;
+  font-size: 2.25rem;
+
+}
+.issuer-header {
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  font-size: 1.5rem;
+  font-weight: bold;
+  padding: 0 1rem 1rem 1rem;
+  width: 100%;
+}
+
+.issuer-upper {
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  width: 80%;
+  margin-bottom: 1rem;
+  /* background-color: white; */
+}
+
+.issuer-upper-1,
+.issuer-upper-2,
+.issuer-upper-3 {
+  display: flex;
+  flex-direction: column;
+  margin-right: 1rem;
+}
+
+.issuer-upper-1 {
+  flex: 1;
+  justify-content: center;
+  align-items: center;
+}
+.issuer-upper-2,
+.issuer-upper-3 {
+  width: 33%;
+  align-items: center;
+  justify-content: center;
+  background-color: white;
+  border-radius: 0.5rem;
+  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.2);
+
+
+}
+
+.issuer-item-header {
+  display: flex;
+  /* justify-content: center; */
+  width: 100%;
+  color: #9d9191;
+  font-weight: bold;
+  margin-top: 0.5rem;
+  margin-left: 1rem;
+  margin-bottom: 0.5rem;
+}
+.issuer-upper-1-1 {
+  background-color: white;
+  width: 100%;
+  justify-content: space-between;
+  border-radius: 0.5rem;
+  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.2);
+}
+
+.issuer-item-data {
+  width: 100%;
+  padding: 0 1rem 1rem 2.1rem;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  font-weight: bold;
+  font-size: 2.25rem;
+  }
+
+.issuer-item-footer {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  padding: 0rem 1rem 0rem 2.1rem;
+  font-weight: bold;
+  width: 100%;
+}
+.issuer-piechart {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+
+.issuer-lower {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 90%;
+  margin-bottom: 1rem;
+}
+
+.issuer-lower-header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 1rem;
+  width: 90%;
+}
+
+.issuer-piechart {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+@layer base {
+  :root {
+    --chart-1: 12 76% 61%;
+    --chart-2: 173 58% 39%;
+    --chart-3: 197 37% 24%;
+    --chart-4: 43 74% 66%;
+    --chart-5: 27 87% 67%;
+  }
+ 
+  .dark {
+    --chart-1: 220 70% 50%;
+    --chart-2: 160 60% 45%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
+  }
 }

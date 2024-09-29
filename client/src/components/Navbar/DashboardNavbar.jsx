@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import Web3 from 'web3';
+import { shortenAddress } from "../../scripts/shortenAddress";
 
 export default function DashboardNavbar({ onConnect }) {
 
@@ -81,7 +82,9 @@ export default function DashboardNavbar({ onConnect }) {
 
     return (
         <nav className="dashboard-navbar">
-            <div className="dashboard-navbar__spacer"></div>
+            <div className="dashboard-navbar__spacer">
+                {account && account.length > 0 ? <p style={{fontSize: '1.25rem', fontWeight: 'bold'}}>{shortenAddress(account)}'s dashboard</p> : ''}
+            </div>
             <div className="dashboard-navbar__container">
                 <ul className="dashboard-navbar__list">
                     <li className="dashboard-navbar__item">

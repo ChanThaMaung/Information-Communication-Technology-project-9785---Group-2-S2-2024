@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { shortenAddress } from "../../scripts/shortenAddress";
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, Dialog, DialogTitle, DialogContent, DialogActions, IconButton, TextField, Select, MenuItem } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
-import { getRows} from "../../../../server/API/Verifier/get_by_address_api"
+import { getRows } from "../../../../server/API/Verifier/get_by_address_api"
 // Add this mapping object outside of your component
 const propertyDisplayNames = {
     project_name: "Project Name",
@@ -60,13 +60,26 @@ const TransactionDetailsPopup = ({ transaction, open, onClose, handleSubmit, ref
 
     const verifyTransaction = async () => {
         if (isSubmitting) return;
+        let updatedTransaction = {};
         setIsSubmitting(true);
-        const updatedTransaction = {
-            ...editedTransaction,
-            verification_status: "1",
-            prev_tx: transaction.prev_tx,
-            transaction_hash: transaction.transaction_hash
-        };
+        if (transaction.date_bought) {
+            updatedTransaction = {
+                ...editedTransaction,
+                verification_status: "1",
+                prev_tx: transaction.prev_tx,
+                transaction_hash: transaction.transaction_hash,
+                emitter_address: transaction.emitter_address,
+            };
+        }
+        else if (transaction.date_issued) {
+            updatedTransaction = {
+                ...editedTransaction,
+                verification_status: "1",
+                prev_tx: transaction.prev_tx,
+                transaction_hash: transaction.transaction_hash,
+                issuer_address: transaction.issuer_address,
+            };
+        }
         console.log('Saving edited transaction:', updatedTransaction);
         try {
             await handleSubmit(updatedTransaction);
@@ -230,8 +243,18 @@ function TransactionSection({
                                 >
                                     <TableCell align="center" component="th" scope="row">{tx.project_name}</TableCell>
                                     <TableCell align="center">{formatDate(tx.date_issued || tx.date_bought)}</TableCell>
-                                    <TableCell align="center">{tx.prev_tx ? shortenAddress(tx.prev_tx) : "N/A"}</TableCell>
-                                    <TableCell align="center">{shortenAddress(tx.transaction_hash)}</TableCell>
+                                    <TableCell align="center">
+                                        {tx.prev_tx ? (
+                                            <a href={`https://etherscan.io/tx/${tx.prev_tx}`} target="_blank" rel="noopener noreferrer" style={{ color: 'blue', textDecoration: 'underline' }}>
+                                                {shortenAddress(tx.prev_tx)}
+                                            </a>
+                                        ) : "N/A"}
+                                    </TableCell>
+                                    <TableCell align="center">
+                                        <a href={`https://etherscan.io/tx/${tx.transaction_hash}`} target="_blank" rel="noopener noreferrer" style={{ color: 'blue', textDecoration: 'underline' }}>
+                                            {shortenAddress(tx.transaction_hash)}
+                                        </a>
+                                    </TableCell>
                                 </TableRow>
                             ))
                         )}
@@ -252,7 +275,7 @@ function TransactionSection({
                 <div className="verifier-upper-1">
                     <div className="verifier-upper-1-upper">
                         <p className="bold-text">{(totalVerifiedCredits || 0).toLocaleString()}</p>
-                        <p className="text-sm">{creditType.toLocaleString()} Carbon Credits Verified</p>
+                        <p className="emitter-item-header text-sm justify-center">{creditType.toLocaleString()} Carbon Credits Verified</p>
                     </div>
                     <div style={{ width: '100%', marginLeft: '1rem' }}>
                         <hr className="divider" />
@@ -261,7 +284,7 @@ function TransactionSection({
                         <p className="bold-text">
                             {totalVerifiedTransactions.toLocaleString()}
                         </p>
-                        <p className="text-sm">{isIssuer ? 'Issuer' : 'Emitter'} Transactions Verified</p>
+                        <p className="emitter-item-header text-sm justify-center">{isIssuer ? 'Issuer' : 'Emitter'} Transactions Verified</p>
                     </div>
                 </div>
                 <div className="verifier-upper-2">

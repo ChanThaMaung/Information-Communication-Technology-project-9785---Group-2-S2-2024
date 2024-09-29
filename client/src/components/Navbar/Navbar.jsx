@@ -12,9 +12,7 @@ function Navbar({ type }) {
             <ul className="nav-links">
                 <li><a href="#home">Home</a></li>
                 <li><a href="#transactions">View All Transactions</a></li>
-                {type === 'issuer' || type === 'emitter' ? (
-                    <li><a href="#create-transaction">Create a new transaction</a></li>
-                ) : null}
+
             </ul>
         </div>
     )

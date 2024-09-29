@@ -10,6 +10,7 @@ contract Emitter {
         string status;
         uint256 end_date;
         string prev_tx;
+        address emitter_address;
     }
 
     event purchaseCredits(address from, uint256 timestamp, emitterData data);

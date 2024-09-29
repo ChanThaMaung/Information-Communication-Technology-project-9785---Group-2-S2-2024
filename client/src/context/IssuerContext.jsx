@@ -20,6 +20,7 @@ export const IssuerProvider = ({ children }) => {
 
   const connectIssuerWallet = async (account) => {
     setCurrentIssuerAccount(account);
+    return currentIssuerAccount;
   }
   const getContract = async () => {
     const contract = await getEthereumContract(
@@ -37,10 +38,11 @@ export const IssuerProvider = ({ children }) => {
       });
       const currentAccount = accounts[0];
 
-      const { project_name, credit_amount, active_status, date_issued, period_covered, verification_status, prev_tx } = formData;
+      const { issuer_address, project_name, credit_amount, active_status, date_issued, period_covered, verification_status, prev_tx } = formData;
       const string_status = active_status.toString();
       const issuedDateInSeconds = Math.floor(new Date(date_issued).getTime() / 1000);
       console.log('Form Data:', {
+        'Address': issuer_address,  
         'Project Name': project_name,
         'Amount': credit_amount,
         'Status': string_status,
@@ -50,9 +52,11 @@ export const IssuerProvider = ({ children }) => {
         'Previous Transaction': prev_tx 
       });
       const issuerContract = await getContract();
+      console.log(issuerContract);
       const parsedAmount = Math.floor(Number(credit_amount));
 
       const issueData = {
+        issuer_address: issuer_address,
         credit_amount: parsedAmount,
         project_name: project_name,
         active_status: string_status,
@@ -66,11 +70,7 @@ export const IssuerProvider = ({ children }) => {
       console.log(formData.transaction_hash);
 
       const transactionHash = await issuerContract.addToBlockChain(
-        issueData,
-        {
-          from: currentAccount,
-          gas: "0x5208",
-        }
+        issueData, {from: currentAccount}
       );
 
       setIsLoadingIssuer(true);
@@ -106,6 +106,7 @@ export const IssuerProvider = ({ children }) => {
       });
       console.log('Data updated:', response.data);
     }
+    return transactionHash.hash;
     } catch (error) {
       console.log(error);
 

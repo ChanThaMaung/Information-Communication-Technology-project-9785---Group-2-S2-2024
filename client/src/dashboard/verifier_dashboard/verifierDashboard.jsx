@@ -113,7 +113,7 @@ function VerifierDashboard({
           <div className="wrapper">
             <div className="verifier-lower-1">
               <div className="text-center">
-                <p className="text-2xl font-bold">Transactions Verified</p>
+                <p className="emitter-item-header text-2xl">Transactions Verified</p>
               </div>
               <div className="text-center">
                 <PieChart width={200} height={200}>
@@ -146,11 +146,11 @@ function VerifierDashboard({
               <div className="mt-2">
                 <div className="flex">
                   <span className="text-l font-bold" style={{ marginRight: '0.5rem' }}>{Math.round((totalVerifiedEmitter / (totalVerifiedEmitter + totalVerifiedIssuer)) * 100)}%</span>
-                  <span className="text-l">Emitter Transactions</span>
+                  <span className="text-l text-gray-500 font-bold">Emitter Transactions</span>
                 </div>
                 <div className="flex">
                   <span className="text-l font-bold" style={{ marginRight: '0.5rem' }}>{Math.round((totalVerifiedIssuer / (totalVerifiedEmitter + totalVerifiedIssuer)) * 100)}%</span>
-                  <span className="text-l">Issuer Transactions</span>
+                  <span className="text-l text-gray-500 font-bold">Issuer Transactions</span>
                 </div>
               </div>
             </div>

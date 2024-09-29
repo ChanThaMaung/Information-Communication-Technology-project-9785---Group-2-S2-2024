@@ -15,7 +15,7 @@ import VerifierDashboard from "./verifier_dashboard/verifierDashboard";
 import * as issuerAPI from "../../../server/API/Issuer/get_issuer_api"
 import * as emitterAPI from "../../../server/API/Emitter/get_emitter_api"
 import * as verifierAPI from "../../../server/API/Verifier/get_verifier_api"
-
+import * as allTransactionsAPI from "../../../server/API/get_all_transactions"
 console.log("Dashboard rendering");
 
 function Dashboard() {
@@ -130,15 +130,6 @@ function Dashboard() {
     setRetiredRows(retiredRows);
   }
 
-  const handleAccountsChanged = async (accounts) => {
-    if (accounts.length === 0) {
-      // MetaMask is locked or the user has not connected any accounts
-      console.log("Please connect to MetaMask.");
-    } else if (accounts[0] !== currentAccount) {
-      setCurrentAccount(accounts[0]);
-    }
-  };
-
   const determineAccountType = async (account) => {
     let accountType = "";
 
@@ -146,20 +137,23 @@ function Dashboard() {
       accountType = "issuer";
       setAccountType(accountType);
       connectIssuerWallet(account);
-      setAllTransactions(await issuerAPI.getAllIssuer())
+      setCurrentAccount(account);
+      // setAllTransactions(await issuerAPI.getAllIssuer())
 
     } else if (account.toLowerCase() === verifierAcc.toLowerCase()) {
 
       accountType = "verifier";
       setAccountType(accountType);
       connectVerifierWallet(account);
-      setAllTransactions(await verifierAPI.getAllVerifier())
+      setCurrentAccount(account);
+      // setAllTransactions(await verifierAPI.getAllVerifier())
 
     } else if (account.toLowerCase() === emitterAcc.toLowerCase()) {
       accountType = "emitter";
       setAccountType(accountType);
       connectEmitterWallet(account);
-      setAllTransactions(await emitterAPI.getAllEmitter())
+      setCurrentAccount(account);
+      // setAllTransactions(await emitterAPI.getAllEmitter())
 
     } else {
       accountType = "Guest";
@@ -168,6 +162,8 @@ function Dashboard() {
   };
 
   const handleSubmit = async (formData) => {
+    let transactionHash;
+    let data = {};
     if (accountType === "issuer") {
       if (formData.project_name === "") {
         console.log("Project name is required");
@@ -175,7 +171,7 @@ function Dashboard() {
       }
       try {
         console.log("Sending transaction");
-        await sendIssuerTransaction(formData);
+        transactionHash = await sendIssuerTransaction(formData);
         console.log("Transaction sent");
         // Optionally, refresh the transactions list
         setAllTransactions(await issuerAPI.getAllIssuer())
@@ -185,7 +181,6 @@ function Dashboard() {
     } else if (accountType === "verifier") {
       try {
         let transactionType;
-
         if (formData.date_bought) {
           transactionType = 0;
           console.log("Type:", transactionType);
@@ -201,16 +196,15 @@ function Dashboard() {
         }
 
         console.log("Sending transaction to verifier");
-        await sendVerifierTransaction(formData, transactionType);
+        transactionHash = await sendVerifierTransaction(formData, transactionType);
         console.log("Transaction sent - verifier");
-
       } catch (error) {
         console.error("Error:", error);
       }
     } else if (accountType === "emitter") {
       try {
         console.log("Sending transaction");
-        await sendEmitterTransaction(formData);
+        transactionHash = await sendEmitterTransaction(formData);
         console.log("Transaction sent");
         // Optionally, refresh the transactions list
         setAllTransactions(await emitterAPI.getAllEmitter())
@@ -220,6 +214,15 @@ function Dashboard() {
     } else {
       console.log("Unknown account type");
     }
+    const currentDate = new Date();
+    const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
+    data = {
+      transaction_hash: transactionHash,
+      address: currentAccount,
+      date_added: formattedDate,
+      type: accountType
+    }
+    await allTransactionsAPI.addTransaction(data);
   };
 
   const renderContent = () => {
@@ -229,7 +232,6 @@ function Dashboard() {
         return (
           <IssuerDashboard
             handleSubmit={handleSubmit}
-            allTransactions={allTransactions}
             formatDate={formatDate}
             currentIssuerAccount={currentIssuerAccount}
           />
@@ -249,7 +251,6 @@ function Dashboard() {
         return (
           <EmitterDashboard
             handleSubmit={handleSubmit}
-            allTransactions={allTransactions}
             formatDate={formatDate}
             currentEmitterAccount={currentEmitterAccount}
           />
@@ -275,7 +276,7 @@ function Dashboard() {
   return <>
 
     <DashboardNavbar onConnect={determineAccountType} />
-    <Navbar />
+    <Navbar type={accountType} />
     {renderContent()}
   </>;
 }

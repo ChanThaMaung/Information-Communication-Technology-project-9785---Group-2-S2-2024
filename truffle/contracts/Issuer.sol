@@ -12,9 +12,10 @@ contract Issuer {
         uint256 date_issued;
         string verification_status;
         string prev_tx;
+        address issuer_address;
     }
 
-    event issueCredits(address from, uint256 timestap, issuerData data);
+    event issueCredits(address from, uint256 timestamp, issuerData data);
 
     function addToBlockChain(issuerData calldata data) public {
         transactionCounter += 1;

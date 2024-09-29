@@ -3,10 +3,89 @@ const express = require('express');
 function createRouter(pool) {
 	const router = express.Router();
 
-	router.get('/address/:address', async (req, res) => {
+
+	router.get('/get_address_unverified_credits/:address', async (req, res) => {
+		const { address } = req.params;
+		try {
+			const [rows] = await pool.query('SELECT SUM(credit_amount) AS unverified_credits FROM emitter WHERE emitter_address = ? AND verification_status = "0"', [address]);
+			res.json(rows);
+		} catch (error) {
+			console.error('Error fetching unverified credits by address:', error);
+			res.status(500).json({ error: 'Internal server error', details: error.message });
+		}
+	});
+	router.get('/get_total_trans/:address', async (req, res) => {
 		const { address } = req.params;
 		try {
 			const [rows] = await pool.query('SELECT * FROM emitter WHERE emitter_address = ?', [address]);
+			res.json(rows);
+		} catch (error) {
+			console.error('Error fetching total transactions:', error);
+			res.status(500).json({ error: 'Internal server error', details: error.message });
+		}
+	});
+
+	router.get('/get_address_verified_credits/:address', async (req, res) => {
+		const { address } = req.params;
+		try {
+			const [rows] = await pool.query('SELECT SUM(credit_amount) AS verified_credits FROM emitter WHERE emitter_address = ? AND verification_status = "1"', [address]);
+			res.json(rows);
+		} catch (error) {
+			console.error('Error fetching verified credits by address:', error);
+			res.status(500).json({ error: 'Internal server error', details: error.message });	
+		}
+	});
+	
+	router.get('/get_total_credits/:address', async (req, res) => {
+		const { address } = req.params;
+		try {
+			const [rows] = await pool.query('SELECT SUM(credit_amount) AS total_credits FROM emitter WHERE emitter_address = ?', [address]);
+			res.json(rows);
+		} catch (error) {
+			console.error('Error fetching total credits by address:', error);
+			res.status(500).json({ error: 'Internal server error', details: error.message });
+		}
+	});
+	router.get('/yearly_average/:address', async (req, res) => {
+		const { address } = req.params;
+		try {
+			const [rows] = await pool.query('SELECT AVG(credit_amount) AS yearly_average FROM emitter WHERE emitter_address = ?', [address]);
+			res.json(rows);
+		} catch (error) {
+			console.error('Error fetching yearly average:', error);
+			res.status(500).json({ error: 'Internal server error', details: error.message });
+		}
+	});
+
+	router.get('/get_credits_by_year/:address', async (req, res) => {
+		const { address } = req.params;
+		try {
+			const currentYear = new Date().getFullYear();
+			const startDate = new Date(`${currentYear}-01-01`);
+			const endDate = new Date(`${currentYear}-12-31`);
+			
+			const [rows] = await pool.query(
+				'SELECT SUM(credit_amount) AS total_credits FROM emitter WHERE emitter_address = ? AND date_bought BETWEEN ? AND ?',
+				[address, startDate, endDate]
+			);
+			res.json(rows);
+		} catch (error) {
+			console.error('Error fetching total credits by address:', error);
+			res.status(500).json({ error: 'Internal server error', details: error.message });
+		}
+	});
+		
+	router.get('/address/:address', async (req, res) => {
+		const { address } = req.params;
+		try {	
+			const currentYear = new Date().getFullYear();
+			const startDate = new Date(`${currentYear}-01-01`);
+			const endDate = new Date(`${currentYear}-12-31`);
+			
+			const [rows] = await pool.query(
+				'SELECT * FROM emitter WHERE emitter_address = ? AND date_bought BETWEEN ? AND ? ORDER BY date_bought ASC',
+				[address, startDate, endDate]
+			);
 			res.json(rows);
 		} catch (error) {
 			console.error('Error fetching emitter:', error);

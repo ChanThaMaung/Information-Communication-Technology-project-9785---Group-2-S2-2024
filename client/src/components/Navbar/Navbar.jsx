@@ -1,3 +1,5 @@
+import { Link } from 'react-router-dom';
+
 function Navbar({ type }) {
     return (
         <div className="navbar">
@@ -10,9 +12,8 @@ function Navbar({ type }) {
                 <h1 className="text-2xl font-bold">Dashboard</h1>
             </div>
             <ul className="nav-links">
-                <li><a href="#home">Home</a></li>
-                <li><a href="#transactions">View All Transactions</a></li>
-
+                <li><Link to="/home">Home</Link></li>
+                <li><Link to="/transaction_page">View All Transactions</Link></li>
             </ul>
         </div>
     )

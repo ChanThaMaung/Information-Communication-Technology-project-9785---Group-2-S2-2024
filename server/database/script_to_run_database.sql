@@ -61,7 +61,7 @@ CREATE TABLE IF NOT EXISTS `issuer` (
   `date_issued` date NOT NULL,
   `period_covered` varchar(200) NOT NULL,
   `verification_status` tinyint(1) NOT NULL,
-  `prev_tx` varchar(200),
+  `prev_tx` varchar(200) DEFAULT NULL,
   `transaction_hash` varchar(200) NOT NULL,
   PRIMARY KEY (`transaction_hash`),
   UNIQUE KEY `transaction_hash_UNIQUE` (`transaction_hash`)

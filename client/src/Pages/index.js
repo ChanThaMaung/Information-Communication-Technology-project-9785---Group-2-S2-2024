@@ -7,4 +7,5 @@ export { default as RTCryptoChart } from './RTCryptoChart/RTCryptoChart';
 export {default as DashboardforEmiiter} from './Dashboard/DashBoardforEmitter'
 export {default as Homev2} from './Home/Homev2'
 export {default as TransactionPage} from './TransactionPage/TransactionPage'
+export {default as TransactionPagev2} from './TransactionPage/TransactionPagev2'
 

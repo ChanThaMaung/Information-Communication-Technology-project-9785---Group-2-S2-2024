@@ -1,4 +1,3 @@
-
 const express = require('express');
 const cors = require('cors');
 const app = express();
@@ -11,7 +10,6 @@ const emitterRouter = require('./routes/Emitter');
 const issuerRouter = require('./routes/Issuer');
 const verifierRouter = require('./routes/Verifier');
 
-
 app.use(cors());
 app.use(express.json()); // Add this line to parse JSON request bodies
 
@@ -22,7 +20,6 @@ app.use('/verifier', verifierRouter(pool));
 app.use(notFound);
 app.use(errorHandler);
 
-app.use(notFound);
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });

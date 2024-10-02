@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TextField, MenuItem } from '@mui/material';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TextField, MenuItem, Button } from '@mui/material';
 // import FilterListIcon from '@mui/icons-material/FilterList'; IconButton
 // import SortIcon from '@mui/icons-material/Sort';
 // import SearchIcon from '@mui/icons-material/Search';
@@ -8,7 +8,7 @@ import * as emitterAPI from "../../../../server/API/Emitter/get_emitter_api";
 import * as verifierAPI from "../../../../server/API/Verifier/get_verifier_api";
 import { shortenAddress } from "../../scripts/shortenAddress";
 import useInput from "../../Hooks/useInput";
-import { formatDateForSQL } from "../../utils/formatUtils.js"; // Create this utility function
+import { formatDateForSQL, formatDateForSQLv2, formatVerificationStatusSQL, formatActiveStatusSQL } from "../../utils/formatUtils.js"; // Create this utility function
 
 
 const formatDate = (dateString) => {
@@ -28,13 +28,18 @@ function TransactionPage() {
     const [allIssuers, setAllIssuers] = useState([]);
     const [allEmitters, setAllEmitters] = useState([]);
     const [allVerifiers, setAllVerifiers] = useState([]);
-    const [filters, setFilters] = useState({
+
+    // Initial filters state
+    const initialFilters = {
         project_name: '',
         credit_amount: '',
         date_issued: '',
         period_covered: '',
-        transaction_hash: '', // Ensure all relevant filters are initialized
-    });
+        transaction_hash: '',
+    };
+
+    const [filters, setFilters] = useState(initialFilters);
+    const [searchFilters, setSearchFilters] = useState(initialFilters);
 
     // Inputs for the filter issuer
     const projectNameInputforIssuer = useInput(filters.project_name);
@@ -53,6 +58,7 @@ function TransactionPage() {
     // Inputs for the filter verifier
     const projectNameInputforVerifier = useInput(filters.project_name);
     const verificationDateInputforVerifier = useInput(filters.verification_date);
+
     useEffect(() => {
         fetchData();
     }, [selectedMenu, filters]); // Fetch data when filters change
@@ -66,6 +72,8 @@ function TransactionPage() {
                     credit_amount: creditAmountInputforIssuer.value,
                     date_issued: formatDateForSQL(dateIssuedInputforIssuer.value),
                     period_covered: periodCoveredInputforIssuer.value,
+                    verification_status: formatVerificationStatusSQL(verificationStatusInputforIssuer.value),
+                    active_status: formatActiveStatusSQL(activeStatusInputforIssuer.value),
                 };
                 console.log("Issuer filters:", currentFilters);
                 data = await issuerAPI.getAllIssuer(currentFilters);
@@ -80,7 +88,7 @@ function TransactionPage() {
             } else if (selectedMenu === "verifier") {
                 const currentFilters = {
                     project_name: projectNameInputforVerifier.value,
-                    verification_date: formatDateForSQL(verificationDateInputforVerifier.value),
+                    verification_date: formatDateForSQLv2(verificationDateInputforVerifier.value),
                 };
                 console.log("Verifier filters:", currentFilters);
                 data = await verifierAPI.getAllVerifier(currentFilters);
@@ -101,11 +109,55 @@ function TransactionPage() {
 
     // Update the filters state when the input changes
     const handleFilterChange = (name, value) => {
-        setFilters((prevFilters) => ({
+        setSearchFilters((prevFilters) => ({
             ...prevFilters,
             [name]: value,
         }));
-        console.log("Filters state updated:", filters);
+    };
+
+    // New function to handle search button click
+    const handleSearchClick = () => {
+        setFilters(searchFilters); // Update filters to the search filters
+        fetchData(); // Fetch data based on the updated filters
+    };
+
+    // Function to reset filters based on selected menu
+    const resetFilters = () => {
+        if (selectedMenu === "issuer") {
+            setFilters({
+                project_name: '',
+                credit_amount: '',
+                date_issued: '',
+                period_covered: '',
+                transaction_hash: '',
+                verification_status: '',
+                active_status: '',
+            });
+            projectNameInputforIssuer.onChange({ target: { value: '' } });
+            creditAmountInputforIssuer.onChange({ target: { value: '' } });
+            dateIssuedInputforIssuer.onChange({ target: { value: '' } });
+            periodCoveredInputforIssuer.onChange({ target: { value: '' } });
+            transactionHashInputforIssuer.onChange({ target: { value: '' } });
+            verificationStatusInputforIssuer.onChange({ target: { value: '' } });
+            activeStatusInputforIssuer.onChange({ target: { value: '' } });
+        } else if (selectedMenu === "emitter") {
+            setFilters({
+                project_name: '',
+                credit_amount: '',
+                date_bought: '',
+            });
+            projectNameInputforEmitter.onChange({ target: { value: '' } });
+            creditAmountInputforEmitter.onChange({ target: { value: '' } });
+            dateBoughtInputforEmitter.onChange({ target: { value: '' } });
+        } else if (selectedMenu === "verifier") {
+            setFilters({
+                project_name: '',
+                verification_date: '',
+            });
+            projectNameInputforVerifier.onChange({ target: { value: '' } });
+            verificationDateInputforVerifier.onChange({ target: { value: '' } });
+        }
+        fetchData();
     };
 
     const handleMenuChange = (event) => {
@@ -119,6 +171,8 @@ function TransactionPage() {
                 credit_amount: '',
                 date_issued: '',
                 period_covered: '',
+                verification_status: '',
+                active_status: '',
                 transaction_hash: '',
             });
         } else if (newMenu === "emitter") {
@@ -185,6 +239,7 @@ function TransactionPage() {
                             className="min-w-[150px] mb-2 bg-white border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-500"
                         />
                         <TextField
+                            select
                             variant="outlined"
                             label="Verification Status"
                             name="verification_status"
@@ -193,8 +248,13 @@ function TransactionPage() {
                                 verificationStatusInputforIssuer.onChange(e);
                                 handleFilterChange('verification_status', e.target.value);
                             }}
-                        />
+                            className="bg-white rounded-md shadow-sm"
+                        >
+                            <MenuItem value="verified">Verified</MenuItem>
+                            <MenuItem value="unverified">Unverified</MenuItem>
+                        </TextField>
                         <TextField
+                            select
                             variant="outlined"
                             label="Active Status"
                             name="active_status"
@@ -203,7 +263,10 @@ function TransactionPage() {
                                 activeStatusInputforIssuer.onChange(e);
                                 handleFilterChange('active_status', e.target.value);
                             }}
-                        />
+                        >
+                            <MenuItem value="active">Active</MenuItem>
+                            <MenuItem value="retired">Retired</MenuItem>
+                        </TextField>
                         <TextField
                             variant="outlined"
                             label="Transaction Hash"
@@ -330,9 +393,9 @@ function TransactionPage() {
                                     </a>
                                 </TableCell>
                                 <TableCell align="center">{transaction.credit_amount}</TableCell>
-                                <TableCell align="center">{formatDate(transaction.date_bought)}</TableCell>
-                                {/* <TableCell align="center">{formatStatus(transaction.verification_status)}</TableCell>
-                                <TableCell align="center">{formatActiveStatus(transaction.active_status)}</TableCell> */}
+                                {/* <TableCell align="center">{formatDate(transaction.date_bought)}</TableCell>
+                                <TableCell align="center">{formatStatus(transaction.verification_status)}</TableCell> */}
+                                <TableCell align="center">{formatActiveStatus(transaction.active_status)}</TableCell>
                                 <TableCell align="center">
                                     {transaction.prev_tx ? (
                                         <a href={`https://explorer.example.com/tx/${transaction.prev_tx}`} target="_blank" rel="noopener noreferrer" style={{ color: 'blue', textDecoration: 'underline' }}>
@@ -393,6 +456,14 @@ function TransactionPage() {
                     <MenuItem value="verifier">Verifier</MenuItem>
                 </TextField>
                 {handleMenuFilterContent()}
+                {/* Add Search Button */}
+                <Button variant="contained" color="primary" onClick={handleSearchClick}>
+                    Search
+                </Button>
+                {/* Add Reset Filters Button */}
+                <Button variant="outlined" color="secondary" onClick={resetFilters}>
+                    Reset Filters
+                </Button>
             </div>
             <TableContainer component={Paper} className="shadow-lg">
                 <Table>

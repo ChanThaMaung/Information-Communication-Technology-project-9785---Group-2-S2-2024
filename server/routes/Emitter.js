@@ -5,7 +5,8 @@ function createRouter(pool) {
 
 	// GET - Fetch all emitters with optional filtering
 	router.get('/all', async (req, res) => {
-		const { project_name, date_bought, verification_status } = req.query;
+		const { project_name, date_bought, credit_amount } = req.query; // Change to req.query
+		console.log("Received filters:", { project_name, date_bought, credit_amount });
 		let query = 'SELECT * FROM emitter WHERE 1=1';
 		const params = [];
 
@@ -13,13 +14,13 @@ function createRouter(pool) {
 			query += ' AND project_name LIKE ?';
 			params.push(`%${project_name}%`);
 		}
-		if (date_bought) {
+		if (date_bought) { // Ensure date is formatted
 			query += ' AND date_bought = ?';
 			params.push(date_bought);
 		}
-		if (verification_status) {
-			query += ' AND verification_status = ?';
-			params.push(verification_status);
+		if (credit_amount) {
+			query += ' AND credit_amount = ?';
+			params.push(credit_amount);
 		}
 
 		try {

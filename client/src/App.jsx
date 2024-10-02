@@ -4,7 +4,8 @@ import {
   Routes,
   Route
 } from "react-router-dom";
-import { Dashboard, Home, NotFound, SignIn, SignUp, RTCryptoChart, DashboardforEmiiter, Homev2, TransactionPage } from "./Pages";
+import { Dashboard, Home, NotFound, SignIn, SignUp, RTCryptoChart,
+ DashboardforEmiiter, Homev2, TransactionPage, TransactionPagev2 } from "./Pages";
 // import React from 'react';
 
 function App() {
@@ -22,6 +23,7 @@ function App() {
           <Route path="*" element={<NotFound/>}/>
           <Route path="/dashboardforemitter" element={<DashboardforEmiiter/>}/>
           <Route path="/transactionpage" element={<TransactionPage/>}/>
+          <Route path="/transactionpagev2" element={<TransactionPagev2/>}/>
         </Routes>
       </BrowserRouter>
     </>

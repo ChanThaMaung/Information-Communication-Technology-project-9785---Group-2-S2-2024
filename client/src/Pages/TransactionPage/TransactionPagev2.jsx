@@ -393,9 +393,7 @@ function TransactionPage() {
                                     </a>
                                 </TableCell>
                                 <TableCell align="center">{transaction.credit_amount}</TableCell>
-                                {/* <TableCell align="center">{formatDate(transaction.date_bought)}</TableCell>
-                                <TableCell align="center">{formatStatus(transaction.verification_status)}</TableCell> */}
-                                <TableCell align="center">{formatActiveStatus(transaction.active_status)}</TableCell>
+                                <TableCell align="center">{formatDate(transaction.date_bought)}</TableCell>
                                 <TableCell align="center">
                                     {transaction.prev_tx ? (
                                         <a href={`https://explorer.example.com/tx/${transaction.prev_tx}`} target="_blank" rel="noopener noreferrer" style={{ color: 'blue', textDecoration: 'underline' }}>

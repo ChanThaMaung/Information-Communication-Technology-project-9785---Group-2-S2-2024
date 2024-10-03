@@ -67,9 +67,6 @@ export default function Navbarv2() {
                             <Link to={"/dashboardforemitter"}>Dashboard</Link>
                         </li>
                         <li className="text-white font-light hover:text-gray-300 hover:cursor-pointer text-lg p-1">
-                            <Link to={"/homev2"}>About</Link>
-                        </li>
-                        <li className="text-white font-light hover:text-gray-300 hover:cursor-pointer text-lg p-1">
                             <Link to={"/transactionpage"}>Transaction</Link>
                         </li>
                     </ul>

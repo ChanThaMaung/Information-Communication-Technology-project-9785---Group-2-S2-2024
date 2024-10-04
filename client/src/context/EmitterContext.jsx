@@ -5,7 +5,7 @@ import {
 } from "../utils/Emitter/EmitterConstants";
 import { getEthereumContract } from "./GlobalFunctions/getEthereumContract";
 import axios from "axios";
-import { convertDateFormat } from "../scripts/handleDateFormat";
+import { convertDateTimeFormat } from "../scripts/handleDateFormat";
 
 export const EmitterContext = React.createContext();
 
@@ -36,30 +36,28 @@ export const EmitterProvider = ({ children }) => {
     );
     return contract;
   };
-  
+
   const sendEmitterTransaction = async (formData) => {
     try {
       const accounts = await window.ethereum.request({
         method: "eth_accounts",
       });
       const currentAccount = accounts[0];
-      const { emitter_address, project_name,credit_amount, date_bought, verification_status, prev_tx } = formData;
+      const { project_name, credit_amount } = formData;
       const emitterContract = await getContract();
       const parsedAmount = Math.floor(Number(credit_amount));
-      const dateBoughtInSeconds = Math.floor(new Date(date_bought).getTime() / 1000);
+      const currDateInSeconds = Math.floor(new Date().getTime() / 1000);
 
       const emitterData = {
-        emitter_address: emitter_address,
         credit_amount: parsedAmount,
         project_name: project_name,
-        end_date: dateBoughtInSeconds,
-        status: verification_status,
-        prev_tx: prev_tx,
+        date_bought: currDateInSeconds
       }
+
       console.log("Data at EmitterContext:", emitterData);
-      
+
       const transactionHash = await emitterContract.addToBlockChain(
-        emitterData, {from: currentAccount}
+        emitterData, { from: currentAccount }
       );
 
       setIsLoadingEmitter(true);
@@ -68,34 +66,18 @@ export const EmitterProvider = ({ children }) => {
       setIsLoadingEmitter(false);
       console.log(`Success - ${transactionHash.hash}`);
 
-      const formattedDateBought = convertDateFormat(dateBoughtInSeconds);
+      const formattedDateBought = convertDateTimeFormat(currDateInSeconds);
 
-
-      if (verification_status === "0") {
       const response = await axios.post('http://localhost:3000/emitter/create', {
-        emitterAddress: currentAccount,
+        emitter_address: currentAccount,
         project_name: project_name,
         credit_amount: credit_amount,
         date_bought: formattedDateBought,
-        verification_status: verification_status,
         transaction_hash: transactionHash.hash,
-        prev_tx: prev_tx
       });
+
       console.log('Data created:', response.data);
-    }
-    else {
-      const response = await axios.put(`http://localhost:3000/emitter/update/${formData.transaction_hash}`, {
-        emitterAddress: currentAccount,
-        project_name: project_name,
-        credit_amount: credit_amount,
-        date_bought: formattedDateBought,
-        verification_status: verification_status,
-        prev_tx: formData.transaction_hash,
-        transaction_hash: transactionHash.hash
-      });
-      console.log('Data updated:', response.data);
-    }
-    return transactionHash.hash;
+      return transactionHash.hash;
     } catch (error) {
       console.log(error);
       throw new Error("No ethereum object.");

@@ -27,17 +27,9 @@ export const getTotalCredits = async (address) => {
     return response.data;
 }
 
-export const getAddressVerifiedCredits = async (address) => {
-    const response = await axios.get(API_URL + "/get_address_verified_credits/" + address);
-    return response.data;
-}
 
 export const getTotalTransactions = async (address) => {
     const response = await axios.get(API_URL + "/get_total_trans/" + address);
     return response.data;
 }
 
-export const getAddressUnverifiedCredits = async (address) => {
-    const response = await axios.get(API_URL + "/get_address_unverified_credits/" + address);
-    return response.data;
-}

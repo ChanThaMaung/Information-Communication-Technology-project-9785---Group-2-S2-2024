@@ -3,6 +3,7 @@ import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper
 import * as transactionsAPI from '../../../server/API/get_all_transactions';
 import { useState, useEffect } from 'react';
 import { shortenAddress } from '../scripts/shortenAddress';
+import './css_files/guestDashboard.css';
 function GuestDashboard({
   totalUniqueEmitter,
   totalUniqueIssuer,
@@ -12,6 +13,7 @@ function GuestDashboard({
   totalVerifierCount,
   activeRows,
   retiredRows,
+  totalTransactionCount,
 }) {
   const [transactions, setTransactions] = useState([]);
   const pieData = [
@@ -43,9 +45,9 @@ function GuestDashboard({
   }, []);
 
   // Preprocess the activeRows data to include formatted dates
-  const processedActiveRows = (activeRows || []).map(row => ({
+  const processedActiveRows = ((activeRows && activeRows.length > 0) ? activeRows : (retiredRows && retiredRows.length > 0) ? retiredRows : []).map(row => ({
     ...row,
-    formattedDate: formatDateDDMonYYYY(row.date_issued),
+    formattedDate: formatDateDDMonYYYY(row.date_issued)
   }));
 
   return (
@@ -108,12 +110,14 @@ function GuestDashboard({
             <p className="mb-[15px]">Transactions made by Emitters</p>
             <span className="bold-text">{totalVerifierCount.toLocaleString()}</span>
             <p className="mb-[15px]">Transactions made by Verifiers</p>
+            <span className="bold-text">{totalTransactionCount.toLocaleString()}</span>
+            <p className="mb-[15px]">Total Transactions</p>
           </div>
           <div className="guest-upper-3">
             <div className="guest-upper-3-upper">
               <h2 className="text-2xl font-bold">Recent Transactions</h2>
             </div>
-            <div style={{ width: '100%' }}>
+            <div className="guest-upper-3-table"style={{ width: '100%' }}>
               <TableContainer component={Paper} style={{ width: '100%' }}>
                 <Table>
                   <TableHead>
@@ -139,6 +143,7 @@ function GuestDashboard({
         {/* Bottom Div */}
         <div className="guest-lower">
           <div className="guest-lower-1">
+            
             <ResponsiveContainer width="100%" height={350}>
               <LineChart margin={{ top: 10, right: 30, bottom: 30, left: 30 }}>
                 <XAxis dataKey="formattedDate" tickFormatter={formatDate} axisLine={false} tickLine={false} tick={{ fontSize: 10 }} tickMargin={10} />
@@ -147,6 +152,7 @@ function GuestDashboard({
                 <Line type="linear" dataKey="credit_amount" data={processedActiveRows} stroke="#484848" dot={{ stroke: '#484848', r: 1, strokeWidth: 4.5 }} />
               </LineChart>
             </ResponsiveContainer>
+            <h2 className="emitter-item-header" style={{marginTop: '10px'}}>Showing {activeRows.length > 0 ? 'active' : 'retired'} credits</h2>
           </div>
           <div className="guest-lower-2">
             <span className="bold-text">

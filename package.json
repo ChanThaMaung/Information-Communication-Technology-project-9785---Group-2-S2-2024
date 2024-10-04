@@ -9,6 +9,7 @@
     "@mui/material": "^6.1.1",
     "@mui/x-charts": "^7.18.0",
     "@mui/x-date-pickers": "^7.18.0",
+    "country-list": "^2.3.0",
     "date-fns": "^4.1.0",
     "dotenv": "^16.4.5",
     "ethers": "^6.13.2",
@@ -16,6 +17,7 @@
     "react-datepicker": "^7.4.0",
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.26.2",
+    "react-select": "^5.8.1",
     "recharts": "^2.12.7",
     "web3": "^4.12.1"
   }

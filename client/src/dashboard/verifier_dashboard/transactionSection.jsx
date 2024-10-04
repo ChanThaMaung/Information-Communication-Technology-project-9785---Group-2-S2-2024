@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { shortenAddress } from "../../scripts/shortenAddress";
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, Dialog, DialogTitle, DialogContent, DialogActions, IconButton, TextField, Select, MenuItem } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
-import { getRows } from "../../../../server/API/Verifier/get_by_address_api"
+import '../css_files/verifierDashboard.css';
+import * as verifierAPI from "../../../../server/API/Verifier/get_by_address_api"
 // Add this mapping object outside of your component
 const propertyDisplayNames = {
     project_name: "Project Name",
@@ -14,16 +15,16 @@ const propertyDisplayNames = {
 };
 
 // Updated TransactionDetailsPopup component
-const TransactionDetailsPopup = ({ transaction, open, onClose, handleSubmit, refreshTransactions, isIssuer }) => {
+const TransactionDetailsPopup = ({ transaction, open, onClose, handleSubmit, refreshTransactions }) => {
     const [editedTransaction, setEditedTransaction] = useState({});
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     useEffect(() => {
         if (transaction) {
-            const { verification_status, ...rest } = transaction;
+            const { verification_status, prev_tx, transaction_hash, issuer_address, timestamp,...rest } = transaction;
             // Format dates for input fields
             const formattedTransaction = Object.entries(rest).reduce((acc, [key, value]) => {
-                if (key === 'date_issued' || key === 'date_bought') {
+                if (key === 'date_issued') {
                     const date = new Date(value);
                     const year = date.getFullYear();
                     const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -50,7 +51,6 @@ const TransactionDetailsPopup = ({ transaction, open, onClose, handleSubmit, ref
 
     const getDisplayName = (key) => {
         if (key === 'issuer_address') return 'Issuer Address';
-        if (key === 'emitter_address') return 'Emitter Address';
         return propertyDisplayNames[key] || key.charAt(0).toUpperCase() + key.slice(1).replace(/_/g, ' ');
     };
 
@@ -62,24 +62,15 @@ const TransactionDetailsPopup = ({ transaction, open, onClose, handleSubmit, ref
         if (isSubmitting) return;
         let updatedTransaction = {};
         setIsSubmitting(true);
-        if (transaction.date_bought) {
-            updatedTransaction = {
-                ...editedTransaction,
-                verification_status: "1",
-                prev_tx: transaction.prev_tx,
-                transaction_hash: transaction.transaction_hash,
-                emitter_address: transaction.emitter_address,
-            };
-        }
-        else if (transaction.date_issued) {
-            updatedTransaction = {
-                ...editedTransaction,
-                verification_status: "1",
-                prev_tx: transaction.prev_tx,
-                transaction_hash: transaction.transaction_hash,
-                issuer_address: transaction.issuer_address,
-            };
-        }
+
+        updatedTransaction = {
+            ...editedTransaction,
+            verification_status: "1",
+            prev_tx: transaction.transaction_hash,
+            issuer_address: transaction.issuer_address,
+            transaction_hash: transaction.transaction_hash,
+        };
+
         console.log('Saving edited transaction:', updatedTransaction);
         try {
             await handleSubmit(updatedTransaction);
@@ -128,13 +119,11 @@ const TransactionDetailsPopup = ({ transaction, open, onClose, handleSubmit, ref
                                                 <MenuItem value="0">Active</MenuItem>
                                                 <MenuItem value="1">Retired</MenuItem>
                                             </Select>
-                                        ) : key === 'prev_tx' || key === 'transaction_hash' || key === 'issuer_address' || key === 'emitter_address' ? (
+                                        ) : key === 'prev_tx' || key === 'transaction_hash' || key === 'issuer_address' ? (
                                             <TextField
                                                 fullWidth
                                                 value={value}
-                                                InputProps={{
-                                                    readOnly: true,
-                                                }}
+                                                disabled
                                             />
                                         ) : (
                                             <TextField
@@ -166,31 +155,27 @@ const TransactionDetailsPopup = ({ transaction, open, onClose, handleSubmit, ref
 function TransactionSection({
     handleSubmit,
     formatDate,
-    isIssuer,
     issuerTransactions,
-    emitterTransactions,
-    totalVerifiedCreditsIssued,
-    totalVerifiedCreditsBought,
-    totalVerifiedIssuer,
-    totalVerifiedEmitter,
-    showIssuerTransactions,
-    setShowIssuerTransactions,
     handleViewMore,
     refreshTransactions,
+    totalVerifiedIssuer,
+    unverifiedCount,
+    currentVerifierAccount,
 }) {
     const [selectedTransaction, setSelectedTransaction] = useState(null);
     const [isPopupOpen, setIsPopupOpen] = useState(false);
     const [searchInput, setSearchInput] = useState("");
     const [allTransactions, setAllTransactions] = useState([]);
-    const transactions = isIssuer ? issuerTransactions : emitterTransactions;
-    const title = isIssuer ? "Unverified Issuer Transactions" : "Unverified Emitter Transactions";
-    const totalVerifiedCredits = isIssuer ? totalVerifiedCreditsIssued : totalVerifiedCreditsBought;
-    const totalVerifiedTransactions = isIssuer ? totalVerifiedIssuer : totalVerifiedEmitter;
-    const creditType = isIssuer ? "Issued" : "Bought";
+    const [totalVerifiedCredits, setTotalVerifiedCredits] = useState(0);
 
     useEffect(() => {
-        setAllTransactions(transactions);
-    }, [transactions]);
+        const fetchTotalCredits = async () => {
+            const response = await verifierAPI.getTotalCreditsByAddress(currentVerifierAccount);
+            setTotalVerifiedCredits(response[0].total_credits);
+        };
+        fetchTotalCredits();
+        setAllTransactions(issuerTransactions);
+    }, [issuerTransactions]);
 
     const handleRowClick = (tx) => {
         setSelectedTransaction(tx);
@@ -199,15 +184,13 @@ function TransactionSection({
 
     const handleClosePopup = () => {
         setIsPopupOpen(false);
-        setSelectedTransaction(null); // Reset selected transaction
+        setSelectedTransaction(null);
     };
 
     const handleKeyUp = (event) => {
         const inputValue = event.target.value;
         setSearchInput(inputValue);
-        // Perform search or filter logic here using inputValue
-        // For example, filter transactions based on project name
-        const filtered = (isIssuer ? issuerTransactions : emitterTransactions).filter(tx =>
+        const filtered = (issuerTransactions).filter(tx =>
             tx.project_name.toLowerCase().includes(inputValue.toLowerCase())
         );
         setAllTransactions(filtered);
@@ -275,35 +258,25 @@ function TransactionSection({
                 <div className="verifier-upper-1">
                     <div className="verifier-upper-1-upper">
                         <p className="bold-text">{(totalVerifiedCredits || 0).toLocaleString()}</p>
-                        <p className="emitter-item-header text-sm justify-center">{creditType.toLocaleString()} Carbon Credits Verified</p>
+                        <p className="emitter-item-header text-sm justify-center">MtCO2 Verified</p>
                     </div>
                     <div style={{ width: '100%', marginLeft: '1rem' }}>
                         <hr className="divider" />
                     </div>
                     <div style={{ borderRadius: '0.5rem', padding: '1rem', width: '100%', textAlign: 'center' }}>
-                        <p className="bold-text">
-                            {totalVerifiedTransactions.toLocaleString()}
+                        <p className="bold-text" style={{paddingLeft: '1.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                            {Math.round((totalVerifiedIssuer / (unverifiedCount + totalVerifiedIssuer)) * 100)} <span style={{fontSize: '1.5rem', marginLeft: '0.5rem'}}>%</span>
                         </p>
-                        <p className="emitter-item-header text-sm justify-center">{isIssuer ? 'Issuer' : 'Emitter'} Transactions Verified</p>
+                        <p className="emitter-item-header text-sm justify-center">Projects Verified</p>
                     </div>
                 </div>
                 <div className="verifier-upper-2">
                     <div style={{ width: '100%', position: 'relative', marginBottom: '1rem', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                         <div>
-                            <h2 className="text-3xl font-bold">{title}</h2>
+                            <h2 className="text-3xl font-bold">Unverified Issuer Transactions</h2>
                         </div>
 
                         <div style={{ display: 'flex', alignItems: 'center' }}>
-                            <div style={{ width: '50%' }}>
-                                <Button
-                                    variant="contained"
-                                    color="primary"
-                                    onClick={() => setShowIssuerTransactions(!showIssuerTransactions)}
-                                    style={{ fontSize: '0.8rem' }}
-                                >
-                                    {showIssuerTransactions ? "Switch to Emitter Transactions" : "Switch to Issuer Transactions"}
-                                </Button>
-                            </div>
                             <div className="verifier-upper-search-bar">
                                 <input
                                     type="text"
@@ -318,7 +291,7 @@ function TransactionSection({
                             </div>
                         </div>
                     </div>
-                    {renderTransactionTable(allTransactions, isIssuer ? "issuer" : "emitter")}
+                    {renderTransactionTable(allTransactions, "issuer")}
                 </div>
                 <TransactionDetailsPopup
                     transaction={selectedTransaction}
@@ -326,7 +299,6 @@ function TransactionSection({
                     onClose={handleClosePopup}
                     handleSubmit={handleSubmit}
                     refreshTransactions={refreshTransactions}
-                    isIssuer={isIssuer}
                 />
             </div>
         </div>

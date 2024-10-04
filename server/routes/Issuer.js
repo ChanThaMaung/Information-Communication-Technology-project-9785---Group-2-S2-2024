@@ -4,6 +4,26 @@ function createRouter(pool) {
   const router = express.Router();
 
 
+  router.get('/getTotalCreditsActiveAndVerified', async (req, res) => {
+    try {
+      const [rows] = await pool.query('SELECT SUM(credit_amount) AS total_credits FROM issuer WHERE active_status = "0" AND verification_status = "1"');
+      res.json(rows);
+    } catch (error) {
+      console.error('Error fetching total credits:', error);
+      res.status(500).json({ error: 'Internal server error', details: error.message });
+    }
+  });
+  
+  router.get('/getActiveAndVerifiedRows', async (req, res) => {
+    try {
+      const [rows] = await pool.query('SELECT * FROM issuer WHERE active_status = "0" AND verification_status = "1" ORDER BY date_issued DESC');
+      res.json(rows);
+    } catch (error) {
+      console.error('Error fetching active and verified rows:', error);
+      res.status(500).json({ error: 'Internal server error', details: error.message });
+    }
+  });
+
   router.get('/getYearlyAverage/:address', async (req, res) => {
     const { address } = req.params;
     try {
@@ -186,6 +206,16 @@ function createRouter(pool) {
 
   // GET only verified ones
 
+  router.get('/unverified/count', async (req, res) => {
+    try {
+      const [rows] = await pool.query('SELECT COUNT(*) AS unverified_count FROM issuer WHERE verification_status = "0"');
+      res.json(rows);
+    } catch (error) {
+      console.error('Error fetching unverified issuers:', error);
+      res.status(500).json({ error: 'Internal server error', details: error.message });
+    }
+  });
+  
   router.get('/unverified', async (req, res) => {
     try {
       const [rows] = await pool.query('SELECT * FROM issuer WHERE verification_status = "0"');
@@ -209,13 +239,15 @@ function createRouter(pool) {
 
   // POST - Create a new issuer
   router.post('/create', async (req, res) => {
-    const { issuer_address, project_name, credit_amount, active_status, date_issued, period_covered, verification_status, prev_tx, transaction_hash } = req.body;
+    const { issuer_address, project_name, credit_amount, active_status, date_issued, country, period_covered, verification_status, prev_tx, bought_by, transaction_hash } = req.body;
     try {
+      const currDate = new Date().toLocaleString('en-AU', { timeZone: 'Australia/Sydney' }).replace(/(\d+)\/(\d+)\/(\d+),?\s*(\d+):(\d+):(\d+)\s*(AM|PM)/i, '$3-$2-$1 $4:$5:$6');
       await pool.query(
-        'INSERT INTO issuer (issuer_address, project_name, credit_amount, active_status, date_issued, period_covered, verification_status, prev_tx, transaction_hash) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
-        [issuer_address, project_name, credit_amount, active_status, date_issued, period_covered, verification_status, prev_tx, transaction_hash]
+        'INSERT INTO issuer (issuer_address, project_name, credit_amount, active_status, date_issued, country, period_covered, verification_status, timestamp, prev_tx, bought_by, transaction_hash) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+        [issuer_address, project_name, credit_amount, active_status, date_issued, country, period_covered, verification_status, currDate, prev_tx, bought_by, transaction_hash]
       );
-      res.status(201).json({ issuer_address, project_name, credit_amount, active_status, date_issued, period_covered, verification_status, prev_tx, transaction_hash });
+      res.status(201).json({message: "Issuer created successfully ", data: {issuer_address, project_name, credit_amount, active_status, date_issued, country, period_covered, verification_status, currDate, prev_tx, bought_by, transaction_hash}
+      });
     } catch (error) {
       console.error('Error creating issuer:', error);
       res.status(500).json({ error: 'Internal server error', details: error.message });
@@ -225,30 +257,19 @@ function createRouter(pool) {
   // PUT - Update an issuer
   router.put('/update/:txHash', async (req, res) => {
     const { txHash } = req.params;
-    const { project_name, credit_amount, active_status, date_issued, period_covered, verification_status, transaction_hash, prev_tx } = req.body;
+    const { project_name, credit_amount, active_status, date_issued, country, period_covered, verification_status, transaction_hash, bought_by, prev_tx } = req.body;
     try {
+      const currDate = new Date().toLocaleString('en-AU', { timeZone: 'Australia/Sydney' }).replace(/(\d+)\/(\d+)\/(\d+),?\s*(\d+):(\d+):(\d+)\s*(AM|PM)/i, '$3-$2-$1 $4:$5:$6');
       await pool.query(
-        'UPDATE issuer SET project_name = ?, credit_amount = ?, active_status = ?, date_issued = ?, period_covered = ?, verification_status = ?, prev_tx = ?, transaction_hash = ? WHERE transaction_hash = ?',
-        [project_name, credit_amount, active_status, date_issued, period_covered, verification_status, prev_tx, transaction_hash, txHash]
+        'UPDATE issuer SET project_name = ?, credit_amount = ?, active_status = ?, date_issued = ?, country = ?, timestamp = ?, period_covered = ?, verification_status = ?, transaction_hash = ?, bought_by = ?, prev_tx = ? WHERE transaction_hash = ?',
+        [project_name, credit_amount, active_status, date_issued, country, currDate, period_covered, verification_status, transaction_hash, bought_by, prev_tx, txHash]
       );
-      res.json({ project_name, credit_amount, active_status, date_issued, period_covered, verification_status, prev_tx, transaction_hash });
+      res.json({ message: "Issuer updated successfully", data: {project_name, credit_amount, active_status, date_issued, country, currDate, period_covered, verification_status, transaction_hash, bought_by, prev_tx } });
     } catch (error) {
       console.error('Error updating issuer:', error);
       res.status(500).json({ error: 'Internal server error', details: error.message });
     }
   });
-
-  // DELETE - Remove an issuer
-  // router.delete('/delete/:txHash  ', async (req, res) => {
-  //   const { txHash } = req.params;
-  //   try {
-  //     await pool.query('DELETE FROM issuer WHERE transaction_hash = ?', [txHash]);
-  //     res.status(204).end();
-  //   } catch (error) {
-  //     console.error('Error deleting issuer:', error);
-  //     res.status(500).json({ error: 'Internal server error', details: error.message });
-  //   }
-  // });
 
   return router;
 }

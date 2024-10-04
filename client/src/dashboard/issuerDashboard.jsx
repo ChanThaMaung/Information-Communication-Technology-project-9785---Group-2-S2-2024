@@ -3,9 +3,11 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip, Label } from 'recharts';
 import * as IssuerAPI from '../../../server/API/Issuer/get_by_address_api';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField, InputAdornment } from '@mui/material';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField, InputAdornment, Autocomplete } from '@mui/material';
 import { format, formatDistanceToNow } from 'date-fns';
 import { shortenAddress } from "../scripts/shortenAddress"; // Add this import
+import './css_files/issuerDashboard.css';
+import { countries } from "../scripts/countryList";
 
 function issuerDashboard({
   handleSubmit,
@@ -20,7 +22,9 @@ function issuerDashboard({
     active_status: "",
     period_covered: "",
     verification_status: "0",
-    prev_tx: "",
+    country: "",
+    bought_by: "N/A",
+    prev_tx: "N/A",
   });
 
   const [dateRange, setDateRange] = useState([null, null]);
@@ -48,7 +52,7 @@ function issuerDashboard({
   const onSubmit = (e) => {
     e.preventDefault();
     formData.issuer_address = currentIssuerAccount;
-    console.log("Sending fromdata:", formData);
+    console.log("Sending formdata:", formData);
     handleSubmit(formData);
   };
 
@@ -90,7 +94,7 @@ function issuerDashboard({
     };
 
     fetchData();
-  }, [currentIssuerAccount]);
+  }, [allTransactions]);
 
   useEffect(() => {
     const filtered = allTransactions.filter(transaction =>
@@ -171,7 +175,7 @@ function issuerDashboard({
             </div>
             <div className="issuer-item-footer">
               <p style={{
-                color: Number(yearlyCredits) > yearlyAverage ? 'green' : 'red',
+                color: Number(yearlyCredits) >= yearlyAverage ? 'green' : 'red',
                 display: 'flex',
                 alignItems: 'center',
                 gap: '5px'
@@ -179,17 +183,18 @@ function issuerDashboard({
                 {Number(yearlyCredits) !== 0 && (
                   <>
                     <span style={{ fontSize: '0.9em' }}>
-                      {Number(yearlyCredits) > yearlyAverage ? '▲' : '▼'}
+                      {Number(yearlyCredits) >= yearlyAverage ? '▲' : '▼'}
                     </span>
-                    {`${((yearlyCredits / yearlyAverage) * 100).toFixed(2)}%`}
+                    {`${((yearlyCredits / yearlyAverage) * 100).toFixed(2)}% (Yearly Average)`}
+                    
                   </>
-                )} (Last Year's)
+                )}
               </p>
             </div>
           </div>
           <div className="issuer-upper-1-1">
             <div className="issuer-item-header">
-              Total credits
+              Total Credits Issued
             </div>
             <div className="issuer-item-data">
               {Number(totalCredits).toLocaleString()}
@@ -406,6 +411,26 @@ function issuerDashboard({
                 <option value="1">Retired</option>
               </select>
             </div>
+            <div className="flex items-center">
+              <span className="mr-2 w-32">Country:</span>
+              <Autocomplete
+                options={countries}
+                value={formData.country}
+                onChange={(event, newValue) => {
+                  handleChange({ target: { value: newValue } }, "country");
+                }}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    variant="outlined"
+                    size="small"
+                    className="form-control border border-black ml-2"
+                    style={{ width: '200px' }}
+                  />
+                )}
+              />
+            </div>
+
             <div className="flex items-center">
               <span className="mr-2 w-32">Period Covered:</span>
               <DatePicker

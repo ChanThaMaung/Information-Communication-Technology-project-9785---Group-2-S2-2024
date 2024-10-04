@@ -3,17 +3,6 @@ const express = require('express');
 function createRouter(pool) {
 	const router = express.Router();
 
-
-	router.get('/get_address_unverified_credits/:address', async (req, res) => {
-		const { address } = req.params;
-		try {
-			const [rows] = await pool.query('SELECT SUM(credit_amount) AS unverified_credits FROM emitter WHERE emitter_address = ? AND verification_status = "0"', [address]);
-			res.json(rows);
-		} catch (error) {
-			console.error('Error fetching unverified credits by address:', error);
-			res.status(500).json({ error: 'Internal server error', details: error.message });
-		}
-	});
 	router.get('/get_total_trans/:address', async (req, res) => {
 		const { address } = req.params;
 		try {
@@ -25,17 +14,6 @@ function createRouter(pool) {
 		}
 	});
 
-	router.get('/get_address_verified_credits/:address', async (req, res) => {
-		const { address } = req.params;
-		try {
-			const [rows] = await pool.query('SELECT SUM(credit_amount) AS verified_credits FROM emitter WHERE emitter_address = ? AND verification_status = "1"', [address]);
-			res.json(rows);
-		} catch (error) {
-			console.error('Error fetching verified credits by address:', error);
-			res.status(500).json({ error: 'Internal server error', details: error.message });	
-		}
-	});
-	
 	router.get('/get_total_credits/:address', async (req, res) => {
 		const { address } = req.params;
 		try {
@@ -93,35 +71,6 @@ function createRouter(pool) {
 		}
 	});
 
-	router.get('/verified/address/:address', async (req, res) => {
-		const { address } = req.params;
-		try {
-			const [rows] = await pool.query('SELECT * FROM emitter WHERE emitter_address = ?', [address]);
-			res.json(rows);
-		} catch (error) {
-			console.error('Error fetching emitter:', error);
-			res.status(500).json({ error: 'Internal server error', details: error.message });
-		}
-	});
-	router.get('/verified-count', async (req, res) => {
-		try {
-			const [rows] = await pool.query('SELECT COUNT(*) AS verified_count FROM emitter WHERE verification_status = "1"');
-			res.json(rows);
-		} catch (error) {
-			console.error('Error fetching verified emitter:', error);
-			res.status(500).json({ error: 'Internal server error', details: error.message });
-		}
-	});
-
-	router.get('/verified/count', async (req, res) => {
-		try {
-			const [rows] = await pool.query('SELECT SUM(credit_amount) AS verified_credits FROM emitter WHERE verification_status = "1"');
-			res.json(rows);
-		} catch (error) {
-			console.error('Error fetching verified emitter count:', error);
-			res.status(500).json({ error: 'Internal server error', details: error.message });
-		}
-	});
 	// GET - Fetch all emitters
 	router.get('/all', async (req, res) => {
 		try {
@@ -155,28 +104,6 @@ function createRouter(pool) {
 		}
 	});
 
-	// GET - Fetch the total amount of verified credits bought
-	router.get('/total', async (req, res) => {
-		try {
-			const [rows] = await pool.query('SELECT SUM(credit_amount) AS credit_count FROM emitter WHERE verification_status = "1"');
-			res.json(rows);
-		} catch (error) {
-			console.error('Error fetching total verified credits:', error);
-			res.status(500).json({ error: 'Internal server error', details: error.message });
-		}
-	});
-
-	// GET - Fetch all unverified emitters
-	router.get('/unverified', async (req, res) => {
-		try {
-			const [rows] = await pool.query('SELECT * FROM emitter WHERE verification_status = "0"');
-			res.json(rows);
-		} catch (error) {
-			console.error('Error fetching emitters:', error);
-			res.status(500).json({ error: 'Internal server error', details: error.message });
-		}
-	});
-
 	// GET - Fetch a specific emitter by transaction hash
 	router.get('/:txHash', async (req, res) => {
 		const { txHash } = req.params;
@@ -190,13 +117,14 @@ function createRouter(pool) {
 	});
 	// POST - Create a new emitter
 	router.post('/create', async (req, res) => {
-		const { emitterAddress, project_name, credit_amount, date_bought, verification_status, prev_tx, transaction_hash } = req.body;
+		const { emitter_address, project_name, credit_amount, date_bought, transaction_hash } = req.body;
 		try {
+			const currDate = new Date().toLocaleString('en-AU', { timeZone: 'Australia/Sydney' }).replace(/(\d+)\/(\d+)\/(\d+),?\s*(\d+):(\d+):(\d+)\s*(AM|PM)/i, '$3-$2-$1 $4:$5:$6');
 			await pool.query(
-				'INSERT INTO emitter (emitter_address, project_name, credit_amount, date_bought, verification_status, prev_tx, transaction_hash) VALUES (?, ?, ?, ?, ?, ?, ?)',
-				[emitterAddress, project_name, credit_amount, date_bought, verification_status, prev_tx, transaction_hash]
+				'INSERT INTO emitter (emitter_address, project_name, credit_amount, date_bought, transaction_hash) VALUES (?, ?, ?, ?, ?)',
+				[emitter_address, project_name, credit_amount, date_bought, transaction_hash]
 			);
-			res.status(201).json({ emitterAddress, project_name, credit_amount, date_bought, verification_status, prev_tx, transaction_hash });
+			res.status(201).json({message: "Emitter created successfully ", data: {emitter_address, project_name, credit_amount, date_bought, currDate, transaction_hash}});
 		} catch (error) {
 			console.error('Error creating emitter:', error);
 			res.status(500).json({ error: 'Internal server error', details: error.message });
@@ -206,14 +134,15 @@ function createRouter(pool) {
 	// PUT - Update an emitter
 	router.put('/update/:txHash', async (req, res) => {
 		const { txHash } = req.params;
-		const { credit_amount, date_bought, verification_status, prev_tx, transaction_hash } = req.body;
+		const { credit_amount, date_bought, transaction_hash } = req.body;
 		try {
+			const currDate = new Date().toLocaleString('en-AU', { timeZone: 'Australia/Sydney' }).replace(/(\d+)\/(\d+)\/(\d+),?\s*(\d+):(\d+):(\d+)\s*(AM|PM)/i, '$3-$2-$1 $4:$5:$6');
 			await pool.query(
-				'UPDATE emitter SET credit_amount = ?, date_bought = ?, verification_status = ?, prev_tx = ?, transaction_hash = ? WHERE transaction_hash = ?',
-				[credit_amount, date_bought, verification_status, prev_tx, transaction_hash, txHash]
+				'UPDATE emitter SET credit_amount = ?, date_bought = ?, transaction_hash = ? WHERE transaction_hash = ?',
+				[credit_amount, date_bought, transaction_hash, txHash]
 
 			);
-			res.json({ credit_amount, date_bought, verification_status, prev_tx, transaction_hash, txHash });
+			res.json({ credit_amount, date_bought, currDate, transaction_hash, txHash });
 		} catch (error) {
 			console.error('Error updating emitter:', error);
 			res.status(500).json({ error: 'Internal server error', details: error.message });

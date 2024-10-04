@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import Web3 from 'web3';
 import { shortenAddress } from "../../scripts/shortenAddress";
+import './css/dashboard-nav.css';
 
 export default function DashboardNavbar({ onConnect }) {
 

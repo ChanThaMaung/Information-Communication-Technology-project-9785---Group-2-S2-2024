@@ -18,33 +18,39 @@ USE `capstone_database`;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Table strPRIMARYucture for table `emitter`
+-- Table structure for table `all_transactions`
 --
 
-DROP TABLE IF EXISTS `emitter`;
+DROP TABLE IF EXISTS `all_transactions`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE IF NOT EXISTS `emitter` (
-  `emitter_address` varchar(200) NOT NULL,
-  `project_name` varchar(200) NOT NULL,
-  `credit_amount` int NOT NULL,
-  `date_bought` date NOT NULL,
-  `verification_status` tinyint(1) NOT NULL,
-  `prev_tx` varchar(200),	
-  `transaction_hash` varchar(200) NOT NULL,
+CREATE TABLE `all_transactions` (
+  `transaction_hash` varchar(126) NOT NULL,
+  `address` varchar(126) NOT NULL,
+  `date_added` datetime NOT NULL,
+  `type` varchar(45) NOT NULL,
   PRIMARY KEY (`transaction_hash`),
   UNIQUE KEY `transaction_hash_UNIQUE` (`transaction_hash`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `emitter`
+-- Table structure for table `emitter`
 --
 
-LOCK TABLES `emitter` WRITE;
-/*!40000 ALTER TABLE `emitter` DISABLE KEYS */;
-/*!40000 ALTER TABLE `emitter` ENABLE KEYS */;
-UNLOCK TABLES;
+DROP TABLE IF EXISTS `emitter`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `emitter` (
+  `emitter_address` varchar(126) NOT NULL,
+  `project_name` varchar(126) NOT NULL,
+  `credit_amount` int NOT NULL,
+  `date_bought` datetime NOT NULL,
+  `transaction_hash` varchar(126) NOT NULL,
+  PRIMARY KEY (`transaction_hash`),
+  UNIQUE KEY `transaction_hash_UNIQUE` (`transaction_hash`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `issuer`
@@ -53,15 +59,18 @@ UNLOCK TABLES;
 DROP TABLE IF EXISTS `issuer`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE IF NOT EXISTS `issuer` (
-  `issuer_address` varchar(200) NOT NULL,
-  `project_name` varchar(200) NOT NULL,
+CREATE TABLE `issuer` (
+  `issuer_address` varchar(126) NOT NULL,
+  `project_name` varchar(126) NOT NULL,
   `credit_amount` int NOT NULL,
   `active_status` tinyint(1) NOT NULL,
   `date_issued` date NOT NULL,
-  `period_covered` varchar(200) NOT NULL,
+  `country` varchar(126) NOT NULL, 
+  `period_covered` varchar(126) NOT NULL,
   `verification_status` tinyint(1) NOT NULL,
-  `prev_tx` varchar(200),
+  `timestamp` datetime NOT NULL,
+  `prev_tx` varchar(200) DEFAULT NULL,
+  `bought_by` varchar(200) DEFAULT NULL,
   `transaction_hash` varchar(200) NOT NULL,
   PRIMARY KEY (`transaction_hash`),
   UNIQUE KEY `transaction_hash_UNIQUE` (`transaction_hash`),
@@ -70,42 +79,23 @@ CREATE TABLE IF NOT EXISTS `issuer` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `issuer`
---
-
-LOCK TABLES `issuer` WRITE;
-/*!40000 ALTER TABLE `issuer` DISABLE KEYS */;
-/*!40000 ALTER TABLE `issuer` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `verifier`
 --
 
 DROP TABLE IF EXISTS `verifier`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE IF NOT EXISTS `verifier` (
-  `verifier_address` varchar(200) NOT NULL,
-  `project_name` varchar(200) NOT NULL,
-  `verification_date` varchar(200) NOT NULL,
-  `transaction_updated` varchar(200) NOT NULL,
-  `transaction_hash` varchar(200) NOT NULL,
-  `type` tinyint(1) NOT NULL,
+CREATE TABLE `verifier` (
+  `verifier_address` varchar(126) NOT NULL,
+  `project_name` varchar(126) NOT NULL,
+  `verification_date` datetime NOT NULL,
+  `transaction_updated` varchar(126) NOT NULL,
+  `transaction_hash` varchar(126) NOT NULL,
   PRIMARY KEY (`transaction_hash`),
   UNIQUE KEY `transaction_hash_UNIQUE` (`transaction_hash`),
   UNIQUE KEY `transaction_updated_UNIQUE` (`transaction_updated`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `verifier`
---
-
-LOCK TABLES `verifier` WRITE;
-/*!40000 ALTER TABLE `verifier` DISABLE KEYS */;
-/*!40000 ALTER TABLE `verifier` ENABLE KEYS */;
-UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -116,4 +106,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-09-09 23:42:29
+-- Dump completed on 2024-10-02 19:13:11

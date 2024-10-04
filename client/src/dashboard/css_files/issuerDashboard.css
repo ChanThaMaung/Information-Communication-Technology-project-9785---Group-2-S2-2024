@@ -1,0 +1,114 @@
+.issuer-header {
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    font-size: 1.5rem;
+    font-weight: bold;
+    padding: 0 1rem 1rem 1rem;
+    width: 100%;
+  }
+  
+  .issuer-upper {
+    display: flex;
+    align-items: stretch;
+    justify-content: center;
+    width: 80%;
+    margin-bottom: 1rem;
+    /* background-color: white; */
+  }
+  
+  .issuer-upper-1,
+  .issuer-upper-2,
+  .issuer-upper-3 {
+    display: flex;
+    flex-direction: column;
+    margin-right: 1rem;
+  }
+  
+  .issuer-upper-1 {
+    flex: 1;
+    justify-content: center;
+    align-items: center;
+  }
+  .issuer-upper-2,
+  .issuer-upper-3 {
+    width: 33%;
+    align-items: center;
+    justify-content: center;
+    background-color: white;
+    border-radius: 0.5rem;
+    box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.2);
+  
+  
+  }
+  
+  .issuer-item-header {
+    display: flex;
+    /* justify-content: center; */
+    width: 100%;
+    color: #9d9191;
+    font-weight: bold;
+    margin-top: 0.5rem;
+    margin-left: 1rem;
+    margin-bottom: 0.5rem;
+  }
+  .issuer-upper-1-1 {
+    background-color: white;
+    width: 100%;
+    justify-content: space-between;
+    border-radius: 0.5rem;
+    box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.2);
+  }
+  
+  .issuer-item-data {
+    width: 100%;
+    padding: 0 1rem 1rem 2.1rem;
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    font-weight: bold;
+    font-size: 2.25rem;
+    }
+  
+  .issuer-item-footer {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    padding: 0rem 1rem 0rem 2.1rem;
+    font-weight: bold;
+    width: 100%;
+  }
+  .issuer-piechart {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .issuer-lower {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 90%;
+    margin-bottom: 1rem;
+  }
+  
+  .issuer-lower-header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding: 1rem;
+    width: 90%;
+  }
+  
+  .issuer-piechart {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+  }

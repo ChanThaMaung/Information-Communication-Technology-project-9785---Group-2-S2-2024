@@ -7,10 +7,7 @@ contract Emitter {
     struct emitterData {
         string project_name;
         uint credit_amount;
-        string status;
-        uint256 end_date;
-        string prev_tx;
-        address emitter_address;
+        uint256 date_bought;
     }
 
     event purchaseCredits(address from, uint256 timestamp, emitterData data);

@@ -1,6 +1,17 @@
 import axios from "axios";
 import { API_URL } from "./constants";
 
+
+export const getActiveAndVerifiedRows = async () => {
+    const response = await axios.get(API_URL + "/getActiveAndVerifiedRows");
+    return response.data;
+}
+
+export const getTotalCreditsActiveAndVerified = async () => {
+    const response = await axios.get(API_URL + "/getTotalCreditsActiveAndVerified");
+    return response.data;
+}
+
 export const getActiveRows = async () => {
     const response = await axios.get(API_URL + "/active-rows");
     return response.data;
@@ -66,3 +77,9 @@ export const getOneIssuer = async (txHash) => {
     const response = await axios.get(API_URL + "/" + txHash);
     return response.data;
 }
+
+export const getUnverifiedCount = async () => {
+    const response = await axios.get(API_URL+"/unverified/count");
+    return response.data;
+  }
+  

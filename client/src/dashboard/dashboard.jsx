@@ -39,10 +39,6 @@ function Dashboard() {
   const [activeRows, setActiveRows] = useState([]);
   const [retiredRows, setRetiredRows] = useState([]);
 
-  const [totalVerifiedCreditsIssued, setTotalVerifiedCreditsIssued] = useState(0);
-  const [totalVerifiedCreditsBought, setTotalVerifiedCreditsBought] = useState(0);
-  const [totalVerifiedEmitter, setTotalVerifiedEmitter] = useState(0);
-  const [totalVerifiedIssuer, setTotalVerifiedIssuer] = useState(0);
   const [totalTransactionCount, setTotalTransactionCount] = useState(0);
 
 
@@ -76,23 +72,8 @@ function Dashboard() {
     getCredits();
     getActiveRows();
     getRetiredRows();
-    getTotalVerified();
-    getVerifiedCredits();
   }, [currentAccount]);
 
-  const getTotalVerified = async () => {
-    const verifiedIssuerCount = await issuerAPI.getVerifiedIssuer();
-    const verifiedEmitterCount = await emitterAPI.getVerifiedEmitter();
-    setTotalVerifiedIssuer(verifiedIssuerCount[0].verified_count);
-    setTotalVerifiedEmitter(verifiedEmitterCount[0].verified_count);
-  }
-
-  const getVerifiedCredits = async () => {
-    const verifiedCreditsIssued = await issuerAPI.getVerifiedIssuerCount();
-    const verifiedCreditsBought = await emitterAPI.getVerifiedEmitterCount();
-    setTotalVerifiedCreditsIssued(verifiedCreditsIssued[0].verified_credits);
-    setTotalVerifiedCreditsBought(verifiedCreditsBought[0].verified_credits);
-  }
   const getUserCount = async () => {
     const emitterCount = await emitterAPI.getUniqueEmitter();
     const issuerCount = await issuerAPI.getUniqueIssuer();
@@ -102,6 +83,7 @@ function Dashboard() {
     setTotalUniqueIssuer(issuerCount[0].address_count);
     setTotalUniqueVerifier(verifierCount[0].address_count);
   }
+
   const getTransactionCount = async () => {
     const emitterCount = await emitterAPI.getCountEmitter();
     const issuerCount = await issuerAPI.getCountIssuer();
@@ -109,7 +91,7 @@ function Dashboard() {
     setTotalEmitterTransactions(emitterCount[0].transaction_count);
     setTotalIssuerTransactions(issuerCount[0].transaction_count);
     setTotalVerifierTransactions(verifierCount[0].transaction_count);
-    setTotalTransactionCount(emitterCount[0].transaction_count + issuerCount[0].transaction_count);
+    setTotalTransactionCount(emitterCount[0].transaction_count + issuerCount[0].transaction_count + verifierCount[0].transaction_count);
   }
 
   const getCredits = async () => {
@@ -162,7 +144,7 @@ function Dashboard() {
   };
 
   const handleSubmit = async (formData) => {
-    let transactionHash;
+    let transactionHash = "";
     let data = {};
     if (accountType === "issuer") {
       if (formData.project_name === "") {
@@ -171,7 +153,7 @@ function Dashboard() {
       }
       try {
         console.log("Sending transaction");
-        transactionHash = await sendIssuerTransaction(formData);
+        transactionHash = await sendIssuerTransaction(formData, "issuer");
         console.log("Transaction sent");
         // Optionally, refresh the transactions list
         setAllTransactions(await issuerAPI.getAllIssuer())
@@ -180,29 +162,24 @@ function Dashboard() {
       }
     } else if (accountType === "verifier") {
       try {
-        let transactionType;
-        if (formData.date_bought) {
-          transactionType = 0;
-          console.log("Type:", transactionType);
-          console.log("Sending transaction to emitter");
-          await sendEmitterTransaction(formData);
-          console.log("Transaction sent - emitter");
-        } else if (formData.date_issued) {
-          transactionType = 1;
-          console.log("Type:", transactionType);
-          console.log("Sending transaction to issuer");
-          await sendIssuerTransaction(formData);
-          console.log("Transaction sent - issuer");
-        }
+
+        console.log("Sending transaction to issuer");
+        await sendIssuerTransaction(formData, "verifier");
+        console.log("Transaction sent - issuer");
 
         console.log("Sending transaction to verifier");
-        transactionHash = await sendVerifierTransaction(formData, transactionType);
+        transactionHash = await sendVerifierTransaction(formData);
         console.log("Transaction sent - verifier");
       } catch (error) {
         console.error("Error:", error);
       }
     } else if (accountType === "emitter") {
       try {
+
+        console.log("Sending transaction to Issuer");
+        await sendIssuerTransaction(formData, "emitter");
+        console.log("Transaction sent - issuer");
+
         console.log("Sending transaction");
         transactionHash = await sendEmitterTransaction(formData);
         console.log("Transaction sent");
@@ -222,6 +199,7 @@ function Dashboard() {
       date_added: formattedDate,
       type: accountType
     }
+    console.log(data);
     await allTransactionsAPI.addTransaction(data);
   };
 
@@ -243,8 +221,6 @@ function Dashboard() {
             handleSubmit={handleSubmit}
             formatDate={formatDate}
             currentVerifierAccount={currentVerifierAccount}
-            totalVerifiedCreditsBought={totalVerifiedCreditsBought}
-            totalVerifiedCreditsIssued={totalVerifiedCreditsIssued}
           />
         );
       case "emitter":
@@ -267,7 +243,7 @@ function Dashboard() {
               totalVerifierCount={totalVerifierTransactions}
               activeRows={activeRows}
               retiredRows={retiredRows}
-              allTransactions={allTransactions}
+              totalTransactionCount={totalTransactionCount}
             />
           </>
         )

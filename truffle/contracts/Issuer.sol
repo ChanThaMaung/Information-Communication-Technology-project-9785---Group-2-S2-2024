@@ -13,6 +13,8 @@ contract Issuer {
         string verification_status;
         string prev_tx;
         address issuer_address;
+        string country;
+        string bought_by;
     }
 
     event issueCredits(address from, uint256 timestamp, issuerData data);

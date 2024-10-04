@@ -3,11 +3,10 @@ const express = require('express');
 function createRouter(pool) {
   const router = express.Router();
 
-
-  router.get('/getRows/:address', async (req, res) => {
+  router.get('/getTotalCreditsByAddress/:address', async (req, res) => {
     const { address } = req.params;
     try {
-      const [rows] = await pool.query('SELECT * FROM verifier WHERE verifier_address = ?', [address]);
+      const [rows] = await pool.query('SELECT SUM(issuer.credit_amount) AS total_credits FROM verifier INNER JOIN issuer ON verifier.transaction_updated = issuer.prev_tx WHERE verifier.verifier_address = ?', [address]);
       res.json(rows);
     } catch (error) {
       console.error('Error fetching verifier:', error);
@@ -16,10 +15,10 @@ function createRouter(pool) {
   });
 
   // GET - Fetch the number of verified issuer transactions
-  router.get('/getTransactionCount/:address/:type', async (req, res) => {
-    const { address, type } = req.params;
+  router.get('/getTransactionCount/:address/', async (req, res) => {
+    const { address } = req.params;
     try {
-      const [rows] = await pool.query('SELECT COUNT(*) AS transaction_count FROM verifier WHERE verifier_address = ? AND type = ?', [address, type]);
+      const [rows] = await pool.query('SELECT COUNT(*) AS transaction_count FROM verifier WHERE verifier_address = ?', [address]);
       res.json(rows);
     } catch (error) {
       console.error('Error fetching verifier:', error);
@@ -87,27 +86,16 @@ function createRouter(pool) {
 
   // POST - Create a new verifier
   router.post('/create', async (req, res) => {
-    const { verifierAddress, type, project_name, verification_date, transaction_updated, transaction_hash } = req.body;
+    const { verifier_address, project_name, transaction_updated, transaction_hash } = req.body;
     try {
-      const [result] = await pool.query(
-        'INSERT INTO verifier (verifier_address, type, project_name, verification_date, transaction_updated, transaction_hash) VALUES (?, ?,  ?, ?, ?, ?)',
-        [verifierAddress, type, project_name, verification_date, transaction_updated, transaction_hash]
+      const currDate = new Date().toLocaleString('en-AU', { timeZone: 'Australia/Sydney' }).replace(/(\d+)\/(\d+)\/(\d+),?\s*(\d+):(\d+):(\d+)\s*(AM|PM)/i, '$3-$2-$1 $4:$5:$6');
+      await pool.query(
+        'INSERT INTO verifier (verifier_address, project_name, verification_date, transaction_updated, transaction_hash) VALUES ( ?, ?, ?, ?, ?)',
+        [verifier_address, project_name, currDate, transaction_updated, transaction_hash]
       );
-      res.status(201).json({ verifierAddress, type, project_name, verification_date, transaction_updated, transaction_hash });
+      res.status(201).json({message: "Verifier created successfully ", data: {verifier_address, project_name, currDate, transaction_updated, transaction_hash}});
     } catch (error) {
       console.error('Error creating verifier:', error);
-      res.status(500).json({ error: 'Internal server error', details: error.message });
-    }
-  });
-
-  // DELETE - Remove a verifier
-  router.delete('/delete/:txHash', async (req, res) => {
-    const { txHash } = req.params;
-    try {
-      await pool.query('DELETE FROM verifier WHERE transaction_hash = ?', [txHash]);
-      res.status(204).end();
-    } catch (error) {
-      console.error('Error deleting verifier:', error);
       res.status(500).json({ error: 'Internal server error', details: error.message });
     }
   });

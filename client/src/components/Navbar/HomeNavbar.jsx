@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import { Link } from "react-router-dom";
 import Web3 from 'web3'; // {{ edit_1 }}
+import './css/home-navbar.css';
 
 export default function DashboardNavbar() {
     const [isSticky, setSticky] = useState(false); // State to track sticky status

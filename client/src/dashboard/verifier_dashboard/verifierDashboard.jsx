@@ -7,54 +7,66 @@ import TransactionSection from "./transactionSection";
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button } from '@mui/material';
 import { useNavigate } from "react-router-dom";
 import * as verifierAPI from "../../../../server/API/Verifier/get_by_address_api"
-import {getUnverifiedIssuer} from "../../../../server/API/Issuer/get_issuer_api"
-import {getUnverifiedEmitter} from "../../../../server/API/Emitter/get_emitter_api"
+import { getUnverifiedIssuer, getUnverifiedCount } from "../../../../server/API/Issuer/get_issuer_api"
+import '../css_files/verifierDashboard.css';
+import '../css_files/emitterDashboard.css';
 function VerifierDashboard({
   handleSubmit,
   formatDate,
   currentVerifierAccount,
-  totalVerifiedCreditsBought,
-  totalVerifiedCreditsIssued,
 
 }) {
-  const [showIssuerTransactions, setShowIssuerTransactions] = useState(true);
   const [searchInput, setSearchInput] = useState("");
   const navigate = useNavigate();
   const [transactions, setTransactions] = useState([]);
 
   const [allTransactions, setAllTransactions] = useState([]);
-  const [totalVerifiedEmitter, setTotalVerifiedEmitter] = useState(0);
   const [totalVerifiedIssuer, setTotalVerifiedIssuer] = useState(0);
-  const [emitterTransactions, setEmitterTransactions] = useState([]);
+  const [totalUnverifiedIssuer, setTotalUnverifiedIssuer] = useState(0);
   const [issuerTransactions, setIssuerTransactions] = useState([]);
+  const [pieData, setPieData] = useState(
+    [{
+      name: 'Unverified Transactions',
+      value: 0
+    },
+    {
+      name: 'Verified Transactions',
+      value: 0
+    }]
+  );
 
 
   useEffect(() => {
     const fetchTransactions = async () => {
-      setEmitterTransactions(await getUnverifiedEmitter())
       setIssuerTransactions(await getUnverifiedIssuer())
-      setTransactions(await verifierAPI.getByAddress(currentVerifierAccount));
-      setAllTransactions(await verifierAPI.getByAddress(currentVerifierAccount));
+      setTransactions(await verifierAPI.getByAddress(currentVerifierAccount)); // to show in table
+      setAllTransactions(await verifierAPI.getByAddress(currentVerifierAccount)); // to show in search bar
     };
     fetchTransactions();
-    fetchTransactionCount(0);
-    fetchTransactionCount(1);
+    fetchTransactionCount();
 
-  }, []);
+  }, [transactions]);
 
-  const fetchTransactionCount = async (type) => {
-    if (type === 0) {
-      const response = await verifierAPI.getTransactionCount(currentVerifierAccount, type);
-       setTotalVerifiedEmitter(response[0].transaction_count);
-    } else {  
-      const response = await verifierAPI.getTransactionCount(currentVerifierAccount, type);
-       setTotalVerifiedIssuer(response[0].transaction_count);
+  const fetchTransactionCount = async () => {
+    const getUnverified = await getUnverifiedCount();
+    const getVerifiedCount = await verifierAPI.getTransactionCount(currentVerifierAccount);
+
+    const unverifiedIssuerCount = getUnverified[0].unverified_count;
+    const verifiedCount = getVerifiedCount[0].transaction_count;
+
+    setTotalVerifiedIssuer(verifiedCount);
+    setTotalUnverifiedIssuer(unverifiedIssuerCount);
+
+    setPieData([{
+      name: 'Unverified Transactions',
+      value: unverifiedIssuerCount
+    },
+    {
+      name: 'Verified Transactions',
+      value: verifiedCount
     }
+    ]);
   }
-  const data = [
-    { name: 'Verified Emitter', value: totalVerifiedEmitter },
-    { name: 'Verified Issuer', value: totalVerifiedIssuer },
-  ];
 
   const COLORS = ['#1C4E80', '#EA6A47', '#A5D8DD'];
 
@@ -75,19 +87,13 @@ function VerifierDashboard({
   const refreshTransactions = async () => {
     // Fetch updated transactions
     const updatedIssuerTransactions = await getUnverifiedIssuer();
-    const updatedEmitterTransactions = await getUnverifiedEmitter();
     const updatedAllTransactions = await verifierAPI.getByAddress(currentVerifierAccount);
 
-    setEmitterTransactions(updatedEmitterTransactions); 
     setIssuerTransactions(updatedIssuerTransactions);
     setAllTransactions(updatedAllTransactions);
 
-    // Optionally, update other related data
-    // For example, update transaction counts
-    const updatedIssuerCount = await verifierAPI.getTransactionCount(currentVerifierAccount, 1);
-    const updatedEmitterCount = await verifierAPI.getTransactionCount(currentVerifierAccount, 0);
+    const updatedIssuerCount = await verifierAPI.getTransactionCount(currentVerifierAccount);
     setTotalVerifiedIssuer(updatedIssuerCount[0].transaction_count || 0);
-    setTotalVerifiedEmitter(updatedEmitterCount[0].transaction_count || 0);
   };
 
   return (
@@ -96,17 +102,12 @@ function VerifierDashboard({
         <TransactionSection
           handleSubmit={handleSubmit}
           formatDate={formatDate}
-          isIssuer={showIssuerTransactions}
           issuerTransactions={issuerTransactions}
-          emitterTransactions={emitterTransactions}
-          totalVerifiedCreditsIssued={Number(totalVerifiedCreditsIssued)}
-          totalVerifiedCreditsBought={Number(totalVerifiedCreditsBought)}
           totalVerifiedIssuer={Number(totalVerifiedIssuer)}
-          totalVerifiedEmitter={Number(totalVerifiedEmitter)}
-          showIssuerTransactions={showIssuerTransactions}
-          setShowIssuerTransactions={setShowIssuerTransactions}
           handleViewMore={handleViewMore}
           refreshTransactions={refreshTransactions}
+          unverifiedCount = {totalUnverifiedIssuer}
+          currentVerifierAccount = {currentVerifierAccount}
         />
 
         <div className="verifier-div">
@@ -118,7 +119,7 @@ function VerifierDashboard({
               <div className="text-center">
                 <PieChart width={200} height={200}>
                   <Pie
-                    data={data}
+                    data={pieData}
                     cx="50%"
                     cy="50%"
                     innerRadius={70}
@@ -127,11 +128,11 @@ function VerifierDashboard({
                     paddingAngle={0}
                     dataKey="value"
                   >
-                    {data.map((entry, index) => (
+                    {pieData.map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} style={{ outline: 'none' }} />
                     ))}
                     <Label
-                      value={`${totalVerifiedEmitter + totalVerifiedIssuer}`}
+                      value={`${ totalVerifiedIssuer}`}
                       position="center"
                       className="bold-text"
                     />
@@ -144,21 +145,18 @@ function VerifierDashboard({
                 </PieChart>
               </div>
               <div className="mt-2">
-                <div className="flex">
-                  <span className="text-l font-bold" style={{ marginRight: '0.5rem' }}>{Math.round((totalVerifiedEmitter / (totalVerifiedEmitter + totalVerifiedIssuer)) * 100)}%</span>
-                  <span className="text-l text-gray-500 font-bold">Emitter Transactions</span>
-                </div>
-                <div className="flex">
+
+                {/* <div className="flex">
                   <span className="text-l font-bold" style={{ marginRight: '0.5rem' }}>{Math.round((totalVerifiedIssuer / (totalVerifiedEmitter + totalVerifiedIssuer)) * 100)}%</span>
                   <span className="text-l text-gray-500 font-bold">Issuer Transactions</span>
-                </div>
+                </div> */}
               </div>
             </div>
             <div className="verifier-lower-2">
               <div style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
                 <h2 className="text-3xl font-bold">Recent Transactions</h2>
               </div>
-              
+
               <div style={{ width: '100%' }}>
                 <div style={{ width: '100%', marginBottom: '1rem', position: 'relative' }}>
                   <input
@@ -179,7 +177,6 @@ function VerifierDashboard({
                       <TableRow>
                         <TableCell align="center" sx={{ fontWeight: 'bold', borderBottom: '2px solid rgba(224, 224, 224, 1)' }}>Project Name</TableCell>
                         <TableCell align="center" sx={{ fontWeight: 'bold', borderBottom: '2px solid rgba(224, 224, 224, 1)' }}>Verification Date</TableCell>
-                        <TableCell align="center" sx={{ fontWeight: 'bold', borderBottom: '2px solid rgba(224, 224, 224, 1)' }}>Type</TableCell>
                         <TableCell align="center" sx={{ fontWeight: 'bold', borderBottom: '2px solid rgba(224, 224, 224, 1)' }}>Transaction Hash</TableCell>
                       </TableRow>
                     </TableHead>
@@ -199,7 +196,6 @@ function VerifierDashboard({
                           >
                             <TableCell align="center">{tx.project_name}</TableCell>
                             <TableCell align="center">{tx.verification_date}</TableCell>
-                            <TableCell align="center">{tx.type === 0 ? 'Emitter' : 'Issuer'}</TableCell>
                             <TableCell align="center">
                               <a href={`https://etherscan.io/tx/${tx.transaction_hash}`} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'underline', color: 'blue' }}>
                                 {shortenAddress(tx.transaction_hash)}

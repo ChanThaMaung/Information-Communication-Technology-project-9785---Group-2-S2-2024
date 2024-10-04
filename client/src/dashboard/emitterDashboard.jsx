@@ -1,59 +1,83 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { ResponsiveContainer, BarChart, Bar, CartesianGrid, XAxis, YAxis, Tooltip, PieChart, Pie, Cell, Label } from 'recharts';
+import { ResponsiveContainer, BarChart, Bar, CartesianGrid, XAxis, YAxis } from 'recharts';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, Dialog, DialogTitle, DialogContent, TextField } from '@mui/material';
 import { shortenAddress } from "../scripts/shortenAddress"; // Add this import
 // import * as getAllAPI from "../../../server/api/Emitter/get_emitter_api";
 import * as getByAddressAPI from "../../../server/api/Emitter/get_by_address_api";
+import './css_files/emitterDashboard.css';
+import { getTotalCreditsActiveAndVerified, getActiveAndVerifiedRows } from "../../../server/api/Issuer/get_issuer_api";
+import SearchIcon from '@mui/icons-material/Search'; // Add this import
 
 function emitterDashboard({
   handleSubmit,
   formatDate,
   currentEmitterAccount,
 }) {
-  const [formData, setFormData] = useState({
-    emitter_address: "",
-    project_name: "",
-    credit_amount: "",
-    date_bought: "",
-    verification_status: "0",
-    prev_tx: "",
-  });
+
   const [totalCredits, setTotalCredits] = useState(0);
   const [creditsByYear, setCreditsByYear] = useState([]);
   const [yearlyTransactions, setYearlyTransactions] = useState([]);
   const [yearlyAverage, setYearlyAverage] = useState(0);
-  const [verifiedCredits, setVerifiedCredits] = useState(0);
   const [allTransactions, setAllTransactions] = useState([]);
-  const [unverifiedCredits, setUnverifiedCredits] = useState(0);
+
+  const [activeAndVerifiedRows, setActiveAndVerifiedRows] = useState([]);
+  const [totalCreditsActiveAndVerified, setTotalCreditsActiveAndVerified] = useState(0);
 
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredTransactions, setFilteredTransactions] = useState([]);
 
-  const [pieData, setPieData] = useState([
-    {
-      name: 'Verified Credits',
-      value: 0
-    },
-    {
-      name: 'Unverified Credits',
-      value: 0
-    }
-  ]);
+  const [selectedProject, setSelectedProject] = useState(null);
+  const [openProjectDialog, setOpenProjectDialog] = useState(false);
 
+  const [projectSearchTerm, setProjectSearchTerm] = useState('');
 
-  const handleChange = (e, field) => {
-    const { value } = e.target;
-    setFormData(prevData => ({
-      ...prevData,
-      [field]: value
-    }));
+  const [isPurchasing, setIsPurchasing] = useState(false);
+
+  const handleProjectSearchChange = (event) => {
+    setProjectSearchTerm(event.target.value);
   };
 
-  const onSubmit = (e) => {
+  const handleRowClick = (project) => {
+    setSelectedProject(project);
+    setOpenProjectDialog(true);
+  };
+
+  const handleCloseProjectDialog = () => {
+    setOpenProjectDialog(false);
+  };
+
+  const refreshTransactions = async () => {
+    await Promise.all([
+      getTotalTransactions(),
+      getTotalCredits(),
+      getCreditsByYear(),
+      getYearlyTransactions(),
+      getYearlyAverage(),
+      getActiveandVerified()
+    ]);
+  };
+
+  const handleBuyProject = async () => {
+    if (selectedProject) {
+      setIsPurchasing(true);
+      try {
+        await onSubmit({ preventDefault: () => {} });
+        handleCloseProjectDialog();
+        await refreshTransactions(); // Refresh data after successful purchase
+      } catch (error) {
+        console.error("Error purchasing credits:", error);
+      } finally {
+        setIsPurchasing(false);
+      }
+    }
+  };
+
+  const onSubmit = async (e) => {
     e.preventDefault();
-    formData.emitter_address = currentEmitterAccount;
-    console.log("Sending data");
-    handleSubmit(formData);
+    selectedProject.bought_by = currentEmitterAccount;
+    selectedProject.prev_tx = selectedProject.transaction_hash;
+    console.log("Buying project:", selectedProject);
+    await handleSubmit(selectedProject);
   };
 
   const [showAllTransactions, setShowAllTransactions] = useState(false);
@@ -89,35 +113,17 @@ function emitterDashboard({
     getCreditsByYear();
     getYearlyTransactions();
     getYearlyAverage();
+    getActiveandVerified();
 
   }, [currentEmitterAccount]);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const verifiedCreditsResponse = await getByAddressAPI.getAddressVerifiedCredits(currentEmitterAccount);
-      const unverifiedCreditsResponse = await getByAddressAPI.getAddressUnverifiedCredits(currentEmitterAccount);
+  const getActiveandVerified = async () => {
+    const response = await getTotalCreditsActiveAndVerified();
+    setTotalCreditsActiveAndVerified(response[0].total_credits);
 
-      const verifiedCredits = verifiedCreditsResponse[0].verified_credits;
-      const unverifiedCredits = unverifiedCreditsResponse[0].unverified_credits;
-
-      setVerifiedCredits(verifiedCredits);
-      setUnverifiedCredits(unverifiedCredits);
-
-      setPieData([
-        {
-          name: 'Verified Credits',
-          value: Number(verifiedCredits)
-        },
-        {
-          name: 'Unverified Credits',
-          value: Number(unverifiedCredits)
-        }
-      ]);
-    };
-
-    fetchData();
-
-  }, [currentEmitterAccount])
+    const response2 = await getActiveAndVerifiedRows();
+    setActiveAndVerifiedRows(response2);
+  }
 
   const getYearlyAverage = async () => {
     const response = await getByAddressAPI.getYearlyAverage(currentEmitterAccount);
@@ -166,11 +172,20 @@ function emitterDashboard({
     setSearchTerm(event.target.value);
   };
 
-  const transactionsToDisplay = searchTerm 
+  const transactionsToDisplay = searchTerm
     ? (showAllTransactions ? filteredTransactions : filteredTransactions.slice(0, 4))
     : (showAllTransactions ? allTransactions : allTransactions.slice(0, 4));
 
-  console.log(pieData);
+  const [openAllProjectsDialog, setOpenAllProjectsDialog] = useState(false);
+
+  const handleOpenAllProjectsDialog = () => {
+    setOpenAllProjectsDialog(true);
+  };
+
+  const handleCloseAllProjectsDialog = () => {
+    setOpenAllProjectsDialog(false);
+  };
+
   return (
     <>
       <div className="Dashboard">
@@ -231,6 +246,75 @@ function emitterDashboard({
             </ResponsiveContainer>
           </div>
         </div>
+        <div className="emitter-middle">
+          <div className="emitter-middle-1">
+            <div className="emitter-middle-1-1">
+              <h2 className="text-2xl font-bold">Acrive Projects</h2>
+              <TextField
+                variant="outlined"
+                size="small"
+                placeholder="Search projects"
+                value={projectSearchTerm}
+                onChange={handleProjectSearchChange}
+                InputProps={{
+                  startAdornment: (
+                    <SearchIcon color="action" style={{ marginRight: '8px' }} />
+                  ),
+                }}
+                style={{ width: '60%', marginTop: '10px' }}
+              />
+            </div>
+            <div className="emitter-middle-1-2">
+              <TableContainer component={Paper}>
+                <Table sx={{ minWidth: 650 }} aria-label="active projects table">
+                  <TableHead>
+                    <TableRow>
+                      <TableCell >Project Name</TableCell>
+                      <TableCell align="left">Credit Amount</TableCell>
+                      <TableCell align="right">Date Issued</TableCell>
+                      <TableCell align="right">Creediting Period</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody style={{ textAlign: 'center' }}>
+                    {activeAndVerifiedRows && activeAndVerifiedRows.length > 0 ? (
+                      activeAndVerifiedRows.slice(0, 4).map((row, index) => (
+                        <TableRow
+                          key={index}
+                          onClick={() => handleRowClick(row)}
+                          sx={{ cursor: 'pointer', '&:hover': { backgroundColor: '#f5f5f5' } }}
+                        >
+                          <TableCell component="th" scope="row">{row.project_name}</TableCell>
+                          <TableCell align="left">{row.credit_amount}</TableCell>
+                          <TableCell align="right">{formatDate(row.date_issued)}</TableCell>
+                          <TableCell align="right">{row.period_covered}</TableCell>
+                        </TableRow>
+                      ))
+                    ) : (
+                      <TableRow>
+                        <TableCell colSpan={4} align="center">No transactions found.</TableCell>
+                      </TableRow>
+                    )}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+              {activeAndVerifiedRows && activeAndVerifiedRows.length > 4 && (
+                <Button variant="contained" onClick={handleOpenAllProjectsDialog} sx={{ mt: 2 }}>
+                  View More
+                </Button>
+              )}
+            </div>
+          </div>
+          <div className="emitter-middle-2">
+            <div className="emitter-middle-2-1">
+              <p className="emitter-item-header">Active Projects</p>
+              <p className="emitter-item-data">{activeAndVerifiedRows.length}</p>
+            </div>
+            <div className="emitter-middle-2-2">
+              <p className="emitter-item-header">Total Active Credits</p>
+              <p className="emitter-item-data">{Number(totalCreditsActiveAndVerified).toLocaleString()}</p>
+            </div>
+          </div>
+        </div>
         <div className="emitter-lower">
           <div className="emitter-lower-1">
             <div className="emitter-lower-1-1">
@@ -238,55 +322,20 @@ function emitterDashboard({
               <p className="emitter-item-data">{totalCredits}</p>
             </div>
             <div className="emitter-lower-1-2">
-              <p className="emitter-item-header" style={{ alignItems: 'center', width: '100%', justifyContent: 'center' }}>Verified Credits</p>
-
-              <ResponsiveContainer width="100%" height={200}>
-                <PieChart>
-                  <Pie
-                    data={pieData}
-                    cx="50%"
-                    cy="50%"
-                    labelLine={false}
-                    outerRadius={70}
-                    innerRadius={60}
-                    fill="#8884d8"
-                    stroke="none"
-                    dataKey="value"
-                  >
-                    {pieData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} style={{outline: 'none'}} fill={COLORS[index % COLORS.length]} />
-                    ))}
-                    <Label
-                      value={Number(verifiedCredits).toLocaleString()}
-                      position="center"
-                      fill="#000000"
-                      style={{
-                        fontSize: '20px',
-                        fontWeight: 'bold',
-                        fontFamily: 'Arial',
-                      }}
-                    />
-                  </Pie>
-                  <Tooltip />
-                </PieChart>
-              </ResponsiveContainer>
+              <p className="emitter-item-header" style={{ alignItems: 'center', width: '100%', justifyContent: 'center' }}>Total Transactions</p>
+              <p className="emitter-item-data">0</p>
             </div>
           </div>
           <div className="emitter-lower-2">
             <div className="emitter-lower-2-heading flex justify-between items-center mb-4">
               <h2 className="text-2xl font-bold">Recent Transactions</h2>
-              <Button
-                variant="contained"
-                onClick={handleOpenCreateDialog}
-              >
-                Create New Transaction
-              </Button>
               <TextField
                 variant="outlined"
                 size="small"
                 placeholder="Search by project name"
                 value={searchTerm}
                 onChange={handleSearchChange}
+                style={{ width: '70%' }}
 
               />
             </div>
@@ -337,53 +386,79 @@ function emitterDashboard({
           </div>
         </div>
       </div>
-      {/* New Create Dialog */}
-      <Dialog open={openCreateDialog} onClose={handleCloseCreateDialog} maxWidth="md" fullWidth>
-        <DialogTitle>Create New Transaction</DialogTitle>
+      {/* Dialog for all projects */}
+      <Dialog open={openAllProjectsDialog} onClose={handleCloseAllProjectsDialog} maxWidth="md" fullWidth>
+        <DialogTitle>All Active Projects</DialogTitle>
         <DialogContent>
-          <div className="flex flex-col gap-2">
-            <div className="flex items-center">
-              <span className="mr-2 w-32">Project Name:</span>
-              <input
-                name="project_name"
-                type="text"
-                value={formData.project_name}
-                onChange={(e) => handleChange(e, "project_name")}
-                className="form-control border border-black p-2 ml-2"
-              />
-            </div>
-            <div className="flex items-center">
-              <span className="mr-2 w-32">Carbon Credit:</span>
-              <input
-                name="credit_amount"
-                type="number"
-                value={formData.credit_amount}
-                onChange={(e) => handleChange(e, "credit_amount")}
-                className="form-control border border-black p-2 ml-2"
-              />
-            </div>
-            <div className="flex items-center">
-              <span className="mr-2 w-32">Date of Purchase:</span>
-              <input
-                name="date_bought"
-                type="date"
-                value={formData.date_bought}
-                onChange={(e) => handleChange(e, "date_bought")}
-                className="form-control border border-black p-2 ml-2"
-              />
-            </div>
-            <button
-              onClick={(e) => {
-                onSubmit(e);
-                handleCloseCreateDialog();
-              }}
-              className="mt-4 p-2 bg-blue-500 text-white hover:bg-blue-600 transition-colors duration-300 border border-black w-32"
-            >
-              Submit
-            </button>
-          </div>
+          <TableContainer component={Paper}>
+            <Table sx={{ minWidth: 650 }} aria-label="all active projects table">
+              <TableHead>
+                <TableRow>
+                  <TableCell>Project Name</TableCell>
+                  <TableCell align="right">Credit Amount</TableCell>
+                  <TableCell align="right">Date Issued</TableCell>
+                  <TableCell align="right">Crediting Period</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {activeAndVerifiedRows && activeAndVerifiedRows.length > 0 ? (
+                  activeAndVerifiedRows.map((row, index) => (
+                    <TableRow key={index}>
+                      <TableCell component="th" scope="row">{row.project_name}</TableCell>
+                      <TableCell align="right">{row.credit_amount}</TableCell>
+                      <TableCell align="right">{formatDate(row.date_issued)}</TableCell>
+                      <TableCell align="right">{row.period_covered}</TableCell>
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell colSpan={4} align="center">No transactions found.</TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </TableContainer>
         </DialogContent>
       </Dialog>
+      {/* Project Details Dialog */}
+      {selectedProject && (
+        <Dialog open={openProjectDialog} onClose={handleCloseProjectDialog} maxWidth="md" fullWidth>
+          <DialogTitle style={{ padding: '1rem', fontSize: '1.5em', marginBottom: '20px' }}>
+            <span style={{ fontWeight: 'bold' }}>Project Name:</span> {selectedProject.project_name}
+          </DialogTitle>
+          <DialogContent>
+            <div style={{ padding: '20px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', fontSize: '1.15rem'}}>
+                <p><strong>Credit Amount:</strong> {selectedProject.credit_amount}</p>
+                <p><strong>Date Issued:</strong> {formatDate(selectedProject.date_issued)}</p>
+                <p><strong>Crediting Period:</strong> {selectedProject.period_covered}</p>
+                <p><strong>Country:</strong> {selectedProject.country}</p>
+                <p><strong>Issued by:</strong> {shortenAddress(selectedProject.issuer_address)}</p>
+              </div>
+              <div style={{ marginTop: '40px', display: 'flex', justifyContent: 'space-between' }}>
+                <Button
+                  onClick={handleCloseProjectDialog}
+                  variant="outlined"
+                  size="large"
+                  disabled={isPurchasing}
+                >
+                  Close
+                </Button>
+                <Button
+                  onClick={handleBuyProject}
+                  variant="contained"
+                  color="primary"
+                  size="large"
+                  disabled={isPurchasing}
+                  style={{ backgroundColor: isPurchasing ? 'gray' : undefined }}
+                >
+                  {isPurchasing ? 'Purchasing...' : 'Purchase Credits'}
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
     </>
   );
 }

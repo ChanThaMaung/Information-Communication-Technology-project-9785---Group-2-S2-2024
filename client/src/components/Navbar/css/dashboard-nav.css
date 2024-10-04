@@ -1,0 +1,51 @@
+.dashboard-navbar {
+    display: flex;
+    padding: 1rem;
+    right: 0;
+    top: 0;
+    z-index: 50;
+    justify-content: space-between;
+    margin-left: auto;
+    width: 85%;
+}
+
+.dashboard-navbar__spacer {
+    display: flex;
+    align-items: center;
+}
+
+.dashboard-navbar__container {
+    display: flex;
+    flex-direction: column;
+}
+
+.dashboard-navbar__list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.dashboard-navbar__item {
+    color: white;
+
+    font-weight: 300;
+    font-size: 1.125rem;
+    padding: 0.25rem;
+}
+
+.dashboard-navbar__item:hover {
+    color: #d1d5db;
+    cursor: pointer;
+}
+
+.dashboard-navbar__connect-button {
+    background: linear-gradient(90deg, #01019B 0%, #770077 100%);
+    color: white;
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+    opacity: 1;
+}
+
+.dashboard-navbar__connect-button:hover {
+    opacity: 0.3;
+}

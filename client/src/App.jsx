@@ -13,7 +13,7 @@ function App() {
         {/* <Navbar /> */}
         {/* <DashboardNavbar /> */}
         <Routes>
-          <Route index path="/home" element={<Home />} />
+          <Route path="/" element={<Home />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/transaction_page" element={<TransactionPage />} />
           <Route path="/input-issuer" element={<InputPageIssuer />} />

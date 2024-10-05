@@ -3,7 +3,9 @@ import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper
 import * as transactionsAPI from '../../../server/API/get_all_transactions';
 import { useState, useEffect } from 'react';
 import { shortenAddress } from '../scripts/shortenAddress';
+import { Link } from 'react-router-dom';
 import './css_files/guestDashboard.css';
+
 function GuestDashboard({
   totalUniqueEmitter,
   totalUniqueIssuer,
@@ -66,7 +68,7 @@ function GuestDashboard({
             <div className="guest-upper-1-lower">
               <h1 style={{ marginBottom: '0px', fontWeight: 'bold' }}>User Types</h1>
               <div className="guest-upper-1-lower-piechart">
-                <div style={{ width: '100%', height: '200px' }}>
+                <div style={{ width: '100%', height: '200px' }} className="piechart">
                   <ResponsiveContainer width="100%" height="100%">
                     <PieChart>
                       <Pie
@@ -115,27 +117,42 @@ function GuestDashboard({
           </div>
           <div className="guest-upper-3">
             <div className="guest-upper-3-upper">
-              <h2 className="text-2xl font-bold">Recent Transactions</h2>
+              <h2>Recent Transactions</h2>
             </div>
-            <div className="guest-upper-3-table"style={{ width: '100%' }}>
+            <div className="guest-upper-3-table" style={{ width: '100%' }}>
               <TableContainer component={Paper} style={{ width: '100%' }}>
                 <Table>
                   <TableHead>
                     <TableRow>
-                      <TableCell align="center">Address</TableCell>
-                      <TableCell align="center">Transaction</TableCell>
+                      <TableCell align="center" style={{fontWeight: 'bold'}}>Address</TableCell>
+                      <TableCell align="center" style={{fontWeight: 'bold'}}>Transaction</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {transactions.map((transaction, index) => (
+                    {transactions.slice(0, 4).map((transaction, index) => (
                       <TableRow key={index}>
-                        <TableCell align="center">{shortenAddress(transaction.address)}</TableCell>
-                        <TableCell align="center">{shortenAddress(transaction.transaction_hash)}</TableCell>
+                        <TableCell align="center">
+                          <span style={{ color: 'blue', textDecoration: 'underline' }}>
+                            {shortenAddress(transaction.address)}
+                          </span>
+                        </TableCell>
+                        <TableCell align="center">
+                          <span style={{ color: 'blue', textDecoration: 'underline' }}>
+                            {shortenAddress(transaction.transaction_hash)}
+                          </span>
+                        </TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
                 </Table>
               </TableContainer>
+            </div>
+            <div className="view-more-button" style={{ textAlign: 'center', marginTop: '20px' }}>
+              <Link to="/transaction_page" style={{ textDecoration: 'none' }}>
+                <button style={{ padding: '5px 10px', backgroundColor: '#06C', color: 'white', border: 'none', borderRadius: '7px', cursor: 'pointer' }}>
+                  View More
+                </button>
+              </Link>
             </div>
           </div>
         </div>
@@ -144,7 +161,7 @@ function GuestDashboard({
         <div className="guest-lower">
           <div className="guest-lower-1">
             
-            <ResponsiveContainer width="100%" height={350}>
+            <ResponsiveContainer width="100%" className="guest-chart">
               <LineChart margin={{ top: 10, right: 30, bottom: 30, left: 30 }}>
                 <XAxis dataKey="formattedDate" tickFormatter={formatDate} axisLine={false} tickLine={false} tick={{ fontSize: 10 }} tickMargin={10} />
                 <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10 }} tickMargin={10} />

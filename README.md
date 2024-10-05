@@ -36,12 +36,12 @@ Changes to consider:
   - Verifier Dashboard:
     ![image](https://github.com/user-attachments/assets/a654695b-12f0-4657-a369-a49e56505500)
 
-Changelog 1.1: 
+## Changelog 1.1: 
 - Added wireframes for the front-end design for verifiers and the public users.
   ![image](https://github.com/user-attachments/assets/72dc6721-ce10-4940-84ec-e9653be1da62)
   ![image](https://github.com/user-attachments/assets/afba6c7b-c550-4b78-ab5d-e1c150a0387a)
 
-Changelog 1.0.1: 
+### Changelog 1.0.1: 
 - Integrated the add/fetch SQL functions for emitters and issuers to the front-end:
   - For emitters (& console log):
 ![image](https://github.com/user-attachments/assets/ba46e765-04f1-401d-b7d0-ef10cec98449)
@@ -53,6 +53,6 @@ Changelog 1.0.1:
   (currently, we can only switch from Issuer to Emitter). The main cause for this is the slicing i used to
   shorten the addresses of the account and the transaction hashes. 
 
-Changelog 1.0: 
+## Changelog 1.0: 
 - Successfully fetched data from the database and displayed them on the front-end. 
 ![image](https://github.com/user-attachments/assets/7e01efea-4fe1-49da-9a6b-a221ffb8f9d7)

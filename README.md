@@ -1,4 +1,4 @@
-# Information-Communication-Technology-project-9785---Group-2-S2-2024
+# Information-Communication-Technology-project-9785---Group-2-S2-2024 - Project changelogs
 
 Changes to be made: 
 + Changes to the dataflow:

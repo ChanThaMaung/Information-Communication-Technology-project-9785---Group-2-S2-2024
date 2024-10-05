@@ -14,7 +14,7 @@ Changes to consider:
   At the moment, both an emitter and a verifier need to sign two contracts in order add the transactions to the blockchain.
   This causes a major problem: 
     -  If a verifier/emitter signs the first transaction but then accidentally rejects the second transaction, only the transaction for the first contract is stored on the blockchain.
-Changelog 2.0: 
+## Changelog 2.0: 
 +++ Responsive designs:
   ++ Guest Dashboard:
     + Added a button to display sidebar for viewport width < 1200px

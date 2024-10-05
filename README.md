@@ -1,6 +1,6 @@
 # Information-Communication-Technology-project-9785---Group-2-S2-2024 - Project changelogs
 
-Changes to be made: 
+## Changes to be made: 
 + Changes to the dataflow:
   - Emitters now do not need verification from verifiers (done).
   - Emitters now can only buy from verified issuer transactions (done). 

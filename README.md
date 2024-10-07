@@ -1,4 +1,4 @@
-# Information-Communication-Technology-project-9785---Group-2-S2-2024 - Project changelogs
+![image](https://github.com/user-attachments/assets/b0dfc58b-90e5-401f-99d1-1da9b5d32aa9)# Information-Communication-Technology-project-9785---Group-2-S2-2024 - Project changelogs
 
 ## Changes to be made: 
 + Changes to the dataflow:
@@ -14,6 +14,17 @@ Changes to consider:
   At the moment, both an emitter and a verifier need to sign two contracts in order add the transactions to the blockchain.
   This causes a major problem: 
     -  If a verifier/emitter signs the first transaction but then accidentally rejects the second transaction, only the transaction for the first contract is stored on the blockchain.
+## Changelog 2.1: 
+
+All layouts change according to the following viewport widths:
+x > 1400px
+1200px <= x < 1399.98px
+992px <= x < 1199.98px
+768px <= x < 991.98px
+576px <= x < 767.98px
+x < 575.98px
+
+I'm unable to provide screenshots as they take too much time.
 ## Changelog 2.0: 
 +++ Responsive designs:
   ++ Guest Dashboard:

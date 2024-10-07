@@ -6,7 +6,7 @@ function createRouter(pool) {
   router.get('/getTotalCreditsByAddress/:address', async (req, res) => {
     const { address } = req.params;
     try {
-      const [rows] = await pool.query('SELECT SUM(issuer.credit_amount) AS total_credits FROM verifier INNER JOIN issuer ON verifier.transaction_updated = issuer.prev_tx WHERE verifier.verifier_address = ?', [address]);
+      const [rows] = await pool.query('SELECT SUM(issuer.credit_amount) AS total_credits FROM verifier INNER JOIN issuer ON verifier.project_name = issuer.project_name WHERE verifier.verifier_address = ?', [address]);
       res.json(rows);
     } catch (error) {
       console.error('Error fetching verifier:', error);

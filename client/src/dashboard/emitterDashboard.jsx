@@ -62,10 +62,11 @@ function emitterDashboard({
       setIsPurchasing(true);
       try {
         await onSubmit({ preventDefault: () => {} });
+        // The dialog will be closed here, after the submission is complete
         handleCloseProjectDialog();
-        await refreshTransactions(); // Refresh data after successful purchase
       } catch (error) {
         console.error("Error purchasing credits:", error);
+        // Optionally, show an error message to the user
       } finally {
         setIsPurchasing(false);
       }
@@ -77,8 +78,15 @@ function emitterDashboard({
     selectedProject.bought_by = currentEmitterAccount;
     selectedProject.prev_tx = selectedProject.transaction_hash;
     console.log("Buying project:", selectedProject);
-    await handleSubmit(selectedProject);
-  };
+    try {
+      await handleSubmit(selectedProject);
+      await refreshTransactions(); // Refresh all data after successful submission
+    } catch (error) {
+      console.error("Error submitting project:", error);
+      // Handle the error appropriately, e.g., show an error message to the user
+      throw error; // Re-throw the error so handleBuyProject can catch it
+    }
+  };  
 
   const [showAllTransactions, setShowAllTransactions] = useState(false);
 
@@ -195,11 +203,13 @@ function emitterDashboard({
               <p className="emitter-item-header">This year's offset</p>
               <p className="emitter-item-data">{Number(creditsByYear).toLocaleString()}</p>
             </div>
+            <hr className="divider" />
             <div className="emitter-upper-1-2">
               <p className="emitter-item-header">Yearly Average</p>
               <p className="emitter-item-data">{Number(Math.round(yearlyAverage)).toLocaleString()}</p>
             </div>
-            <div>
+            
+            <div className="emitter-upper-1-3">
               <p style={{
                 color: Number(creditsByYear) > yearlyAverage ? 'green' : 'red',
                 display: 'flex',
@@ -211,9 +221,9 @@ function emitterDashboard({
                     <span style={{ fontSize: '0.9em' }}>
                       {Number(creditsByYear) > yearlyAverage ? '▲' : '▼'}
                     </span>
-                    {`${((creditsByYear / yearlyAverage) * 100).toFixed(2)}%`}
+                    {`${((creditsByYear / yearlyAverage) * 100).toFixed(2)}% (Last Year's)`}
                   </>
-                )} (Last Year's)
+                )} 
               </p>
             </div>
           </div>
@@ -221,7 +231,7 @@ function emitterDashboard({
             <div className="emitter-upper-2-1">
               <h2>Graph of this year's purchased credits</h2>
             </div>
-            <ResponsiveContainer width="100%" height={150}>
+            <ResponsiveContainer width="100%" height={200} className="emitter-upper-2-2">
               <BarChart accessibilityLayer data={chartData}>
                 <CartesianGrid vertical={false} />
                 <XAxis
@@ -249,30 +259,25 @@ function emitterDashboard({
         <div className="emitter-middle">
           <div className="emitter-middle-1">
             <div className="emitter-middle-1-1">
-              <h2 className="text-2xl font-bold">Acrive Projects</h2>
+              <h2 className="text-2xl font-bold">Active Projects</h2>
               <TextField
                 variant="outlined"
                 size="small"
                 placeholder="Search projects"
                 value={projectSearchTerm}
                 onChange={handleProjectSearchChange}
-                InputProps={{
-                  startAdornment: (
-                    <SearchIcon color="action" style={{ marginRight: '8px' }} />
-                  ),
-                }}
-                style={{ width: '60%', marginTop: '10px' }}
+                style={{ width: '100%', marginTop: '10px' }}
               />
             </div>
             <div className="emitter-middle-1-2">
-              <TableContainer component={Paper}>
-                <Table sx={{ minWidth: 650 }} aria-label="active projects table">
+              <TableContainer component={Paper} style={{ overflowX: 'auto' }}>
+                <Table sx={{ minWidth: 300 }} aria-label="active projects table">
                   <TableHead>
                     <TableRow>
                       <TableCell >Project Name</TableCell>
                       <TableCell align="left">Credit Amount</TableCell>
                       <TableCell align="right">Date Issued</TableCell>
-                      <TableCell align="right">Creediting Period</TableCell>
+                      <TableCell align="right">Crediting Period</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody style={{ textAlign: 'center' }}>
@@ -321,14 +326,15 @@ function emitterDashboard({
               <p className="emitter-item-header">Total Credits Bought</p>
               <p className="emitter-item-data">{totalCredits}</p>
             </div>
+            <hr className="divider" />
             <div className="emitter-lower-1-2">
-              <p className="emitter-item-header" style={{ alignItems: 'center', width: '100%', justifyContent: 'center' }}>Total Transactions</p>
-              <p className="emitter-item-data">0</p>
+              <p className="emitter-item-header">Total Transactions</p>
+              <p className="emitter-item-data">{allTransactions.length}</p>
             </div>
           </div>
           <div className="emitter-lower-2">
             <div className="emitter-lower-2-heading flex justify-between items-center mb-4">
-              <h2 className="text-2xl font-bold">Recent Transactions</h2>
+              <h2 className="text-2xl font-bold">Recent Purchases</h2>
               <TextField
                 variant="outlined"
                 size="small"
@@ -346,7 +352,6 @@ function emitterDashboard({
                     <TableCell align="center" sx={{ fontWeight: 'bold', borderBottom: '2px solid rgba(224, 224, 224, 1)' }}>Project Name</TableCell>
                     <TableCell align="center" sx={{ fontWeight: 'bold', borderBottom: '2px solid rgba(224, 224, 224, 1)' }}>Credit Amount</TableCell>
                     <TableCell align="center" sx={{ fontWeight: 'bold', borderBottom: '2px solid rgba(224, 224, 224, 1)' }}>Date Bought</TableCell>
-                    <TableCell align="center" sx={{ fontWeight: 'bold', borderBottom: '2px solid rgba(224, 224, 224, 1)' }}>Verification Status</TableCell>
                     <TableCell align="center" sx={{ fontWeight: 'bold', borderBottom: '2px solid rgba(224, 224, 224, 1)' }}>Transaction Hash</TableCell>
                   </TableRow>
                 </TableHead>
@@ -363,9 +368,6 @@ function emitterDashboard({
                         {transaction.credit_amount}
                       </TableCell>
                       <TableCell align="center" sx={{ borderBottom: '1px solid rgba(224, 224, 224, 1)' }}>{formatDate(transaction.date_bought)}</TableCell>
-                      <TableCell align="center" sx={{ borderBottom: '1px solid rgba(224, 224, 224, 1)' }}>
-                        {transaction.verification_status === 1 ? "Verified" : "Unverified"}
-                      </TableCell>
                       <TableCell align="center" sx={{ borderBottom: '1px solid rgba(224, 224, 224, 1)' }}>
                         {shortenAddress(transaction.transaction_hash)}
                       </TableCell>

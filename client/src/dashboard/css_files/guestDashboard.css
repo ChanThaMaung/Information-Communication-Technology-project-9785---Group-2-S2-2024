@@ -4,6 +4,7 @@
     flex-direction: column;
     width: 80%;
     margin-right: 10px;
+    height: 400px;
   }
   
   .guest-lower-2 {
@@ -88,6 +89,7 @@
   }
   
   .guest-upper-3-upper h2 {
+    font-size: 1.6rem;
     font-weight: bold;
   }
   .guest-upper-1-upper {
@@ -186,6 +188,7 @@
 
 }
 @media (min-width: 992px) and (max-width: 1199.98px) {
+
   .guest-upper-1-upper p, .guest-upper-2 p { 
     font-size: 0.9rem;
   }
@@ -210,6 +213,9 @@
   .guest-chart {
     height: 250px !important;
   } 
+  .guest-lower {
+    height: 370px;
+  }
 }
 
 /* @media (min-width: 768px) and (max-width: 992px) {

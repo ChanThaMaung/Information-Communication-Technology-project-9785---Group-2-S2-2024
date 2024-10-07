@@ -40,6 +40,7 @@ body {
   border: 1px solid #ccc;
   width: 80%;
   margin: 20px auto 0;
+  margin-bottom: 1rem;
 }
 
 .wrapper {

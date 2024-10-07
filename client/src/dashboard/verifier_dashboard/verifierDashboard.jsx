@@ -1,6 +1,4 @@
 import React, { useState, useEffect } from "react";
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
 import { PieChart, Pie, Cell, Label, Tooltip, Legend } from 'recharts';
 import { shortenAddress } from "../../scripts/shortenAddress";
 import TransactionSection from "./transactionSection";
@@ -45,7 +43,7 @@ function VerifierDashboard({
     fetchTransactions();
     fetchTransactionCount();
 
-  }, [transactions]);
+  }, [currentVerifierAccount]);
 
   const fetchTransactionCount = async () => {
     const getUnverified = await getUnverifiedCount();
@@ -106,18 +104,18 @@ function VerifierDashboard({
           totalVerifiedIssuer={Number(totalVerifiedIssuer)}
           handleViewMore={handleViewMore}
           refreshTransactions={refreshTransactions}
-          unverifiedCount = {totalUnverifiedIssuer}
-          currentVerifierAccount = {currentVerifierAccount}
+          unverifiedCount={totalUnverifiedIssuer}
+          currentVerifierAccount={currentVerifierAccount}
         />
 
         <div className="verifier-div">
           <div className="wrapper">
             <div className="verifier-lower-1">
               <div className="text-center">
-                <p className="emitter-item-header text-2xl">Transactions Verified</p>
+                <p className="emitter-item-header verifier-transaction-text">Transactions Verified</p>
               </div>
-              <div className="text-center">
-                <PieChart width={200} height={200}>
+              <div>
+                <PieChart width={200} height={200} className="pie-chart-container">
                   <Pie
                     data={pieData}
                     cx="50%"
@@ -127,14 +125,15 @@ function VerifierDashboard({
                     fill="#8884d8"
                     paddingAngle={0}
                     dataKey="value"
+                  
                   >
                     {pieData.map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} style={{ outline: 'none' }} />
                     ))}
                     <Label
-                      value={`${ totalVerifiedIssuer}`}
+                      value={`${totalVerifiedIssuer}`}
                       position="center"
-                      className="bold-text"
+                      className="verifier-bold-text"  // Changed from "bold-text" to "verifier-bold-text"
                     />
                   </Pie>
                   <Tooltip
@@ -154,7 +153,7 @@ function VerifierDashboard({
             </div>
             <div className="verifier-lower-2">
               <div style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
-                <h2 className="text-3xl font-bold">Recent Transactions</h2>
+                <h2 className="verifier-header-text">Recent Transactions</h2>
               </div>
 
               <div style={{ width: '100%' }}>
@@ -170,55 +169,45 @@ function VerifierDashboard({
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                   </svg>
                 </div>
-
-                <TableContainer component={Paper} sx={{ width: '100%', borderTop: '2px solid rgba(224, 224, 224, 1)' }}>
-                  <Table aria-label="recent transactions table">
-                    <TableHead>
-                      <TableRow>
-                        <TableCell align="center" sx={{ fontWeight: 'bold', borderBottom: '2px solid rgba(224, 224, 224, 1)' }}>Project Name</TableCell>
-                        <TableCell align="center" sx={{ fontWeight: 'bold', borderBottom: '2px solid rgba(224, 224, 224, 1)' }}>Verification Date</TableCell>
-                        <TableCell align="center" sx={{ fontWeight: 'bold', borderBottom: '2px solid rgba(224, 224, 224, 1)' }}>Transaction Hash</TableCell>
-                      </TableRow>
-                    </TableHead>
-                    <TableBody>
-                      {transactions.length === 0 ? (
+                <div className="div-table-container" style={{ height: '300px', overflow: 'auto', width: '100%' }}>
+                  <TableContainer className="table-container" component={Paper} sx={{ overflow: 'initial',width: '100%', borderTop: '2px solid rgba(224, 224, 224, 1)' }}>
+                    <Table stickyHeader aria-label="recent transactions table">
+                      <TableHead>
                         <TableRow>
-                          <TableCell colSpan={4} align="center">No transactions found</TableCell>
+                          <TableCell className="table-cell" align="center" sx={{ fontWeight: 'bold', borderBottom: '2px solid rgba(224, 224, 224, 1)' }}>Project Name</TableCell>
+                          <TableCell className="table-cell" align="center" sx={{ fontWeight: 'bold', borderBottom: '2px solid rgba(224, 224, 224, 1)' }}>Verification Date</TableCell>
+                          <TableCell className="table-cell" align="center" sx={{ fontWeight: 'bold', borderBottom: '2px solid rgba(224, 224, 224, 1)' }}>Transaction Hash</TableCell>
                         </TableRow>
-                      ) : (
-                        transactions.slice(0, 4).map((tx, index) => (
-                          <TableRow
-                            key={index}
-                            sx={{
-                              '&:last-child td, &:last-child th': { border: 0 },
-                              '&:hover': { backgroundColor: 'rgba(0, 0, 0, 0.04)' }
-                            }}
-                          >
-                            <TableCell align="center">{tx.project_name}</TableCell>
-                            <TableCell align="center">{tx.verification_date}</TableCell>
-                            <TableCell align="center">
-                              <a href={`https://etherscan.io/tx/${tx.transaction_hash}`} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'underline', color: 'blue' }}>
-                                {shortenAddress(tx.transaction_hash)}
-                              </a>
-                            </TableCell>
+                      </TableHead>
+                      <TableBody>
+                        {transactions.length === 0 ? (
+                          <TableRow>
+                            <TableCell colSpan={4} align="center">No transactions found</TableCell>
                           </TableRow>
-                        ))
-                      )}
-                    </TableBody>
-                  </Table>
-                </TableContainer>
-              </div>
-              {transactions.length > 4 && (
-                <div style={{ marginTop: '1rem', textAlign: 'center' }}>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={handleViewMore}
-                  >
-                    View More
-                  </Button>
+                        ) : (
+                          transactions.slice(0, 4).map((tx, index) => (
+                            <TableRow
+                              key={index}
+                              sx={{
+                                '&:last-child td, &:last-child th': { border: 0 },
+                                '&:hover': { backgroundColor: 'rgba(0, 0, 0, 0.04)' }
+                              }}
+                            >
+                              <TableCell className="table-cell" align="center">{tx.project_name}</TableCell>
+                              <TableCell className="table-cell" align="center">{formatDate(tx.verification_date)}</TableCell>
+                              <TableCell className="table-cell" align="center">
+                                <a href={`https://etherscan.io/tx/${tx.transaction_hash}`} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'underline', color: 'blue' }}>
+                                  {shortenAddress(tx.transaction_hash)}
+                                </a>
+                              </TableCell>
+                            </TableRow>
+                          ))
+                        )}
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
                 </div>
-              )}
+              </div>
             </div>
           </div>
         </div>

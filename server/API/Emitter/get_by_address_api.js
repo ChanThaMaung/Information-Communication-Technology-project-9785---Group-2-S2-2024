@@ -1,7 +1,6 @@
 import axios from "axios";
 import { API_URL } from "./constants";
 
-
 export const getCreditsByYear = async (address) => {
     const response = await axios.get(API_URL + "/get_credits_by_year/" + address);
     return response.data;

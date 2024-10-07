@@ -21,7 +21,7 @@ const TransactionDetailsPopup = ({ transaction, open, onClose, handleSubmit, ref
 
     useEffect(() => {
         if (transaction) {
-            const { verification_status, prev_tx, transaction_hash, issuer_address, timestamp,...rest } = transaction;
+            const { verification_status, prev_tx, transaction_hash, issuer_address, timestamp, ...rest } = transaction;
             // Format dates for input fields
             const formattedTransaction = Object.entries(rest).reduce((acc, [key, value]) => {
                 if (key === 'date_issued') {
@@ -156,7 +156,6 @@ function TransactionSection({
     handleSubmit,
     formatDate,
     issuerTransactions,
-    handleViewMore,
     refreshTransactions,
     totalVerifiedIssuer,
     unverifiedCount,
@@ -175,7 +174,7 @@ function TransactionSection({
         };
         fetchTotalCredits();
         setAllTransactions(issuerTransactions);
-    }, [issuerTransactions]);
+    }, []);
 
     const handleRowClick = (tx) => {
         setSelectedTransaction(tx);
@@ -198,14 +197,14 @@ function TransactionSection({
 
     const renderTransactionTable = (allTransactions) => (
         <>
-            <TableContainer component={Paper} sx={{ borderTop: '2px solid rgba(224, 224, 224, 1)' }}>
-                <Table sx={{ minWidth: 650 }} aria-label="transaction table">
+            <TableContainer component={Paper} className="table-container" style={{ width: '100%', overflowX: "initial", borderTop: '2px solid rgba(224, 224, 224, 1)' }}>
+                <Table stickyHeader aria-label="transaction table" style={{ width: '100%' }}>
                     <TableHead>
                         <TableRow>
-                            <TableCell align="center" sx={{ fontWeight: 'bold', borderBottom: '2px solid rgba(224, 224, 224, 1)' }}>Project Name</TableCell>
-                            <TableCell align="center" sx={{ fontWeight: 'bold', borderBottom: '2px solid rgba(224, 224, 224, 1)' }}>Date</TableCell>
-                            <TableCell align="center" sx={{ fontWeight: 'bold', borderBottom: '2px solid rgba(224, 224, 224, 1)' }}>Old Transaction Hash</TableCell>
-                            <TableCell align="center" sx={{ fontWeight: 'bold', borderBottom: '2px solid rgba(224, 224, 224, 1)' }}>Transaction Hash</TableCell>
+                            <TableCell className="table-cell" align="center" sx={{ fontWeight: 'bold', borderBottom: '2px solid rgba(224, 224, 224, 1)' }}>Project Name</TableCell>
+                            <TableCell className="table-cell" align="center" sx={{ fontWeight: 'bold', borderBottom: '2px solid rgba(224, 224, 224, 1)' }}>Date</TableCell>
+                            <TableCell className="table-cell" align="center" sx={{ fontWeight: 'bold', borderBottom: '2px solid rgba(224, 224, 224, 1)' }}>Old Transaction Hash</TableCell>
+                            <TableCell className="table-cell" align="center" sx={{ fontWeight: 'bold', borderBottom: '2px solid rgba(224, 224, 224, 1)' }}>Transaction Hash</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -214,7 +213,7 @@ function TransactionSection({
                                 <TableCell colSpan={4} align="center">No transactions</TableCell>
                             </TableRow>
                         ) : (
-                            allTransactions.slice(0, 4).map((tx, index) => (
+                            allTransactions.map((tx, index) => (
                                 <TableRow
                                     key={index}
                                     onClick={() => handleRowClick(tx)}
@@ -224,16 +223,18 @@ function TransactionSection({
                                         '&:last-child td, &:last-child th': { border: 0 }
                                     }}
                                 >
-                                    <TableCell align="center" component="th" scope="row">{tx.project_name}</TableCell>
-                                    <TableCell align="center">{formatDate(tx.date_issued || tx.date_bought)}</TableCell>
-                                    <TableCell align="center">
-                                        {tx.prev_tx ? (
+                                    <TableCell className="table-cell" align="center" component="th" scope="row">{tx.project_name}</TableCell>
+                                    <TableCell className="table-cell" align="center">{formatDate(tx.date_issued || tx.date_bought)}</TableCell>
+                                    <TableCell className="table-cell" align="center">
+                                        {tx.prev_tx && tx.prev_tx !== "N/A" ? (
                                             <a href={`https://etherscan.io/tx/${tx.prev_tx}`} target="_blank" rel="noopener noreferrer" style={{ color: 'blue', textDecoration: 'underline' }}>
                                                 {shortenAddress(tx.prev_tx)}
                                             </a>
-                                        ) : "N/A"}
+                                        ) : (
+                                            <span>{tx.prev_tx}</span>
+                                        )}
                                     </TableCell>
-                                    <TableCell align="center">
+                                    <TableCell className="table-cell" align="center">
                                         <a href={`https://etherscan.io/tx/${tx.transaction_hash}`} target="_blank" rel="noopener noreferrer" style={{ color: 'blue', textDecoration: 'underline' }}>
                                             {shortenAddress(tx.transaction_hash)}
                                         </a>
@@ -244,11 +245,6 @@ function TransactionSection({
                     </TableBody>
                 </Table>
             </TableContainer>
-            {allTransactions.length > 3 && (
-                <div style={{ marginTop: '1rem', textAlign: 'center' }}>
-                    <Button variant="contained" color="primary" onClick={handleViewMore}>View More</Button>
-                </div>
-            )}
         </>
     );
 
@@ -257,23 +253,23 @@ function TransactionSection({
             <div className="wrapper">
                 <div className="verifier-upper-1">
                     <div className="verifier-upper-1-upper">
-                        <p className="bold-text">{(totalVerifiedCredits || 0).toLocaleString()}</p>
+                        <p className="verifier-bold-text">{(Number(totalVerifiedCredits) || 0).toLocaleString()}</p>
                         <p className="emitter-item-header text-sm justify-center">MtCO2 Verified</p>
                     </div>
-                    <div style={{ width: '100%', marginLeft: '1rem' }}>
+                    <div className="div-hr" style={{ width: '100%', marginLeft: '1rem' }}>
                         <hr className="divider" />
                     </div>
-                    <div style={{ borderRadius: '0.5rem', padding: '1rem', width: '100%', textAlign: 'center' }}>
-                        <p className="bold-text" style={{paddingLeft: '1.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                            {Math.round((totalVerifiedIssuer / (unverifiedCount + totalVerifiedIssuer)) * 100)} <span style={{fontSize: '1.5rem', marginLeft: '0.5rem'}}>%</span>
+                    <div style={{ padding: '1rem', width: '100%', textAlign: 'center' }}>
+                        <p className="verifier-bold-text" style={{ paddingLeft: '1.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            {Math.round((totalVerifiedIssuer / (unverifiedCount + totalVerifiedIssuer)) * 100)} <span className="percentage-text"style={{ fontSize: '1.5rem', marginLeft: '0.5rem' }}>%</span>
                         </p>
-                        <p className="emitter-item-header text-sm justify-center">Projects Verified</p>
+                        <p className="emitter-item-header text-sm justify-center">of Projects Verified</p>
                     </div>
                 </div>
                 <div className="verifier-upper-2">
                     <div style={{ width: '100%', position: 'relative', marginBottom: '1rem', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-                        <div>
-                            <h2 className="text-3xl font-bold">Unverified Issuer Transactions</h2>
+                        <div className="verifier-upper-2-header">
+                            <h2 className="verifier-header-text">Unverified Issuer Transactions</h2>
                         </div>
 
                         <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -291,7 +287,9 @@ function TransactionSection({
                             </div>
                         </div>
                     </div>
-                    {renderTransactionTable(allTransactions, "issuer")}
+                    <div className="div-table-container" style={{ height: '300px',overflow: 'auto', width: '100%' }}>
+                        {renderTransactionTable(allTransactions, "issuer")}
+                    </div>
                 </div>
                 <TransactionDetailsPopup
                     transaction={selectedTransaction}

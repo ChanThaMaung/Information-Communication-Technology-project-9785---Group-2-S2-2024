@@ -1,3 +1,5 @@
+![image](https://github.com/user-attachments/assets/73e405ba-ff9b-42eb-a8c1-09e5b53bb38c)
+
 ![image](https://github.com/user-attachments/assets/b0dfc58b-90e5-401f-99d1-1da9b5d32aa9)# Information-Communication-Technology-project-9785---Group-2-S2-2024 - Project changelogs
 
 ## Changes to be made: 
@@ -6,14 +8,19 @@
   - Emitters now can only buy from verified issuer transactions (done). 
   - Verifiers now only verify issuer transactions (done).
 + Error-handling:
-  - Showing error pop-ups when a user writes an incorrect/duplicate input.
+  - Showing error pop-ups when a user writes an incorrect/duplicate input (in progress).
   - Allowing users to connect to metamask on their smartphone devices or a workaround for that idea (for the project demo purpose).
-  - Changing the blockchain network from Ganache to Sepolia to allow everyone to work with smart contracts.
+  - Changing the blockchain network from Ganache to Sepolia to allow everyone to work with smart contracts (to be implemented).
 Changes to consider: 
-- I want to make the user experience with smart contracts more convenient. Currently, I'm considering changing the data flow of Emitter and Verifier.
-  At the moment, both an emitter and a verifier need to sign two contracts in order add the transactions to the blockchain.
-  This causes a major problem: 
-    -  If a verifier/emitter signs the first transaction but then accidentally rejects the second transaction, only the transaction for the first contract is stored on the blockchain.
+- I want to make the user experience with smart contracts more convenient. 
+  Currently, I'm considering changing the data flow of Emitter and Verifier. At the moment, both an emitter and a verifier need to sign two contracts in order add the transactions to the blockchain. This causes a major problem: 
+-  If a verifier/emitter signs the first transaction but then accidentally rejects the second transaction, only the transaction for the first contract is stored on the blockchain.
+
+## Changelog 2.2: 
+
+Mainly contributed by Tom, the all-transactions page is now complete. Users can filter any key search. 
+**TO FIX:** Something to consider is the "Period Covered" filter box. At the moment, it only uses string to filter the results, which is not correct from the user's perspective.
+- Might add time and location soon to the all-transactions page.  
 ## Changelog 2.1: 
 
 All layouts change according to the following viewport widths:

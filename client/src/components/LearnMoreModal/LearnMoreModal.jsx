@@ -16,9 +16,9 @@ const LearnMoreModal = ({ show, handleClose, content, title }) => {
     return (
         <div className={`fixed inset-0 z-10 flex items-center justify-center bg-[rgba(0,0,0,0.8)] ${show ? 'block' : 'hidden'}`}> 
             <div className="fixed inset-0" onClick={handleClose}></div>
-            <div className={`bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg shadow-lg z-50 p-8 transition-opacity duration-300 ${isVisible ? 'opacity-100' : 'opacity-0'}`}>
+            <div className={`bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg shadow-lg z-50 p-8 transition-opacity duration-300 ${isVisible ? 'opacity-100' : 'opacity-0'} max-w-md mx-auto`}>
                 <h2 className="text-2xl font-extrabold mb-4 text-white text-center">{title}</h2>
-                <p className="text-white">{content}</p>
+                <p className="text-white whitespace-pre-wrap">{content}</p>
                 <button className="mt-6 bg-white text-blue-600 px-6 py-2 rounded hover:bg-gray-200 transition duration-200" onClick={handleClose}>
                     Close
                 </button>
@@ -27,7 +27,6 @@ const LearnMoreModal = ({ show, handleClose, content, title }) => {
     );
 };
 
-// Add PropTypes validation
 LearnMoreModal.propTypes = {
     show: PropTypes.bool.isRequired, // Validate 'show' as a required boolean
     handleClose: PropTypes.func.isRequired, // Validate 'handleClose' as a required function

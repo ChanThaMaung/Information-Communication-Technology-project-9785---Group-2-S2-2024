@@ -61,8 +61,8 @@ export const getTotalIssuer = async () => {
 }
 
 // Fetch all issuer transactions
-export const getAllIssuer = async () => {
-    const response = await axios.get(API_URL + "/all");
+export const getAllIssuer = async (filters) => {
+    const response = await axios.get(API_URL + "/all", { params: filters });
     return response.data;
 }
 

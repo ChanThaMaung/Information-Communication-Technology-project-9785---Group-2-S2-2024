@@ -126,6 +126,49 @@ function createRouter(pool) {
         });
       }
     })
+    router.get('/all', async (req, res) => {
+      const { issuer_address, project_name, date_issued, period_covered, credit_amount, verification_status, active_status } = req.query; // Change to req.query
+      console.log("Received filters:", { issuer_address, project_name, date_issued, period_covered, credit_amount, verification_status, active_status });
+      let query = 'SELECT * FROM issuer WHERE 1=1';
+      const params = [];
+      
+      if (issuer_address) {
+        query += ' AND issuer_address = ?';
+        params.push(`${issuer_address}`);
+      }
+      if (project_name) {
+        query += ' AND project_name LIKE ?';
+        params.push(`%${project_name}%`);
+      }
+      if (date_issued) {
+        query += ' AND date_issued = ?';
+        params.push(date_issued);
+      }
+      if (period_covered) {
+        query += ' AND period_covered LIKE ?';
+        params.push(`%${period_covered}%`);
+      }
+      if (credit_amount) {
+        query += ' AND credit_amount = ?';
+        params.push(credit_amount);
+      }
+      if (verification_status) {
+        query += ' AND verification_status = ?';
+        params.push(verification_status);
+      }
+      if (active_status) {
+        query += ' AND active_status = ?';
+        params.push(active_status);
+      }
+  
+      try {
+        const [rows] = await pool.query(query, params);
+        res.json(rows);
+      } catch (error) {
+        console.error('Error fetching issuers:', error);
+        res.status(500).json({ error: 'Internal server error', details: error.message });
+      }
+    });
 
     router.get('/address/:address', async (req, res) => {
       const {
@@ -277,16 +320,24 @@ function createRouter(pool) {
     });
 
     // GET - Fetch all issuers
-    router.get('/all', async (req, res) => {
+    router.get('/count', async (req, res) => {
       try {
-        const [rows] = await pool.query('SELECT * FROM issuer');
+        const [rows] = await pool.query('SELECT COUNT(*) AS transaction_count FROM issuer');
         res.json(rows);
       } catch (error) {
-        console.error('Error fetching issuers:', error);
-        res.status(500).json({
-          error: 'Internal server error',
-          details: error.message
-        });
+        console.error('Error fetching issuer count:', error);
+        res.status(500).json({ error: 'Internal server error', details: error.message });
+      }
+    });
+  
+    // GET - Fetch the number of unique issuer addresses
+    router.get('/addresses', async (req, res) => {
+      try {
+        const [rows] = await pool.query('SELECT COUNT(DISTINCT issuer_address) AS address_count FROM issuer');
+        res.json(rows);
+      } catch (error) {
+        console.error('Error fetching unique issuer addresses:', error);
+        res.status(500).json({ error: 'Internal server error', details: error.message });
       }
     });
 

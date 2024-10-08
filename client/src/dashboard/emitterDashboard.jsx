@@ -345,8 +345,15 @@ function emitterDashboard({
 
               />
             </div>
-            <TableContainer component={Paper} sx={{ border: '1px solid rgba(224, 224, 224, 1)' }}>
-              <Table sx={{ minWidth: 650 }} aria-label="transaction table">
+            <TableContainer 
+              component={Paper} 
+              sx={{ 
+                border: '1px solid rgba(224, 224, 224, 1)',
+                height: '220px', // Set a fixed height (adjust as needed)
+                overflowY: 'auto' // Enable vertical scrolling
+              }}
+            >
+              <Table sx={{ minWidth: 650 }} aria-label="transaction table" stickyHeader>
                 <TableHead>
                   <TableRow>
                     <TableCell align="center" sx={{ fontWeight: 'bold', borderBottom: '2px solid rgba(224, 224, 224, 1)' }}>Project Name</TableCell>
@@ -376,15 +383,6 @@ function emitterDashboard({
                 </TableBody>
               </Table>
             </TableContainer>
-            {((searchTerm && filteredTransactions.length > 4) || (!searchTerm && allTransactions.length > 4)) && (
-              <Button
-                variant="contained"
-                onClick={() => setShowAllTransactions(!showAllTransactions)}
-                sx={{ mt: 2 }}
-              >
-                {showAllTransactions ? "Show Less" : "View More"}
-              </Button>
-            )}
           </div>
         </div>
       </div>

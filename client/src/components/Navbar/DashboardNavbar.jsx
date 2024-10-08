@@ -14,7 +14,31 @@ export default function DashboardNavbar({ onConnect }) {
     const buttonRef = useRef(null);
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const sidebarRef = useRef(null);
+    const [accountType, setAccountType] = useState('');
 
+    useEffect(() => {
+        if (account) {
+            getAccountType();
+        } else {
+            setAccountType('Guest');
+        }
+    }, [account]);
+
+    const getAccountType = () => {
+        if (account.toLowerCase() === "0xed1626e677Ad1ad8dA0Cb707CD4a32A604AB0862".toLowerCase()) {
+            setAccountType('Verifier');
+        }
+        else if (account.toLowerCase() === "0xf8E848eDC950D1455481e7D82a80098f35D2dCE6".toLowerCase()) {
+            setAccountType('Issuer');
+        }
+        else if (account.toLowerCase() === "0x21b4b54911cfa548c153daa6605161cbaa1eb878".toLowerCase()){
+            setAccountType('Emitter');
+        } 
+        else {
+            setAccountType('Guest');
+        }
+    }
+    
     useEffect(() => {
         // Listen for account changes
         if (window.ethereum) {
@@ -113,7 +137,7 @@ export default function DashboardNavbar({ onConnect }) {
                 </div>
                 <div className="dashboard-navbar__spacer">
                     <div className="account-address">
-                        {account && account.length > 0 ? <p style={{ fontSize: '1.25rem', fontWeight: 'bold' }}>{shortenAddress(account)}'s dashboard</p> : ''}
+                        {account && account.length > 0 ? <p style={{ fontSize: '1.25rem', fontWeight: 'bold' }}>{shortenAddress(account)}'s dashboard ({accountType})</p> : ''}
                     </div>
                 </div>
                 <div className="dashboard-navbar__container">

@@ -73,8 +73,30 @@ function createRouter(pool) {
 
 	// GET - Fetch all emitters
 	router.get('/all', async (req, res) => {
+		const { emitter_address, project_name, date_bought, credit_amount } = req.query; // Change to req.query
+		console.log("Received filters:", { emitter_address, project_name, date_bought, credit_amount });
+		let query = 'SELECT * FROM emitter WHERE 1=1';
+		const params = [];
+
+		if (emitter_address) {
+			query += ' AND emitter_address = ?';
+			params.push(`${emitter_address}`);
+		}
+		if (project_name) {
+			query += ' AND project_name LIKE ?';
+			params.push(`%${project_name}%`);
+		}
+		if (date_bought) { // Ensure date is formatted
+			query += ' AND DATE(date_bought) = ?';
+			params.push(date_bought);
+		}
+		if (credit_amount) {
+			query += ' AND credit_amount = ?';
+			params.push(credit_amount);
+		}
+
 		try {
-			const [rows] = await pool.query('SELECT * FROM emitter');
+			const [rows] = await pool.query(query, params);
 			res.json(rows);
 		} catch (error) {
 			console.error('Error fetching emitters:', error);

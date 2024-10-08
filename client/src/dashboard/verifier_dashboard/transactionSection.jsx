@@ -174,7 +174,7 @@ function TransactionSection({
         };
         fetchTotalCredits();
         setAllTransactions(issuerTransactions);
-    }, []);
+    }, [issuerTransactions]);
 
     const handleRowClick = (tx) => {
         setSelectedTransaction(tx);

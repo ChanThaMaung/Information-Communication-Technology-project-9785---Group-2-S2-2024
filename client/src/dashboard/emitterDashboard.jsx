@@ -61,7 +61,7 @@ function emitterDashboard({
     if (selectedProject) {
       setIsPurchasing(true);
       try {
-        await onSubmit({ preventDefault: () => {} });
+        await onSubmit({ preventDefault: () => { } });
         // The dialog will be closed here, after the submission is complete
         handleCloseProjectDialog();
       } catch (error) {
@@ -86,7 +86,7 @@ function emitterDashboard({
       // Handle the error appropriately, e.g., show an error message to the user
       throw error; // Re-throw the error so handleBuyProject can catch it
     }
-  };  
+  };
 
   const [showAllTransactions, setShowAllTransactions] = useState(false);
 
@@ -203,12 +203,6 @@ function emitterDashboard({
               <p className="emitter-item-header">This year's offset</p>
               <p className="emitter-item-data">{Number(creditsByYear).toLocaleString()}</p>
             </div>
-            <hr className="divider" />
-            <div className="emitter-upper-1-2">
-              <p className="emitter-item-header">Yearly Average</p>
-              <p className="emitter-item-data">{Number(Math.round(yearlyAverage)).toLocaleString()}</p>
-            </div>
-            
             <div className="emitter-upper-1-3">
               <p style={{
                 color: Number(creditsByYear) > yearlyAverage ? 'green' : 'red',
@@ -223,9 +217,15 @@ function emitterDashboard({
                     </span>
                     {`${((creditsByYear / yearlyAverage) * 100).toFixed(2)}% (Last Year's)`}
                   </>
-                )} 
+                )}
               </p>
             </div>
+            <hr className="divider" />
+            <div className="emitter-upper-1-2">
+              <p className="emitter-item-header">Yearly Average</p>
+              <p className="emitter-item-data">{Number(Math.round(yearlyAverage)).toLocaleString()}</p>
+            </div>
+
           </div>
           <div className="emitter-upper-2">
             <div className="emitter-upper-2-1">
@@ -345,9 +345,9 @@ function emitterDashboard({
 
               />
             </div>
-            <TableContainer 
-              component={Paper} 
-              sx={{ 
+            <TableContainer
+              component={Paper}
+              sx={{
                 border: '1px solid rgba(224, 224, 224, 1)',
                 height: '220px', // Set a fixed height (adjust as needed)
                 overflowY: 'auto' // Enable vertical scrolling
@@ -428,7 +428,7 @@ function emitterDashboard({
           </DialogTitle>
           <DialogContent>
             <div style={{ padding: '20px' }}>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', fontSize: '1.15rem'}}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', fontSize: '1.15rem' }}>
                 <p><strong>Credit Amount:</strong> {selectedProject.credit_amount}</p>
                 <p><strong>Date Issued:</strong> {formatDate(selectedProject.date_issued)}</p>
                 <p><strong>Crediting Period:</strong> {selectedProject.period_covered}</p>

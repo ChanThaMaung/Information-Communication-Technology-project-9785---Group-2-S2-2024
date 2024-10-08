@@ -1,6 +1,17 @@
 import axios from "axios";
 import { API_URL } from "./constants";
 
+export const checkProjectNameExists = async (name) => {
+  try {
+    const encodedName = encodeURIComponent(name);
+    const response = await axios.get(API_URL+"/check-project-name/"+encodedName);
+    return response.data.exists;
+  } catch (error) {
+    console.error('Error checking project name:', error);
+    return false;
+  }
+};
+
 export const getLastYearCredits = async (address) => {
   const response = await axios.get(API_URL+"/getLastYearCredits/"+address);
   return response.data;

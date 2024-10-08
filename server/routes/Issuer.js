@@ -4,6 +4,21 @@ function createRouter(pool) {
   const router = express.Router();
 
 
+  router.get('/check-project-name/:name', async (req, res) => {
+    const { name } = req.params;
+    try {
+      const [rows] = await pool.query('SELECT COUNT(*) as count FROM issuer WHERE project_name = ?', [name]);
+      const exists = rows[0].count > 0;
+      res.json({ exists });
+    } catch (error) {
+      console.error('Error checking project name:', error);
+      res.status(500).json({
+        error: 'Internal server error',
+        details: error.message
+      });
+    }
+  });
+
   router.get('/getLastYearCredits/:address', async (req, res) => {
       const {
         address
@@ -127,8 +142,8 @@ function createRouter(pool) {
       }
     })
     router.get('/all', async (req, res) => {
-      const { issuer_address, project_name, date_issued, period_covered, credit_amount, verification_status, active_status } = req.query; // Change to req.query
-      console.log("Received filters:", { issuer_address, project_name, date_issued, period_covered, credit_amount, verification_status, active_status });
+      const { issuer_address, project_name, country, date_issued, period_covered, credit_amount, verification_status, active_status } = req.query; // Change to req.query
+      console.log("Received filters:", { issuer_address, country, project_name, date_issued, period_covered, credit_amount, verification_status, active_status });
       let query = 'SELECT * FROM issuer WHERE 1=1';
       const params = [];
       
@@ -139,6 +154,10 @@ function createRouter(pool) {
       if (project_name) {
         query += ' AND project_name LIKE ?';
         params.push(`%${project_name}%`);
+      }
+      if (country) {
+        query += ' AND country = ?';
+        params.push(`${country}`);
       }
       if (date_issued) {
         query += ' AND date_issued = ?';

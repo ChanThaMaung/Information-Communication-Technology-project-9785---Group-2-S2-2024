@@ -10,7 +10,6 @@ import { countries } from "../scripts/countryList";
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { SingleInputDateRangeField } from '@mui/x-date-pickers-pro/SingleInputDateRangeField';
-import dayjs from 'dayjs';
 
 function issuerDashboard({
   handleSubmit,
@@ -30,14 +29,24 @@ function issuerDashboard({
     prev_tx: "N/A",
   });
 
+  const [formErrors, setFormErrors] = useState({});
   const [dateRange, setDateRange] = useState([null, null]);
 
-  const handleChange = (e, field) => {
+  const handleChange = async (e, field) => {
     const { value } = e.target;
-    setFormData(prevData => ({
-      ...prevData,
-      [field]: value
-    }));
+    setFormData(prev => ({ ...prev, [field]: value }));
+
+    if (field === 'project_name') {
+      // Clear the error as soon as the user starts typing
+      setFormErrors(prev => ({ ...prev, project_name: '' }));
+
+      if (value.trim() !== '') {
+        const exists = await IssuerAPI.checkProjectNameExists(value);
+        if (exists) {
+          setFormErrors(prev => ({ ...prev, project_name: 'This project name already exists' }));
+        }
+      }
+    }
   };
 
   const handleDateRangeChange = (newValue) => {
@@ -56,7 +65,12 @@ function issuerDashboard({
     e.preventDefault();
     formData.issuer_address = currentIssuerAccount;
     console.log("Sending formdata:", formData);
-    handleSubmit(formData);
+    if (formErrors.project_name === '') {
+      handleSubmit(formData);
+    }
+    else {
+      alert("Project already exists!");      
+    }
   };
 
   const [verifiedCredits, setVerifiedCredits] = useState(0);
@@ -132,13 +146,6 @@ function issuerDashboard({
 
   const COLORS = ['#38812F', '#BDE2B9'];
   const COLORS2 = ['#06C', '#8BC1F7'];
-
-  const formatTransactionData = (transaction) => ({
-    ...transaction,
-    date_issued: format(new Date(transaction.date_issued), 'yyyy-MM-dd'),
-    active_status: transaction.active_status === 0 ? 'Active' : 'Retired',
-    time_since: formatDistanceToNow(new Date(transaction.date_issued), { addSuffix: true }),
-  });
 
   const cellStyle = {
     textAlign: 'center',
@@ -353,7 +360,7 @@ function issuerDashboard({
                 type="text"
                 value={formData.project_name}
                 onChange={(e) => handleChange(e, "project_name")}
-                className="form-control border border-black p-2 ml-2"
+                className={`form-control border ${formErrors.project_name ? 'border-red-500' : 'border-black'} p-2 ml-2`}
               />
             </div>
             <div className="flex items-center">

@@ -7,6 +7,8 @@ import { shortenAddress } from "../../scripts/shortenAddress";
 import { formatVerificationStatusSQL, formatActiveStatusSQL } from "../../scripts/formatUtils.js"; // Create this utility function
 import './transactionpage.css';
 import { Link } from 'react-router-dom';
+import { Autocomplete } from '@mui/material';
+import { countries } from "../../scripts/countryList.js";
 
 const useInput = (initialValue = '') => {
     const [value, setValue] = useState(initialValue);
@@ -21,6 +23,19 @@ const useInput = (initialValue = '') => {
     };
 };
 
+const formatDateAndTime = (dateString) => {
+    const date = new Date(dateString);
+    const day = String(date.getDate()).padStart(2, '0');
+    const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+        "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    const month = monthNames[date.getMonth()];
+    const year = date.getFullYear();
+    const hours = date.getHours();
+    const minutes = date.getMinutes();
+    const ampm = hours >= 12 ? 'pm' : 'am';
+    const formattedHours = hours % 12 || 12;
+    return `${month} ${day}, ${year} ${formattedHours}:${minutes}${ampm}`;
+};
 const formatDate = (dateString) => {
     const date = new Date(dateString);
     const day = String(date.getDate()).padStart(2, '0');
@@ -51,6 +66,7 @@ function TransactionPage() {
     const periodCoveredInputforIssuer = useInput(filters.period_covered);
     const verificationStatusInputforIssuer = useInput(filters.verification_status);
     const activeStatusInputforIssuer = useInput(filters.active_status);
+    const countryInputforIssuer = useInput(filters.country);
 
     // Inputs for the filter emitter
     const emitterAddressInputforEmitter = useInput(filters.emitter_address);
@@ -74,6 +90,7 @@ function TransactionPage() {
                 const currentFilters = {
                     issuer_address: issuerAddressInputforIssuer.value,
                     project_name: projectNameInputforIssuer.value,
+                    country: countryInputforIssuer.value,
                     credit_amount: creditAmountInputforIssuer.value,
                     date_issued: dateIssuedInputforIssuer.value,
                     period_covered: periodCoveredInputforIssuer.value,
@@ -134,6 +151,7 @@ function TransactionPage() {
             setFilters({
                 issuer_address: '',
                 project_name: '',
+                country: '',
                 credit_amount: '',
                 date_issued: '',
                 period_covered: '',
@@ -142,6 +160,7 @@ function TransactionPage() {
             });
             issuerAddressInputforIssuer.onChange({ target: { value: '' } });
             projectNameInputforIssuer.onChange({ target: { value: '' } });
+            countryInputforIssuer.onChange({ target: { value: '' } });
             creditAmountInputforIssuer.onChange({ target: { value: '' } });
             dateIssuedInputforIssuer.onChange({ target: { value: '' } });
             periodCoveredInputforIssuer.onChange({ target: { value: '' } });
@@ -180,6 +199,7 @@ function TransactionPage() {
             setFilters({
                 issuer_address: '',
                 project_name: '',
+                country: '',
                 credit_amount: '',
                 date_issued: '',
                 period_covered: '',
@@ -229,6 +249,23 @@ function TransactionPage() {
                                 handleFilterChange('project_name', e.target.value);
                             }}
                             className="col-span-1 bg-white rounded-md shadow-sm" // Tailwind classes
+                        />
+                        <Autocomplete
+                            options={countries}
+                            value={countryInputforIssuer.value}
+                            onChange={(event, newValue) => {
+                                countryInputforIssuer.onChange({ target: { value: newValue } });
+                                handleFilterChange('country', newValue);
+                            }}
+                            renderInput={(params) => (
+                                <TextField
+                                    {...params}
+                                    variant="outlined"
+                                    label="Country"
+                                    name="country"
+                                    className="col-span-1 bg-white rounded-md shadow-sm"
+                                />
+                            )}
                         />
                         <TextField
                             variant="outlined"
@@ -406,6 +443,7 @@ function TransactionPage() {
                                     </a>
                                 </TableCell>
                                 <TableCell>{transaction.project_name}</TableCell>
+                                <TableCell>{transaction.country}</TableCell>
                                 <TableCell align="center">{transaction.credit_amount}</TableCell>
                                 <TableCell align="center">{formatDate(transaction.date_issued)}</TableCell>
                                 <TableCell align="center">{transaction.period_covered}</TableCell>
@@ -432,6 +470,7 @@ function TransactionPage() {
                                         {shortenAddress(transaction.transaction_hash)}
                                     </a>
                                 </TableCell>
+                                <TableCell align="center">{formatDateAndTime(transaction.timestamp)}</TableCell>
                             </TableRow>
                         ))}
                     </TableBody>
@@ -525,6 +564,7 @@ function TransactionPage() {
                                 <>
                                     <TableCell align="center">Issuer Address</TableCell>
                                     <TableCell align="center">Project Name</TableCell>
+                                    <TableCell align="center">Country</TableCell>
                                     <TableCell align="center">Credit Amount</TableCell>
                                     <TableCell align="center">Issued Date</TableCell>
                                     <TableCell align="center">Period Covered</TableCell>
@@ -532,6 +572,7 @@ function TransactionPage() {
                                     <TableCell align="center">Active Status</TableCell>
                                     <TableCell align="center">Prev. Transaction</TableCell>
                                     <TableCell align="center">Transaction Hash</TableCell>
+                                    <TableCell align="center">Timestamp</TableCell>
                                 </>
                             )}
                             {selectedMenu === "emitter" && (

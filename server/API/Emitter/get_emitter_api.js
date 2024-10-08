@@ -1,8 +1,8 @@
 import axios from "axios";
 import { API_URL } from "./constants";
 
-export const getAllEmitter = async () => {
-    const response = await axios.get(API_URL + "/all");
+export const getAllEmitter = async (filters) => {
+    const response = await axios.get(API_URL + "/all", { params: filters });
     return response.data;
 }
 

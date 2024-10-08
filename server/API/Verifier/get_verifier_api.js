@@ -20,8 +20,8 @@ export const getUniqueVerifier = async () => {
 }
 
 // Fetch all verifiers
-export const getAllVerifier = async () => {
-    const response = await axios.get(API_URL + "/all");
+export const getAllVerifier = async (filters) => {
+    const response = await axios.get(API_URL + "/all", { params: filters });
     return response.data;
 }
 

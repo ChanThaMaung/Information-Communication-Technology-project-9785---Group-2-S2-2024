@@ -185,7 +185,7 @@ function VerifierDashboard({
                             <TableCell colSpan={4} align="center">No transactions found</TableCell>
                           </TableRow>
                         ) : (
-                          transactions.slice(0, 4).map((tx, index) => (
+                          transactions.map((tx, index) => (
                             <TableRow
                               key={index}
                               sx={{

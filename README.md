@@ -16,6 +16,7 @@ Changes to consider:
   Currently, I'm considering changing the data flow of Emitter and Verifier. At the moment, both an emitter and a verifier need to sign two contracts in order add the transactions to the blockchain. This causes a major problem: 
 -  If a verifier/emitter signs the first transaction but then accidentally rejects the second transaction, only the transaction for the first contract is stored on the blockchain.
 
+### Update to Changelog 2.2: added country as a filter box and data display. 
 ## Changelog 2.2: 
 
 Mainly contributed by Tom, the all-transactions page is now complete. Users can filter any key search. 

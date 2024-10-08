@@ -147,10 +147,34 @@ function Dashboard() {
     let transactionHash = "";
     let data = {};
     if (accountType === "issuer") {
-      if (formData.project_name === "") {
-        console.log("Project name is required");
+      if (!formData.project_name) {
+        alert("Project name is required!");
         return;
       }
+      if (!formData.credit_amount) {
+        alert("Credit amount is required!");
+        return;
+      }
+ 
+      if (!formData.date_issued) {
+        alert("Date issued is required!");
+        return;
+      }
+      if (!formData.active_status) {
+        alert("Active Status is Required!");
+        return;
+      }
+
+      if (!formData.country) {
+        alert("Country is required!");
+        return;
+      }
+
+      if (!formData.period_covered) {
+        alert("Period covered is required!");
+        return;
+      }
+
       try {
         console.log("Sending transaction");
         transactionHash = await sendIssuerTransaction(formData, "issuer");

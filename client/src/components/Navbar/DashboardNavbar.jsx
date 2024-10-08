@@ -22,7 +22,7 @@ export default function DashboardNavbar({ onConnect }) {
         } else {
             setAccountType('Guest');
         }
-    }, [account]);
+    }, [account, accountType]);
 
     const getAccountType = () => {
         if (account.toLowerCase() === "0xed1626e677Ad1ad8dA0Cb707CD4a32A604AB0862".toLowerCase()) {
@@ -61,6 +61,7 @@ export default function DashboardNavbar({ onConnect }) {
             console.log("Please connect to MetaMask.");
         } else if (accounts[0] !== account) {
             onConnect(accounts[0]);
+            setAccount(accounts[0]);
         }
     };
 

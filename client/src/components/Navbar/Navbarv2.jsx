@@ -8,6 +8,7 @@ export default function Navbarv2() {
     const [account, setAccount] = useState(null); // Changed initial state to null
     const [connectionStatus, setConnectionStatus] = useState('Disconnected'); // No change needed
     const [loading, setLoading] = useState(false); // {{ edit_1 }}
+    const [dropdownOpen, setDropdownOpen] = useState(false); // State for dropdown visibility
     const buttonRef = useRef(null);
 
     const connectWallet = async () => { // {{ edit_2 }}
@@ -58,21 +59,41 @@ export default function Navbarv2() {
     return (
         <>
             <nav className={`flex p-4  ${isSticky ? 'fixed top-0' : 'relative'} right-0 left-0 z-50 place-content-between bg--gradientCarousel `}>
-                <div className="hidden md:flex flex-col md:flex-row md:items-center md:space-x-4 mt-4 md:mt-0">
-                    <ul className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-4">
-                        <li className="text-white font-light text-xl p-1">
-                            <Link to={"/"}>Home</Link>
-                        </li>
-                        <li className="text-white font-light hover:text-gray-300 hover:cursor-pointer text-lg p-1">
-                            <Link to={"/dashboardforemitter"}>Dashboard</Link>
-                        </li>
-                        <li className="text-white font-light hover:text-gray-300 hover:cursor-pointer text-lg p-1">
-                            <Link to={"/transactionpage"}>Transaction</Link>
-                        </li>
-                    </ul>
+                <div className="flex items-center justify-between w-full">
+                    <div className="md:flex hidden">
+                        <ul className="flex space-x-4">
+                            <li className="text-white font-light text-xl p-1">
+                                <Link to={"/"}>Home</Link>
+                            </li>
+                            <li className="text-white font-light hover:text-gray-300 hover:cursor-pointer text-lg p-1">
+                                <Link to={"/dashboardforemitter"}>Dashboard</Link>
+                            </li>
+                            <li className="text-white font-light hover:text-gray-300 hover:cursor-pointer text-lg p-1">
+                                <Link to={"/transactionpage"}>Transaction</Link>
+                            </li>
+                        </ul>
+                    </div>
+                    <div className="md:hidden flex items-center relative"> {/* Added relative positioning */}
+                        <button onClick={() => setDropdownOpen(!dropdownOpen)}>
+                            <i className="fa-solid fa-bars text-white text-2xl"></i>
+                        </button>
+                        <div className={`absolute left-0 top-5 mt-2 bg-black shadow-md rounded-md transition-all duration-300 ease-in-out ${dropdownOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}> {/* Transition effect */}
+                            <ul className="flex flex-col space-y-2 p-4">
+                                <li>
+                                    <Link to={"/"} className="text-white hover:text-gray-600">Home</Link>
+                                </li>
+                                <li>
+                                    <Link to={"/dashboardforemitter"} className="text-white hover:text-gray-600">Dashboard</Link>
+                                </li>
+                                <li>
+                                    <Link to={"/transactionpage"} className="text-white hover:text-gray-600">Transaction</Link>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
                 </div>
-                <div className=" md:flex flex-col md:flex-row md:items-center md:space-x-4 mt-4 md:mt-0">
-                    <ul className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-4">
+                <div className="md:flex flex-col md:flex-row md:items-center md:space-x-4 mt-4 md:mt-0"> 
+                    <ul className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-4"> 
                         <li className="text-white font-light hover:text-gray-300 hover:cursor-pointer text-lg p-1">
                             <button
                                 ref={buttonRef}
@@ -80,7 +101,7 @@ export default function Navbarv2() {
                                 onClick={connectWallet}
                                 disabled={loading} // Disable button while loading
                             >
-                                {loading ? 'Connecting...' : 'Connect'} {/* {{ edit_3 }} */}
+                                {loading ? 'Connecting...' : 'Connect'} {/* {{ edit_5 }} */}
                             </button>
                         </li>
                     </ul>

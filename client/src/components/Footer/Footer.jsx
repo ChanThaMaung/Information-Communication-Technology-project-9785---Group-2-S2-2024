@@ -2,7 +2,7 @@ function Footer() {
     return (
         <div className="pt-8 pb-3 mt-16 border-t border-gray-200 bg--gradientCarousel">
 
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 container mx-auto text-left  px-4 md:px-0 justify-center">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 container mx-auto text-left  px-4 md:px-0 justify-center">
                 <div>
                     <h5 className="font-semibold text-white p-5 pl-0 text-lg">Features</h5>
                     <ul className="space-y-2">
@@ -11,7 +11,8 @@ function Footer() {
                         <li><a className="text-white hover:text-gray-700" href="#">Customer Support</a></li>
                         <li><a className="text-white hover:text-gray-700" href="#">Educational Resources</a></li>
                     </ul>
-                </div><div>
+                </div>
+                <div>
                     <h5 className="font-semibold text-white p-5 pl-0 text-lg">Links</h5>
                     <ul className="space-y-2">
                         <li><a className="text-white hover:text-gray-700" href="#">Blog</a></li>

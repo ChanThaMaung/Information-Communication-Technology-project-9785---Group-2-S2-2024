@@ -2,26 +2,38 @@ import { LineChart } from '@mui/x-charts/LineChart';
 import { Link } from "react-router-dom";
 import Web3 from 'web3';
 import { useState, useEffect } from 'react';
+import { getTotalCredits, getCreditsData } from '../../../../server/API/Emitter/get_emitter_api'; // Import the API functions
+import PropTypes from 'prop-types'; // Import PropTypes
 
 export default function DashBoardforEmitter() {
-    const BasicLineChart = () => {
+    const [web3, setWeb3] = useState(null);
+    const [account, setAccount] = useState('');
+    const [connectionStatus, setConnectionStatus] = useState('Disconnected');
+    const [totalCredits, setTotalCredits] = useState(0); // State to hold total credits
+    const [chartData, setChartData] = useState({ credits: [], dates: [] }); // Add state for chart data
+
+    const BasicLineChart = ({ chartData }) => {
         return (
             <LineChart
-                xAxis={[{ data: [1, 2, 3, 5, 8, 10] }]}
+                xAxis={[{ data: chartData.dates }]} // Use dates for the x-axis
                 series={[
                     {
-                        data: [2, 5.5, 2, 8.5, 1.5, 5],
+                        data: chartData.credits, // Use credits for the series data
                     },
                 ]}
                 width={800}
                 height={300}
             />
         );
-    }
+    };
 
-    const [web3, setWeb3] = useState(null);
-    const [account, setAccount] = useState('');
-    const [connectionStatus, setConnectionStatus] = useState('Disconnected');
+    // Add propTypes for BasicLineChart
+    BasicLineChart.propTypes = {
+        chartData: PropTypes.shape({
+            credits: PropTypes.array.isRequired,
+            dates: PropTypes.array.isRequired,
+        }).isRequired,
+    };
 
     const connectWallet = async () => {
         if (window.ethereum) {
@@ -51,6 +63,31 @@ export default function DashBoardforEmitter() {
     // Determine text color based on connection status
     const statusColor = connectionStatus === 'Connected' ? 'text-green-500' : 'text-red-500';
     const dotColor = connectionStatus === 'Connected' ? 'bg-green-500' : 'bg-red-500';
+
+    useEffect(() => {
+        const fetchTotalCredits = async () => {
+            try {
+                const data = await getTotalCredits(); // Call the API function
+                setTotalCredits(data.total_credits); // Update state with total credits
+            } catch (error) {
+                console.error("Error fetching total credits:", error);
+            }
+        };
+
+        const fetchCreditsData = async () => {
+            try {
+                const data = await getCreditsData(); // Call the new API function
+                const credits = data.map(item => item.credits_amount); // Extract credits amount
+                const dates = data.map(item => new Date(item.date_bought).getFullYear()); // Extract years from date_bought
+                setChartData({ credits, dates }); // Update state with chart data
+            } catch (error) {
+                console.error("Error fetching credits data:", error);
+            }
+        };
+
+        fetchTotalCredits(); // Fetch total credits on component mount
+        fetchCreditsData(); // Fetch credits data on component mount
+    }, []); // Empty dependency array to run only once
 
     return (
         <>
@@ -128,7 +165,7 @@ export default function DashBoardforEmitter() {
                                 <hr />
                             </div>
                             <div>
-                                <p className="text-3xl">1500</p>
+                                <p className="text-3xl">{totalCredits}</p> {/* Display total credits */}
                             </div>
                         </div>
                         <div className="col-span-3 border rounded">
@@ -136,7 +173,7 @@ export default function DashBoardforEmitter() {
                                 <h3 className="text-2xl">Carbon Credits Over Time</h3>
                             </div>
                             <div>
-                                <BasicLineChart />
+                                <BasicLineChart chartData={chartData} /> {/* Pass chart data to BasicLineChart */}
                             </div>
                         </div>
                     </div>

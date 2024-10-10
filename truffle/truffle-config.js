@@ -1,3 +1,5 @@
+const HDWalletProvider = require("@truffle/hdwallet-provider");
+const mnemonic = "cool file cloth wild dune grab twist amused mystery rail vital pretty";
 /**
  * Use this file to configure your truffle project. It's seeded with some
  * common settings for different networks and features like migrations,
@@ -64,6 +66,11 @@ module.exports = {
       network_id: "*",
       // accounts: ['0x8dd5e6f66d4927676c2760f3deb5af714cf93bc0cf39e513fcecb255d6ceaf27']
     },
+
+    sepolia: {
+      provider: () => new HDWalletProvider(mnemonic, "https://sepolia.infura.io/v3/2664039f8795448fb35d51f287758a13"),
+      network_id: 11155111
+    }
     // Useful for testing. The `development` name is special - truffle uses it by default
     // if it's defined here and no other network is specified at the command line.
     // You should run a client (like ganache, geth, or parity) in a separate terminal

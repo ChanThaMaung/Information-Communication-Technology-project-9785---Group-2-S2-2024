@@ -123,8 +123,8 @@ function TransactionPage() {
 
     // Function to reset filters based on selected menu
     const resetFilters = () => {
-        if (selectedMenu === "issuer") {
-            setFilters({
+        const resetValues = {
+            issuer: {
                 project_name: '',
                 credit_amount: '',
                 date_issued: '',
@@ -132,7 +132,20 @@ function TransactionPage() {
                 transaction_hash: '',
                 verification_status: '',
                 active_status: '',
-            });
+            },
+            emitter: {
+                project_name: '',
+                credit_amount: '',
+                date_bought: '',
+            },
+            verifier: {
+                project_name: '',
+                verification_date: '',
+            },
+        };
+        setFilters(resetValues[selectedMenu]);
+        // Reset input values
+        if (selectedMenu === "issuer") {
             projectNameInputforIssuer.onChange({ target: { value: '' } });
             creditAmountInputforIssuer.onChange({ target: { value: '' } });
             dateIssuedInputforIssuer.onChange({ target: { value: '' } });
@@ -141,19 +154,10 @@ function TransactionPage() {
             verificationStatusInputforIssuer.onChange({ target: { value: '' } });
             activeStatusInputforIssuer.onChange({ target: { value: '' } });
         } else if (selectedMenu === "emitter") {
-            setFilters({
-                project_name: '',
-                credit_amount: '',
-                date_bought: '',
-            });
             projectNameInputforEmitter.onChange({ target: { value: '' } });
             creditAmountInputforEmitter.onChange({ target: { value: '' } });
             dateBoughtInputforEmitter.onChange({ target: { value: '' } });
         } else if (selectedMenu === "verifier") {
-            setFilters({
-                project_name: '',
-                verification_date: '',
-            });
             projectNameInputforVerifier.onChange({ target: { value: '' } });
             verificationDateInputforVerifier.onChange({ target: { value: '' } });
         }
@@ -256,13 +260,14 @@ function TransactionPage() {
                         <TextField
                             select
                             variant="outlined"
-                            label="Active Status"
+                            label="Active Status" // Fixed missing label
                             name="active_status"
                             value={activeStatusInputforIssuer.value}
                             onChange={(e) => {
                                 activeStatusInputforIssuer.onChange(e);
                                 handleFilterChange('active_status', e.target.value);
                             }}
+                            className="bg-white rounded-md shadow-sm"
                         >
                             <MenuItem value="active">Active</MenuItem>
                             <MenuItem value="retired">Retired</MenuItem>
@@ -439,9 +444,9 @@ function TransactionPage() {
     };
 
     return (
-        <div className="container mx-auto p-6 bg-gray-100 min-h-screen"> {/* Tailwind classes */}
-            <h1 className="text-3xl font-bold text-center mb-6">Transactions</h1>
-            <div className="grid grid-cols-7 gap-4 justify-between items-center mb-4">
+        <div className="container mx-auto p-4 md:p-6 bg-gray-100 min-h-screen"> {/* Adjusted padding for mobile and tablet */}
+            <h1 className="text-2xl md:text-3xl font-bold text-center mb-4">Transactions</h1> {/* Responsive text size */}
+            <div className="grid grid-cols-1 md:grid-cols-10 gap-4 justify-between items-center mb-4"> {/* Responsive grid layout */}
                 <TextField
                     select
                     variant="outlined"
@@ -454,16 +459,14 @@ function TransactionPage() {
                     <MenuItem value="verifier">Verifier</MenuItem>
                 </TextField>
                 {handleMenuFilterContent()}
-                {/* Add Search Button */}
-                <Button variant="contained" color="primary" onClick={handleSearchClick}>
+                <Button variant="contained" color="primary" onClick={handleSearchClick} className="w-full md:w-auto"> {/* Full width on mobile */}
                     Search
                 </Button>
-                {/* Add Reset Filters Button */}
-                <Button variant="outlined" color="secondary" onClick={resetFilters}>
+                <Button variant="outlined" color="secondary" onClick={resetFilters} className="w-full md:w-auto"> {/* Full width on mobile */}
                     Reset Filters
                 </Button>
             </div>
-            <TableContainer component={Paper} className="shadow-lg">
+            <TableContainer component={Paper} className="shadow-lg overflow-x-auto"> {/* Added overflow for responsiveness */}
                 <Table>
                     <TableHead>
                         <TableRow className="bg-blue-600 text-white">
@@ -486,8 +489,6 @@ function TransactionPage() {
                                     <TableCell align="center">Address</TableCell>
                                     <TableCell align="center">Carbon Credit Amount</TableCell>
                                     <TableCell align="center">Date Bought</TableCell>
-                                    {/* <TableCell align="center">Verification Status</TableCell>
-                                    <TableCell align="center">Active Status</TableCell> */}
                                     <TableCell align="center">Prev Transaction</TableCell>
                                     <TableCell align="center">Transaction Hash</TableCell>
                                 </>

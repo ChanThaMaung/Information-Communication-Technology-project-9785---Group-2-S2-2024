@@ -65,6 +65,15 @@ function createRouter(pool) {
 		}
 	});
 
+	router.get('/credits-data', async (req, res) => {
+		try {
+			const [rows] = await pool.query('SELECT credit_amount, date_bought FROM emitter');
+			res.json(rows);
+		} catch (error) {
+			console.error('Error fetching credits data:', error);
+			res.status(500).json({ error: 'Internal server error', details: error.message });
+		}
+	});
 	// GET - Fetch all unverified emitters
 	router.get('/unverified', async (req, res) => {
 		try {
@@ -127,6 +136,19 @@ function createRouter(pool) {
 			res.status(204).end();
 		} catch (error) {
 			console.error('Error deleting emitter:', error);
+			res.status(500).json({ error: 'Internal server error', details: error.message });
+		}
+	});
+
+	// GET - Fetch the total amount of credit_amount from all emitters
+	router.get('/total-credits', async (req, res) => {
+		try {
+			const [rows] = await pool.query('SELECT SUM(credit_amount) AS total_credits FROM emitter'); // Destructure to get rows
+			console.log(rows[0]?.total_credits || 0);
+			console.log("success");
+			res.status(200).json({rows}); // Access total_credits from the first row
+		} catch (error) {
+			console.error('Error fetching total credits:', error);
 			res.status(500).json({ error: 'Internal server error', details: error.message });
 		}
 	});

@@ -2,7 +2,6 @@ import { useState } from 'react';// Import the new modal component
 import { Link } from "react-router-dom";
 import { Navbarv2, Footer, PieChartWithCenterLabel, LearnMoreModal } from "../../components";
 
-
 export default function Homev2() {
     const [showModal, setShowModal] = useState(false);
     const [modalContent, setModalContent] = useState('');
@@ -16,195 +15,165 @@ export default function Homev2() {
     const handleClose = () => setShowModal(false);
 
     const documents = {
-        whatWeDo: "At the forefront of innovation, we are developing a blockchain-based platform that redefines how carbon offset taxes are managed. Our platform provides a fully transparent, verifiable system for tracking carbon emissions and offsets, ensuring accurate allocation of carbon credits and streamlined compliance with environmental regulations.",
-        whyBlockchain: "Blockchain technology offers an unparalleled level of security and transparency, making it the ideal solution for carbon offset management. Each transaction, whether initiated by carbon emitters, Verified Carbon Standard (VCS) regulators, or offset project developers, is securely logged in an immutable ledger. This not only eliminates the potential for double-selling carbon credits but also guarantees that every ton of offset is accounted for. With our platform, businesses can confidently meet their carbon tax obligations while maintaining full visibility and trust in the process.",
-        howItWorks: 'Our platform integrates three key participants in the carbon offset ecosystem: \
-                    Carbon Emitters: Companies seeking to offset their carbon footprint through certified projects. \
-                    Verified Carbon Standard (VCS): Regulatory bodies responsible for validating emissions reductions and offsets. \
-                    Offset Developers: Organizations developing carbon offset projects such as reforestation or renewable energy initiatives.'
+        whatWeDo: `We are developing a blockchain-based platform that redefines how carbon offset taxes are managed. 
+            Our platform provides a fully transparent, verifiable system for tracking carbon emissions and offsets, ensuring accurate allocation of carbon credits and streamlined compliance with environmental regulations.`,
+        whyBlockchain: `Blockchain technology offers an unparalleled level of security and transparency, making it the ideal solution for carbon offset management. 
+                Each transaction, whether initiated by carbon emitters, Verified Carbon Standard (VCS) regulators, or offset project developers, is securely logged in an immutable ledger. This not only eliminates the potential for double-selling carbon credits but also guarantees that every ton of offset is accounted for. 
+                With our platform, businesses can confidently meet their carbon tax obligations while maintaining full visibility and trust in the process.`,
+        howItWorks: `Our platform integrates three key participants in the carbon offset ecosystem:
+            1. Carbon Emitters: Companies seeking to offset their carbon footprint through certified projects.
+            2. Verifiers: Regulatory bodies responsible for validating emissions reductions and offsets.
+            3. Offset Developers: Organizations/Individuals developing carbon offset projects such as reforestation or renewable energy initiatives.
+            The public can view these activities on our platform, where they can search for specific transactions or projects.`
     };
+
+    const socialMedia = [
+        {
+            name: 'Facebook',
+            icon: 'facebook',
+            link: 'https://www.facebook.com/your-page',
+            text: 'Stay updated with our latest news and updates.'
+        },
+        {
+            name: 'Twitter',
+            icon: 'twitter',
+            link: 'https://www.twitter.com/your-page',
+            text: 'Follow us for the latest news and updates.'
+        },
+        {
+            name: 'LinkedIn',
+            icon: 'linkedin',
+            link: 'https://www.linkedin.com/your-page',
+            text: 'Connect with us on LinkedIn for more information.'
+        },
+        {
+            name: 'Discord',
+            icon: 'discord',
+            link: 'https://www.discord.com/your-page',
+            text: 'Join our Discord community for the latest news and updates.'
+        }
+    ];
 
     return (
         <>
             <Navbarv2 />
 
             {/* Carousel */}
-            <div className="relative w-full h-auto bg--gradientCarousel place-content-center "> {/* Added margin-top */}
-                <div className=" text-center p-10">
-                    <h1 className="text-4xl font-semibold font-mono text-white">
+            <div className="relative w-full h-auto bg--gradientCarousel place-content-center p-4 md:p-10"> {/* Added padding for responsiveness */}
+                <div className="text-center">
+                    <h1 className="text-3xl md:text-4xl font-semibold font-mono text-white">
                         Transforming Carbon Offset Tax Compliance with Blockchain Technology
                     </h1>
                 </div>
-                <div className=" text-center p-4 md:block ml-8">
-                    <h5 className="text-white font-mono text-lg ">
+                <div className="text-center mt-4">
+                    <h5 className="text-white font-mono text-base md:text-lg">
                         Revolutionize carbon offset tax compliance with our blockchain-powered platform. Ensure transparency, security, and accountability for your business or governing body, driving sustainability with innovative technology.
                     </h5>
                 </div>
             </div>
 
             {/* Dashboard */}
-            <div className="relative w-full h-auto bg-white place-content-center mt-16">
-                <div className="grid grid-cols-3 gap-4 container mx-auto">
-                    <div className="col-span-1 flex-col p-4">
+            <div className="relative w-full h-auto bg-white place-content-center mt-8 md:mt-16">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 container mx-auto">
+                    <div className="col-span-1 flex-col p-8">
                         <div className="items-center px-6 py-2">
                             <p className="text-sm inline-block btn btn-ghost bg-orange-200 rounded-full px-4 py-2">
                                 Dashboard
                             </p>
                             <div className="mt-4">
-                                <h1 className="text-5xl font-semibold font-mono">
+                                <h1 className="text-3xl md:text-3xl font-semibold font-mono">
                                     Lorem ipsum dolor sit amet consectetur.
                                 </h1>
                             </div>
                         </div>
                     </div>
-                    <div className="col-span-2 flex-col border bg--gradientDBv2 shadow-md rounded-xl grid grid-cols-2">
-                        <div className="col-span-1 flex items-center justify-center">
+                    <div className="col-span-1 md:col-span-2 flex-col border bg--gradientDBv2 shadow-md rounded-xl grid grid-cols-1 md:grid-cols-2">
+                        <div className="flex items-center justify-center">
                             <PieChartWithCenterLabel />
                         </div>
-                        <div className="col-span-1 justify-items-center">
-                            <p className="text-black font-mono text-lg p-4 mt-6">
+                        <div className="justify-items-center p-4">
+                            <p className="text-black font-mono text-lg">
                                 Lorem ipsum dolor sit amet consectetur adipisicing elit. Autem aliquam, voluptas vitae eaque earum voluptatum mollitia culpa cumque. Incidunt, minus?
                             </p>
-                            <Link to={"/dashboard"} className="btn btn-primary mt-4 ml-4 bg-orange-200 hover:bg-orange-300 px-4 py-2 rounded-full">
-                                Go to Dashboard
-                            </Link>
+                            <div className="flex justify-start">
+                                <Link to={"/dashboard"} className="btn btn-primary mt-5 bg-orange-200 hover:bg-orange-300 px-4 py-2 rounded-full">
+                                    Go to Dashboard
+                                </Link>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
 
             {/* About */}
-            <div className="mt-16">
+            <div className="mt-8 md:mt-16">
                 <div className="container mx-auto">
                     <div className="flex justify-center">
-                        <h1 className="text-5xl font-thin font-mono ">
+                        <h1 className="text-4xl md:text-5xl font-thin font-mono">
                             About
                         </h1>
                     </div>
-                    <div className="grid grid-cols-3 gap-8 justify-items-center mt-8">
-                        <div className="col-span-1 border-2 border-orange-200 rounded-xl">
-                            <div className="bg-orange-200 rounded-t-lg items-center justify-center">
-                                <h1 className="text-2xl font-mono p-4 text-center">
-                                    What We Do
-                                </h1>
-                            </div>
-                            <div className="p-4">
-                                <div className="flex justify-center p-4">
-                                    <p className="text-sm font-mono ">
-                                        At the forefront of innovation...
-                                    </p>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 justify-items-center mt-8">
+                        {Object.entries(documents).map(([key, value]) => (
+                            <div key={key} className="col-span-1 border-2 border-orange-200 rounded-xl">
+                                <div className="bg-orange-200 rounded-t-lg items-center justify-center">
+                                    <h1 className="text-2xl font-mono p-4 text-center capitalize">
+                                        {key.replace(/([A-Z])/g, ' $1').trim()}
+                                    </h1>
                                 </div>
-                                <div className="flex justify-center">
-                                    <button onClick={() => handleShow("What We Do", documents.whatWeDo)} className="text-blue-500 font-mono bg-orange-200 hover:bg-orange-300 px-4 py-2 rounded-full">Learn More</button>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="col-span-1 border-2 border-orange-200 rounded-xl">
-                            <div className="bg-orange-200 rounded-t-lg items-center justify-center">
-                                <h1 className="text-2xl font-mono p-4 text-center">
-                                    Why Blockchain?
-                                </h1>
-                            </div>
-                            <div className="p-4">
-                                <div className="flex justify-center p-4">
-                                    <p className="text-sm font-mono">
-                                        Blockchain technology offers an unparalleled level of security...
-                                    </p>
-                                </div>
-                                <div className="flex justify-center">
-                                    <button onClick={() => handleShow("Why Blockchain?", documents.whyBlockchain)} className="text-blue-500 font-mono bg-orange-200 hover:bg-orange-300 px-4 py-2 rounded-full">Learn More</button>
+                                <div className="p-4">
+                                    <div className="flex justify-center p-4">
+                                        <p className="text-sm font-mono">
+                                            {value.split('. ').slice(0, 2).join('. ')}. {/* Show only the first two sentences */}
+                                        </p>
+                                    </div>
+                                    <div className="flex justify-center">
+                                        <button onClick={() => handleShow(key.replace(/([A-Z])/g, ' $1').trim(), value)} className="text-blue-500 font-mono bg-orange-200 hover:bg-orange-300 px-4 py-2 rounded-full">Learn More</button>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div className="col-span-1 border-2 border-orange-200 rounded-xl">
-                            <div className="bg-orange-200 rounded-t-lg items-center justify-center">
-                                <h1 className="text-2xl font-mono p-4 text-center">
-                                    How It Works:
-                                </h1>
-                            </div>
-                            <div className="p-4">
-                                <div className="flex justify-center p-4">
-                                    <p className="text-sm font-mono">
-                                        Our platform integrates three key participants...
-                                    </p>
-                                </div>
-                                <div className="flex justify-center">
-                                    <button onClick={() => handleShow("How It Works", documents.howItWorks)} className="text-blue-500 font-mono bg-orange-200 hover:bg-orange-300 px-4 py-2 rounded-full">Learn More</button>
-                                </div>
-                            </div>
-                        </div>
+                        ))}
                     </div>
                 </div>
             </div>
 
             {/* Contact */}
-            <div className="mt-16 ">
+            <div className="mt-8 md:mt-16">
                 <div className="container mx-auto">
                     <div className="flex justify-center bg-slate-100 shadow-md rounded-xl">
                         <div className="py-12">
-                            <div className=" rounded-t-lg items-center justify-center pt-1">
+                            <div className="rounded-t-lg items-center justify-center pt-1">
                                 <h1 className="text-4xl font-mono text-center">
                                     Contact Us
                                 </h1>
                             </div>
                             <div className="p-4">
                                 <p className="text-sm font-mono">
-                                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Autem aliquam, voluptas vitae eaque earum voluptatum mollitia culpa cumque. Incidunt, minus?
+                                    Feel free to reach out through any of our social media platforms. We’re always here to connect with you!
                                 </p>
                             </div>
                             <div className="grid grid-cols-2 gap-4 mx-auto">
-                                <div className="col-span-1 p-4 flex items-center">
-                                    <div className="border-2 border-slate-300 bg-white rounded-md w-14 h-14 flex items-center justify-center">
-                                        <i className="fab fa-facebook-f text-2xl m-2"></i>
+                                {socialMedia.map((platform) => (
+                                    <div key={platform} className="col-span-2 md:col-span-1 p-4 flex items-center">
+                                        <div className="border-2 border-slate-300 bg-white rounded-md w-14 h-14 flex items-center justify-center">
+                                            <i className={`fab fa-${platform.icon} text-2xl m-2`}></i>
+                                        </div>
+                                        <div className="p-2">
+                                            <p className="text-sm font-mono text-black capitalize">{platform.name}</p>
+                                            <p className="text-sm font-mono text-black">{platform.text}</p>
+                                        </div>
                                     </div>
-                                    <div className="p-2">
-                                        <p className="text-sm font-mono text-black">Facebook</p>
-                                        <p className="text-sm font-mono text-black">lorem ipsum dolor sit amet consectetur adipisicing ?</p>
-                                    </div>
-
-                                </div>
-                                <div className="col-span-1 p-4 flex items-center">
-                                    <div className="flex items-center border-2 border-slate-300 bg-white rounded-md w-14 h-14 justify-center">
-                                        <i className="fab fa-x-twitter text-2xl m-2"></i>
-                                    </div>
-                                    <div className="p-2">
-                                        <p className="text-sm font-mono text-black">X</p>
-                                        <p className="text-sm font-mono text-black">lorem ipsum dolor sit amet consectetur adipisicing ?</p>
-                                    </div>
-                                </div>
-                                <div className="col-span-1 p-4 flex items-center">
-
-                                    <div className="flex items-center border-2 border-slate-300 bg-white rounded-md w-14 h-14 justify-center">
-                                        <i className="fab fa-linkedin-in text-2xl m-2"></i>
-                                    </div>
-                                    <div className="p-2">
-                                        <p className="text-sm font-mono text-black">LinkedIn</p>
-                                        <p className="text-sm font-mono text-black">lorem ipsum dolor sit amet consectetur adipisicing ?</p>
-                                    </div>
-                                </div>
-                                <div className="col-span-1 p-4 flex items-center">
-                                    <div className="flex items-center border-2 border-slate-300 bg-white rounded-md w-14 h-14 justify-center">
-                                        <i className="fab fa-discord text-2xl m-2"></i> {/* Added Yahoo icon */}
-                                    </div>
-                                    <div className="p-2">
-                                        <p className="text-sm font-mono text-black">Discord</p>
-                                        <p className="text-sm font-mono text-black">lorem ipsum dolor sit amet consectetur adipisicing ?</p>
-                                    </div>
-                                </div>
+                                ))}
                             </div>
                         </div>
                     </div>
-
                 </div>
             </div>
 
             <Footer />
 
-
-
             {/* Modal for Learn More */}
             <LearnMoreModal show={showModal} handleClose={handleClose} content={modalContent} title={modalTitle} />
-
         </>
     );
 }

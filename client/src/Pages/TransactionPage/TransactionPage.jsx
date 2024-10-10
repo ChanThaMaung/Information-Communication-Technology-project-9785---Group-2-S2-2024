@@ -31,10 +31,11 @@ const formatDateAndTime = (dateString) => {
     const month = monthNames[date.getMonth()];
     const year = date.getFullYear();
     const hours = date.getHours();
-    const minutes = date.getMinutes();
-    const ampm = hours >= 12 ? 'pm' : 'am';
-    const formattedHours = hours % 12 || 12;
-    return `${month} ${day}, ${year} ${formattedHours}:${minutes}${ampm}`;
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    const seconds = String(date.getSeconds()).padStart(2, '0');
+    const ampm = hours >= 12 ? ' pm' : ' am';
+    const formattedHours = String(hours % 12 || 12).padStart(2, '0');
+    return `${month} ${day}, ${year} ${formattedHours}:${minutes}:${seconds}${ampm}`;
 };
 const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -438,7 +439,7 @@ function TransactionPage() {
                         {allIssuers.map((transaction, index) => (
                             <TableRow key={index}>
                                 <TableCell align="center">
-                                    <a href={`https://explorer.example.com/address/${transaction.issuer_address}`} target="_blank" rel="noopener noreferrer" style={{ color: 'blue', textDecoration: 'underline' }}>
+                                    <a href={`https://sepolia.etherscan.io/address/${transaction.issuer_address}`} target="_blank" rel="noopener noreferrer" style={{ color: 'blue', textDecoration: 'underline' }}>
                                         {shortenAddress(transaction.issuer_address)}
                                     </a>
                                 </TableCell>
@@ -452,7 +453,7 @@ function TransactionPage() {
                                 <TableCell align="center">
                                     {transaction.prev_tx && transaction.prev_tx !== "N/A" ? (
                                         <a
-                                            href={`https://explorer.example.com/tx/${transaction.prev_tx}`}
+                                            href={`https://sepolia.etherscan.io/tx/${transaction.prev_tx}`}
                                             target="_blank"
                                             rel="noopener noreferrer"
                                             style={{ color: 'blue', textDecoration: 'underline' }}
@@ -466,7 +467,7 @@ function TransactionPage() {
                                     )}
                                 </TableCell>
                                 <TableCell align="center">
-                                    <a href={`https://explorer.example.com/tx/${transaction.transaction_hash}`} target="_blank" rel="noopener noreferrer" style={{ color: 'blue', textDecoration: 'underline' }}>
+                                    <a href={`https://sepolia.etherscan.io/tx/${transaction.transaction_hash}`} target="_blank" rel="noopener noreferrer" style={{ color: 'blue', textDecoration: 'underline' }}>
                                         {shortenAddress(transaction.transaction_hash)}
                                     </a>
                                 </TableCell>
@@ -481,7 +482,7 @@ function TransactionPage() {
                         {allEmitters.map((transaction, index) => (
                             <TableRow key={index}>
                                 <TableCell align="center">
-                                    <a href={`https://explorer.example.com/address/${transaction.emitter_address}`} target="_blank" rel="noopener noreferrer" style={{ color: 'blue', textDecoration: 'underline' }}>
+                                    <a href={`https://sepolia.etherscan.io/address/${transaction.emitter_address}`} target="_blank" rel="noopener noreferrer" style={{ color: 'blue', textDecoration: 'underline' }}>
                                         {shortenAddress(transaction.emitter_address)}
                                     </a>
                                 </TableCell>
@@ -490,7 +491,7 @@ function TransactionPage() {
                                 <TableCell align="center">{transaction.credit_amount}</TableCell>
                                 <TableCell align="center">{formatDate(transaction.date_bought)}</TableCell>
                                 <TableCell align="center">
-                                    <a href={`https://explorer.example.com/tx/${transaction.transaction_hash}`} target="_blank" rel="noopener noreferrer" style={{ color: 'blue', textDecoration: 'underline' }}>
+                                    <a href={`https://sepolia.etherscan.io/tx/${transaction.transaction_hash}`} target="_blank" rel="noopener noreferrer" style={{ color: 'blue', textDecoration: 'underline' }}>
                                         {shortenAddress(transaction.transaction_hash)}
                                     </a>
                                 </TableCell>
@@ -504,14 +505,14 @@ function TransactionPage() {
                         {allVerifiers.map((transaction, index) => (
                             <TableRow key={index}>
                                 <TableCell align="center">
-                                    <a href={`https://explorer.example.com/address/${transaction.verifier_address}`} target="_blank" rel="noopener noreferrer" style={{ color: 'blue', textDecoration: 'underline' }}>
+                                    <a href={`https://sepolia.etherscan.io/address/${transaction.verifier_address}`} target="_blank" rel="noopener noreferrer" style={{ color: 'blue', textDecoration: 'underline' }}>
                                         {shortenAddress(transaction.verifier_address)}
                                     </a>
                                 </TableCell>
                                 <TableCell align="center">{transaction.project_name}</TableCell>
                                 <TableCell align="center">{formatDate(transaction.verification_date)}</TableCell>
                                 <TableCell align="center">
-                                    <a href={`https://explorer.example.com/tx/${transaction.transaction_hash}`} target="_blank" rel="noopener noreferrer" style={{ color: 'blue', textDecoration: 'underline' }}>
+                                    <a href={`https://sepolia.etherscan.io/tx/${transaction.transaction_hash}`} target="_blank" rel="noopener noreferrer" style={{ color: 'blue', textDecoration: 'underline' }}>
                                         {shortenAddress(transaction.transaction_hash)}
                                     </a>
                                 </TableCell>

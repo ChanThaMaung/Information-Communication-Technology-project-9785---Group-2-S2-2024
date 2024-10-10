@@ -142,7 +142,7 @@ function createRouter(pool) {
       }
     })
     router.get('/all', async (req, res) => {
-      const { issuer_address, project_name, country, date_issued, period_covered, credit_amount, verification_status, active_status } = req.query; // Change to req.query
+      const { issuer_address, project_name, country, date_issued, period_covered, credit_amount, verification_status, active_status } = req.query;
       console.log("Received filters:", { issuer_address, country, project_name, date_issued, period_covered, credit_amount, verification_status, active_status });
       let query = 'SELECT * FROM issuer WHERE 1=1';
       const params = [];
@@ -179,6 +179,8 @@ function createRouter(pool) {
         query += ' AND active_status = ?';
         params.push(active_status);
       }
+  
+      query += ' ORDER BY timestamp DESC';
   
       try {
         const [rows] = await pool.query(query, params);

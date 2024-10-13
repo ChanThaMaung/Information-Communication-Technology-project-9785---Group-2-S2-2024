@@ -225,7 +225,7 @@ function TransactionSection({
                                     <TableCell className="table-cell" align="center" component="th" scope="row">{shortenName(tx.project_name)}</TableCell>
                                     <TableCell className="table-cell" align="center">{formatDate(tx.date_issued)}</TableCell>
                                     <TableCell className="table-cell" align="center">
-                                        <a href={`https://etherscan.io/tx/${tx.transaction_hash}`} target="_blank" rel="noopener noreferrer" style={{ color: 'blue', textDecoration: 'underline' }}>
+                                        <a href={`https://sepolia.etherscan.io/tx/${tx.transaction_hash}`} target="_blank" rel="noopener noreferrer" style={{ color: 'blue', textDecoration: 'underline' }}>
                                             {shortenAddress(tx.transaction_hash)}
                                         </a>
                                     </TableCell>

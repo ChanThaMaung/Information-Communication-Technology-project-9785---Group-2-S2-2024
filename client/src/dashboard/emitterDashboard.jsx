@@ -1,12 +1,11 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { ResponsiveContainer, BarChart, Bar, CartesianGrid, XAxis, YAxis } from 'recharts';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, Dialog, DialogTitle, DialogContent, TextField } from '@mui/material';
-import { shortenAddress } from "../scripts/shortenAddress"; // Add this import
-// import * as getAllAPI from "../../../server/api/Emitter/get_emitter_api";
+import { shortenAddress } from "../scripts/shortenAddress";
 import * as getByAddressAPI from "../../../server/api/Emitter/get_by_address_api";
 import './css_files/emitterDashboard.css';
 import { getTotalCreditsActiveAndVerified, getActiveAndVerifiedRows } from "../../../server/api/Issuer/get_issuer_api";
-import SearchIcon from '@mui/icons-material/Search'; // Add this import
+import { shortenName } from "../scripts/shortenName";
 
 function emitterDashboard({
   handleSubmit,
@@ -274,8 +273,8 @@ function emitterDashboard({
                 <Table sx={{ minWidth: 300 }} aria-label="active projects table">
                   <TableHead>
                     <TableRow>
-                      <TableCell >Project Name</TableCell>
-                      <TableCell align="left">Credit Amount</TableCell>
+                      <TableCell style={{ width: '30%' }}>Project Name</TableCell>
+                      <TableCell align="center">Credit Amount</TableCell>
                       <TableCell align="right">Date Issued</TableCell>
                       <TableCell align="right">Crediting Period</TableCell>
                     </TableRow>
@@ -288,8 +287,8 @@ function emitterDashboard({
                           onClick={() => handleRowClick(row)}
                           sx={{ cursor: 'pointer', '&:hover': { backgroundColor: '#f5f5f5' } }}
                         >
-                          <TableCell component="th" scope="row">{row.project_name}</TableCell>
-                          <TableCell align="left">{row.credit_amount}</TableCell>
+                          <TableCell component="th" scope="row" style={{ width: '30%' }}>{shortenName(row.project_name)}</TableCell>
+                          <TableCell align="center">{row.credit_amount}</TableCell>
                           <TableCell align="right">{formatDate(row.date_issued)}</TableCell>
                           <TableCell align="right">{row.period_covered}</TableCell>
                         </TableRow>
@@ -363,23 +362,33 @@ function emitterDashboard({
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {transactionsToDisplay.map((transaction, index) => (
-                    <TableRow
-                      key={index}
-                      sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                    >
-                      <TableCell align="center" sx={{ borderBottom: '1px solid rgba(224, 224, 224, 1)' }}>
-                        {transaction.project_name}
-                      </TableCell>
-                      <TableCell align="center" component="th" scope="row" sx={{ borderBottom: '1px solid rgba(224, 224, 224, 1)' }}>
-                        {transaction.credit_amount}
-                      </TableCell>
-                      <TableCell align="center" sx={{ borderBottom: '1px solid rgba(224, 224, 224, 1)' }}>{formatDate(transaction.date_bought)}</TableCell>
-                      <TableCell align="center" sx={{ borderBottom: '1px solid rgba(224, 224, 224, 1)' }}>
-                        {shortenAddress(transaction.transaction_hash)}
+                  {transactionsToDisplay.length > 0 ? (
+                    transactionsToDisplay.map((transaction, index) => (
+                      <TableRow
+                        key={index}
+                        sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                      >
+                        <TableCell align="center" sx={{ borderBottom: '1px solid rgba(224, 224, 224, 1)' }}>
+                          {shortenName(transaction.project_name)}
+                        </TableCell>
+                        <TableCell align="center" component="th" scope="row" sx={{ borderBottom: '1px solid rgba(224, 224, 224, 1)' }}>
+                          {transaction.credit_amount}
+                        </TableCell>
+                        <TableCell align="center" sx={{ borderBottom: '1px solid rgba(224, 224, 224, 1)' }}>{formatDate(transaction.date_bought)}</TableCell>
+                        <TableCell align="center" sx={{ borderBottom: '1px solid rgba(224, 224, 224, 1)' }}>
+                          <a href={`https://sepolia.etherscan.io/tx/${transaction.transaction_hash}`} target="_blank" rel="noopener noreferrer" style={{ color: 'blue', textDecoration: 'underline' }}>
+                            {shortenAddress(transaction.transaction_hash)}
+                          </a>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  ) : (
+                    <TableRow>
+                      <TableCell colSpan={4} align="center" sx={{ borderBottom: '1px solid rgba(224, 224, 224, 1)' }}>
+                        No transactions found
                       </TableCell>
                     </TableRow>
-                  ))}
+                  )}
                 </TableBody>
               </Table>
             </TableContainer>

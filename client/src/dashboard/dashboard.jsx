@@ -201,6 +201,7 @@ function Dashboard() {
       try {
 
         console.log("Sending transaction to Issuer");
+        formData.active_status = 1;
         await sendIssuerTransaction(formData, "emitter");
         console.log("Transaction sent - issuer");
 

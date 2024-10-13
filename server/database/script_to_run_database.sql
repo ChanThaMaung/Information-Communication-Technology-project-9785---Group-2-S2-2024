@@ -45,7 +45,7 @@ CREATE TABLE `emitter` (
   `emitter_address` varchar(126) NOT NULL,
   `project_name` varchar(126) NOT NULL,
   `credit_amount` int NOT NULL,
-  `date_bought` datetime NOT NULL,
+  `date_bought` date NOT NULL,
   `transaction_hash` varchar(126) NOT NULL,
   PRIMARY KEY (`transaction_hash`),
   UNIQUE KEY `transaction_hash_UNIQUE` (`transaction_hash`)

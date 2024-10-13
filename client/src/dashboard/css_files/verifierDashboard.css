@@ -41,7 +41,7 @@
   flex-direction: column;
   justify-content: center;
   align-items: stretch;
-  height: 100%;
+
 }
 
 .verifier-upper-1-upper {
@@ -252,12 +252,13 @@
   }
   
   .verifier-upper-1 {
-    width: 85%;
+    width: 100%;
     background-color: white;
     box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.4);
     border-radius: 0.5rem;
     padding: 2rem;
     margin-bottom: 1rem;
+    margin-right: 0;
   }
 
   .div-hr {
@@ -274,8 +275,7 @@
   }
 
   .verifier-upper-2 {
-    margin-top: 1rem;
-    width: 130%;
+    width: 100%;
     background-color: white;
     box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.4);
     border-radius: 0.5rem;
@@ -298,10 +298,10 @@
 
   .verifier-lower-1 {
     margin-right: 0;
-    width: 85%;
+    width: 100%;
   }
   .verifier-lower-2 {
-    width: 130%;
+    width: 100%;
     height: 430px;
   }
   .table-container {

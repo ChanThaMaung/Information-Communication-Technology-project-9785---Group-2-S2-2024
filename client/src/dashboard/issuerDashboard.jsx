@@ -339,7 +339,7 @@ function issuerDashboard({
                       </TableCell>
                       <TableCell align="center" style={{ ...cellStyle }}>
                         {transaction.prev_tx && transaction.prev_tx !== "N/A" ? (
-                          <a href={`https://etherscan.io/tx/${transaction.prev_tx}`} target="_blank" rel="noopener noreferrer" style={{ color: 'blue', textDecoration: 'underline' }}>
+                          <a href={`https://sepolia.etherscan.io/tx/${transaction.prev_tx}`} target="_blank" rel="noopener noreferrer" style={{ color: 'blue', textDecoration: 'underline' }}>
                             {shortenAddress(transaction.prev_tx)}
                           </a>
                         ) : (

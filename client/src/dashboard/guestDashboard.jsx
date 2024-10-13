@@ -124,24 +124,36 @@ function GuestDashboard({
                 <Table>
                   <TableHead>
                     <TableRow>
-                      <TableCell align="center" style={{fontWeight: 'bold'}}>Address</TableCell>
-                      <TableCell align="center" style={{fontWeight: 'bold'}}>Transaction</TableCell>
+                      <TableCell align="center" style={{ fontWeight: 'bold' }}>Address</TableCell>
+                      <TableCell align="center" style={{ fontWeight: 'bold' }}>Transaction</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
                     {transactions.slice(0, 4).map((transaction, index) => (
                       <TableRow key={index}>
                         <TableCell align="center">
-                          <span style={{ color: 'blue', textDecoration: 'underline' }}>
+                          <a
+                            href={`https://sepolia.etherscan.io/address/${transaction.address}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{ color: 'blue', textDecoration: 'underline' }}
+                          >
                             {shortenAddress(transaction.address)}
-                          </span>
+                          </a>
                         </TableCell>
+
                         <TableCell align="center">
-                          <span style={{ color: 'blue', textDecoration: 'underline' }}>
+                          <a
+                            href={`https://sepolia.etherscan.io/tx/${transaction.transaction_hash}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{ color: 'blue', textDecoration: 'underline' }}
+                          >
                             {shortenAddress(transaction.transaction_hash)}
-                          </span>
+                          </a>
                         </TableCell>
                       </TableRow>
+
                     ))}
                   </TableBody>
                 </Table>
@@ -160,7 +172,7 @@ function GuestDashboard({
         {/* Bottom Div */}
         <div className="guest-lower">
           <div className="guest-lower-1">
-            
+
             <ResponsiveContainer width="100%" className="guest-chart">
               <LineChart margin={{ top: 10, right: 30, bottom: 30, left: 30 }}>
                 <XAxis dataKey="formattedDate" tickFormatter={formatDate} axisLine={false} tickLine={false} tick={{ fontSize: 10 }} tickMargin={10} />
@@ -169,7 +181,7 @@ function GuestDashboard({
                 <Line type="linear" dataKey="credit_amount" data={processedActiveRows} stroke="#484848" dot={{ stroke: '#484848', r: 1, strokeWidth: 4.5 }} />
               </LineChart>
             </ResponsiveContainer>
-            <h2 className="emitter-item-header" style={{marginTop: '10px'}}>Showing {activeRows.length > 0 ? 'active' : 'retired'} credits</h2>
+            <h2 className="emitter-item-header" style={{ marginTop: '10px' }}>Showing {activeRows.length > 0 ? 'active' : 'retired'} credits</h2>
           </div>
           <div className="guest-lower-2">
             <span className="bold-text">

@@ -197,7 +197,7 @@ function VerifierDashboard({
                               <TableCell className="table-cell" align="center">{shortenName(tx.project_name)}</TableCell>
                               <TableCell className="table-cell" align="center">{formatDate(tx.verification_date)}</TableCell>
                               <TableCell className="table-cell" align="center">
-                                <a href={`https://etherscan.io/tx/${tx.transaction_hash}`} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'underline', color: 'blue' }}>
+                                <a href={`https://sepolia.etherscan.io/tx/${tx.transaction_hash}`} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'underline', color: 'blue' }}>
                                   {shortenAddress(tx.transaction_hash)}
                                 </a>
                               </TableCell>

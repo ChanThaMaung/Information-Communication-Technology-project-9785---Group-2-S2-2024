@@ -18,7 +18,9 @@ export default function Homev2() {
     const documents = {
         WhatWeDo: `We are developing a blockchain-based platform that redefines how carbon offset taxes are managed. 
 
-Our platform provides a fully transparent, verifiable system for tracking carbon emissions and offsets, ensuring accurate allocation of carbon credits and streamlined compliance with environmental regulations.`,
+Our platform provides a fully transparent, verifiable system for tracking carbon emissions and offsets, ensuring accurate allocation of carbon credits and streamlined compliance with environmental regulations.
+
+Additionally, the platform leverages smart contracts to automate the issuance and trading of carbon credits, reducing the need for intermediaries and minimizing transaction costs. By integrating real-time data from IoT sensors and other tracking technologies, it enables precise monitoring of carbon footprints across various industries. Our goal is to empower businesses and governments to meet sustainability targets more efficiently, fostering greater accountability and collaboration in the fight against climate change.`,
         WhyBlockchain: `Blockchain technology offers an unparalleled level of security and transparency, making it the ideal solution for carbon offset management. 
 
 Each transaction, whether initiated by carbon emitters, Verified Carbon Standard (VCS) regulators, or offset project developers, is securely logged in an immutable ledger. This not only eliminates the potential for double-selling carbon credits but also guarantees that every ton of offset is accounted for. 
@@ -86,11 +88,11 @@ The public can view these activities on our platform, where they can search for 
                     <div className="col-span-1 flex-col p-8">
                         <div className="items-center px-6 py-2">
                             <p className="text-sm inline-block btn btn-ghost bg-orange-200 rounded-full px-4 py-2">
-                                Dashboard
+                                Revolutional Carbon
                             </p>
                             <div className="mt-4">
                                 <h1 className="text-3xl md:text-3xl font-semibold font-mono">
-                                    Solving with Blockchain
+                                    Solving Climate Change with Blockchain
                                 </h1>
                             </div>
                         </div>
@@ -114,7 +116,7 @@ The public can view these activities on our platform, where they can search for 
             </div>
 
             {/* About */}
-            <div className="mt-8 md:mt-16">
+            <div className="mt-8 md:mt-16 mr-10 ml-10">
                 <div className="container mx-auto">
                     <div className="flex justify-center">
                         <h1 className="text-4xl md:text-5xl font-thin font-mono">
@@ -123,20 +125,25 @@ The public can view these activities on our platform, where they can search for 
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8 justify-items-center mt-8">
                         {Object.entries(documents).map(([key, value]) => (
-                            <div key={key} className="col-span-1 border-2 border-orange-200 rounded-xl">
+                            <div key={key} className="col-span-1 border-2 border-orange-200 rounded-xl flex flex-col">
                                 <div className="bg-orange-200 rounded-t-lg items-center justify-center">
                                     <h1 className="text-2xl font-mono p-4 text-center capitalize">
                                         {key.replace(/([A-Z])/g, ' $1').trim()}
                                     </h1>
                                 </div>
-                                <div className="p-4">
+                                <div className="p-4 flex-grow flex flex-col justify-between">
                                     <div className="flex justify-center p-4">
                                         <p className="text-sm font-mono">
                                             {value.slice(0, 200)}...
                                         </p>
                                     </div>
-                                    <div className="flex justify-center">
-                                        <button onClick={() => handleShow(key.replace(/([A-Z])/g, ' $1').trim(), value)} className="text-blue-500 font-mono bg-orange-200 hover:bg-orange-300 px-4 py-2 rounded-full">Learn More</button>
+                                    <div className="flex justify-center mt-auto">
+                                        <button 
+                                            onClick={() => handleShow(key.replace(/([A-Z])/g, ' $1').trim(), value)} 
+                                            className="text-blue-500 font-mono bg-orange-200 hover:bg-orange-300 px-4 py-2 rounded-full"
+                                        >
+                                            Learn More
+                                        </button>
                                     </div>
                                 </div>
                             </div>

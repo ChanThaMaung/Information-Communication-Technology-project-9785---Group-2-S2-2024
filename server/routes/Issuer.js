@@ -196,7 +196,7 @@ function createRouter(pool) {
         address
       } = req.params;
       try {
-        const [rows] = await pool.query('SELECT * FROM issuer WHERE issuer_address = ?', [address]);
+        const [rows] = await pool.query('SELECT * FROM issuer WHERE issuer_address = ? ORDER BY timestamp DESC', [address]);
         res.json(rows);
       } catch (error) {
         console.error('Error fetching issuer:', error);

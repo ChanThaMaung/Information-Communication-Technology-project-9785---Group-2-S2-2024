@@ -42,7 +42,7 @@ function createRouter(pool) {
       address
     } = req.params;
     try {
-      const [rows] = await pool.query('SELECT * FROM verifier WHERE verifier_address = ?', [address]);
+      const [rows] = await pool.query('SELECT * FROM verifier WHERE verifier_address = ? ORDER BY verification_date DESC', [address]);
       res.json(rows);
     } catch (error) {
       console.error('Error fetching verifier:', error);

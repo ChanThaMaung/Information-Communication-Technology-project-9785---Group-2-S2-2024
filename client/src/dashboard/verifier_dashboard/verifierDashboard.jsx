@@ -8,6 +8,7 @@ import * as verifierAPI from "../../../../server/API/Verifier/get_by_address_api
 import { getUnverifiedIssuer, getUnverifiedCount } from "../../../../server/API/Issuer/get_issuer_api"
 import '../css_files/verifierDashboard.css';
 import '../css_files/emitterDashboard.css';
+import { shortenName } from "../../scripts/shortenName";
 function VerifierDashboard({
   handleSubmit,
   formatDate,
@@ -193,7 +194,7 @@ function VerifierDashboard({
                                 '&:hover': { backgroundColor: 'rgba(0, 0, 0, 0.04)' }
                               }}
                             >
-                              <TableCell className="table-cell" align="center">{tx.project_name}</TableCell>
+                              <TableCell className="table-cell" align="center">{shortenName(tx.project_name)}</TableCell>
                               <TableCell className="table-cell" align="center">{formatDate(tx.verification_date)}</TableCell>
                               <TableCell className="table-cell" align="center">
                                 <a href={`https://etherscan.io/tx/${tx.transaction_hash}`} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'underline', color: 'blue' }}>

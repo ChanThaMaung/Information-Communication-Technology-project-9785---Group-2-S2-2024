@@ -5,7 +5,7 @@ export function formatDate(dateString) {
     const month = monthNames[date.getMonth()];
     const year = date.getFullYear();
   
-    return `${day}/${month}/${year}`;
+    return `${month}/${day}/${year}`;
   }
 
   export function convertDateFormat(seconds) {

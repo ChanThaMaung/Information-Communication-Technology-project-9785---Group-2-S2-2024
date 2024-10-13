@@ -10,7 +10,8 @@ import { countries } from "../scripts/countryList";
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { SingleInputDateRangeField } from '@mui/x-date-pickers-pro/SingleInputDateRangeField';
-
+import CircularProgress from '@mui/material/CircularProgress';
+import { shortenName } from "../scripts/shortenName";
 function issuerDashboard({
   handleSubmit,
   formatDate,
@@ -31,6 +32,7 @@ function issuerDashboard({
 
   const [formErrors, setFormErrors] = useState({});
   const [dateRange, setDateRange] = useState([null, null]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleChange = async (e, field) => {
     const { value } = e.target;
@@ -61,12 +63,21 @@ function issuerDashboard({
     }));
   };
 
-  const onSubmit = (e) => {
+  const onSubmit = async (e) => {
     e.preventDefault();
     formData.issuer_address = currentIssuerAccount;
     console.log("Sending formdata:", formData);
     if (formErrors.project_name === '') {
-      handleSubmit(formData);
+      setIsSubmitting(true);
+      try {
+        await handleSubmit(formData);
+        handleCloseCreateDialog();
+      } catch (error) {
+        console.error("Error submitting form:", error);
+        // Handle error (e.g., show error message)
+      } finally {
+        setIsSubmitting(false);
+      }
     }
     else {
       alert("Project already exists!");      
@@ -169,7 +180,7 @@ function issuerDashboard({
         <div className="issuer-upper-1">
           <div className="issuer-upper-1-1" style={{ marginBottom: '1.5rem' }}>
             <div className="issuer-item-header">
-              <div>This year</div>
+              <div>Credits Issued This year</div>
             </div>
             <div className="issuer-item-data">
               {Number(yearlyCredits).toLocaleString()}
@@ -314,7 +325,7 @@ function issuerDashboard({
                 {filteredTransactions.length > 0 ? (
                   filteredTransactions.map((transaction) => (
                     <TableRow key={transaction.transaction_hash}>
-                      <TableCell align="center" style={{ ...cellStyle, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{transaction.project_name}</TableCell>
+                      <TableCell align="center" style={{ ...cellStyle, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{shortenName(transaction.project_name)}</TableCell>
                       <TableCell align="center" style={{ ...cellStyle }}>{formatDate(transaction.date_issued)}</TableCell>
                       <TableCell align="center" style={{ ...cellStyle }}>{transaction.credit_amount}</TableCell>
                       <TableCell align="center" style={{ ...cellStyle }}>{transaction.active_status === 0 ? 'Active' : 'Retired'}</TableCell>
@@ -431,9 +442,10 @@ function issuerDashboard({
             </div>
             <button
               type="submit"
-              className="mt-4 p-2 bg-blue-500 text-white hover:bg-blue-600 transition-colors duration-300 border border-black w-32"
+              className="mt-4 p-2 bg-blue-500 text-white hover:bg-blue-600 transition-colors duration-300 border border-black w-32 flex items-center justify-center"
+              disabled={isSubmitting}
             >
-              Submit
+              {isSubmitting ? <CircularProgress size={24} color="inherit" /> : 'Submit'}
             </button>
           </form>
         </DialogContent>

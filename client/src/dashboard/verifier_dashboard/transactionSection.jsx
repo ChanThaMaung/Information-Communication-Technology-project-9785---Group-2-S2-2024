@@ -4,7 +4,7 @@ import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper
 import CloseIcon from '@mui/icons-material/Close';
 import '../css_files/verifierDashboard.css';
 import * as verifierAPI from "../../../../server/API/Verifier/get_by_address_api"
-// Add this mapping object outside of your component
+import { shortenName } from "../../scripts/shortenName";
 const propertyDisplayNames = {
     project_name: "Project Name",
     credit_amount: "Credit Amount",
@@ -203,7 +203,6 @@ function TransactionSection({
                         <TableRow>
                             <TableCell className="table-cell" align="center" sx={{ fontWeight: 'bold', borderBottom: '2px solid rgba(224, 224, 224, 1)' }}>Project Name</TableCell>
                             <TableCell className="table-cell" align="center" sx={{ fontWeight: 'bold', borderBottom: '2px solid rgba(224, 224, 224, 1)' }}>Date</TableCell>
-                            <TableCell className="table-cell" align="center" sx={{ fontWeight: 'bold', borderBottom: '2px solid rgba(224, 224, 224, 1)' }}>Old Transaction Hash</TableCell>
                             <TableCell className="table-cell" align="center" sx={{ fontWeight: 'bold', borderBottom: '2px solid rgba(224, 224, 224, 1)' }}>Transaction Hash</TableCell>
                         </TableRow>
                     </TableHead>
@@ -223,17 +222,8 @@ function TransactionSection({
                                         '&:last-child td, &:last-child th': { border: 0 }
                                     }}
                                 >
-                                    <TableCell className="table-cell" align="center" component="th" scope="row">{tx.project_name}</TableCell>
-                                    <TableCell className="table-cell" align="center">{formatDate(tx.date_issued || tx.date_bought)}</TableCell>
-                                    <TableCell className="table-cell" align="center">
-                                        {tx.prev_tx && tx.prev_tx !== "N/A" ? (
-                                            <a href={`https://etherscan.io/tx/${tx.prev_tx}`} target="_blank" rel="noopener noreferrer" style={{ color: 'blue', textDecoration: 'underline' }}>
-                                                {shortenAddress(tx.prev_tx)}
-                                            </a>
-                                        ) : (
-                                            <span>{tx.prev_tx}</span>
-                                        )}
-                                    </TableCell>
+                                    <TableCell className="table-cell" align="center" component="th" scope="row">{shortenName(tx.project_name)}</TableCell>
+                                    <TableCell className="table-cell" align="center">{formatDate(tx.date_issued)}</TableCell>
                                     <TableCell className="table-cell" align="center">
                                         <a href={`https://etherscan.io/tx/${tx.transaction_hash}`} target="_blank" rel="noopener noreferrer" style={{ color: 'blue', textDecoration: 'underline' }}>
                                             {shortenAddress(tx.transaction_hash)}
@@ -269,7 +259,7 @@ function TransactionSection({
                 <div className="verifier-upper-2">
                     <div style={{ width: '100%', position: 'relative', marginBottom: '1rem', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                         <div className="verifier-upper-2-header">
-                            <h2 className="verifier-header-text">Unverified Issuer Transactions</h2>
+                            <h2 className="verifier-header-text">Unverified Projects</h2>
                         </div>
 
                         <div style={{ display: 'flex', alignItems: 'center' }}>

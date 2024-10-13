@@ -269,7 +269,7 @@ function emitterDashboard({
               />
             </div>
             <div className="emitter-middle-1-2">
-              <TableContainer component={Paper} style={{ overflowX: 'auto'}}>
+              <TableContainer component={Paper} style={{ overflowX: 'auto' }}>
                 <Table sx={{ minWidth: 300 }} aria-label="active projects table">
                   <TableHead>
                     <TableRow>
@@ -279,7 +279,7 @@ function emitterDashboard({
                       <TableCell align="right">Crediting Period</TableCell>
                     </TableRow>
                   </TableHead>
-                  <TableBody style={{ textAlign: 'center'}}>
+                  <TableBody style={{ textAlign: 'center' }}>
                     {activeAndVerifiedRows && activeAndVerifiedRows.length > 0 ? (
                       activeAndVerifiedRows.slice(0, 4).map((row, index) => (
                         <TableRow
@@ -362,23 +362,33 @@ function emitterDashboard({
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {transactionsToDisplay.map((transaction, index) => (
-                    <TableRow
-                      key={index}
-                      sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                    >
-                      <TableCell align="center" sx={{ borderBottom: '1px solid rgba(224, 224, 224, 1)' }}>
-                        {shortenName(transaction.project_name)}
-                      </TableCell>
-                      <TableCell align="center" component="th" scope="row" sx={{ borderBottom: '1px solid rgba(224, 224, 224, 1)' }}>
-                        {transaction.credit_amount}
-                      </TableCell>
-                      <TableCell align="center" sx={{ borderBottom: '1px solid rgba(224, 224, 224, 1)' }}>{formatDate(transaction.date_bought)}</TableCell>
-                      <TableCell align="center" sx={{ borderBottom: '1px solid rgba(224, 224, 224, 1)' }}>
-                        {shortenAddress(transaction.transaction_hash)}
+                  {transactionsToDisplay.length > 0 ? (
+                    transactionsToDisplay.map((transaction, index) => (
+                      <TableRow
+                        key={index}
+                        sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                      >
+                        <TableCell align="center" sx={{ borderBottom: '1px solid rgba(224, 224, 224, 1)' }}>
+                          {shortenName(transaction.project_name)}
+                        </TableCell>
+                        <TableCell align="center" component="th" scope="row" sx={{ borderBottom: '1px solid rgba(224, 224, 224, 1)' }}>
+                          {transaction.credit_amount}
+                        </TableCell>
+                        <TableCell align="center" sx={{ borderBottom: '1px solid rgba(224, 224, 224, 1)' }}>{formatDate(transaction.date_bought)}</TableCell>
+                        <TableCell align="center" sx={{ borderBottom: '1px solid rgba(224, 224, 224, 1)' }}>
+                          <a href={`https://sepolia.etherscan.io/tx/${transaction.transaction_hash}`} target="_blank" rel="noopener noreferrer" style={{ color: 'blue', textDecoration: 'underline' }}>
+                            {shortenAddress(transaction.transaction_hash)}
+                          </a>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  ) : (
+                    <TableRow>
+                      <TableCell colSpan={4} align="center" sx={{ borderBottom: '1px solid rgba(224, 224, 224, 1)' }}>
+                        No transactions found
                       </TableCell>
                     </TableRow>
-                  ))}
+                  )}
                 </TableBody>
               </Table>
             </TableContainer>

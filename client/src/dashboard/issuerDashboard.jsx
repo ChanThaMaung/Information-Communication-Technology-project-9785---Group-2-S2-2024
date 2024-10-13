@@ -315,6 +315,7 @@ function issuerDashboard({
                   <TableCell align="center" style={{ ...cellStyle, fontWeight: 'bold' }}>Project Name</TableCell>
                   <TableCell align="center" style={{ ...cellStyle, fontWeight: 'bold' }}>Date Issued</TableCell>
                   <TableCell align="center" style={{ ...cellStyle, fontWeight: 'bold' }}>Credit Amount</TableCell>
+                  <TableCell align="center" style={{ ...cellStyle, fontWeight: 'bold' }}>Country</TableCell>
                   <TableCell align="center" style={{ ...cellStyle, fontWeight: 'bold' }}>Active Status</TableCell>
                   <TableCell align="center" style={{ ...cellStyle, fontWeight: 'bold' }}>Period Covered</TableCell>
                   <TableCell align="center" style={{ ...cellStyle, fontWeight: 'bold' }}>Transaction Hash</TableCell>
@@ -328,10 +329,11 @@ function issuerDashboard({
                       <TableCell align="center" style={{ ...cellStyle, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{shortenName(transaction.project_name)}</TableCell>
                       <TableCell align="center" style={{ ...cellStyle }}>{formatDate(transaction.date_issued)}</TableCell>
                       <TableCell align="center" style={{ ...cellStyle }}>{transaction.credit_amount}</TableCell>
+                      <TableCell align="center" style={{ ...cellStyle }}>{transaction.country}</TableCell>
                       <TableCell align="center" style={{ ...cellStyle }}>{transaction.active_status === 0 ? 'Active' : 'Retired'}</TableCell>
                       <TableCell align="center" style={{ ...cellStyle, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{transaction.period_covered}</TableCell>
                       <TableCell align="center" style={{ ...cellStyle }}>
-                        <a href={`https://etherscan.io/tx/${transaction.transaction_hash}`} target="_blank" rel="noopener noreferrer" style={{ color: 'blue', textDecoration: 'underline' }}>
+                        <a href={`https://sepolia.etherscan.io/tx/${transaction.transaction_hash}`} target="_blank" rel="noopener noreferrer" style={{ color: 'blue', textDecoration: 'underline' }}>
                           {shortenAddress(transaction.transaction_hash)}
                         </a>
                       </TableCell>
@@ -361,7 +363,7 @@ function issuerDashboard({
 
       {/* New Create Dialog */}
       <Dialog open={openCreateDialog} onClose={handleCloseCreateDialog} maxWidth="md" fullWidth>
-        <DialogTitle>Create New Transaction</DialogTitle>
+        <DialogTitle>Register Your Projects</DialogTitle>
         <DialogContent>
           <form onSubmit={onSubmit} className="flex flex-col gap-2">
             <div className="flex items-center">

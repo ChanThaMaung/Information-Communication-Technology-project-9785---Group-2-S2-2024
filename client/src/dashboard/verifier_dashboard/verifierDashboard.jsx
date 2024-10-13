@@ -44,7 +44,7 @@ function VerifierDashboard({
     fetchTransactions();
     fetchTransactionCount();
 
-  }, [currentVerifierAccount]);
+  }, [currentVerifierAccount, transactions]);
 
   const fetchTransactionCount = async () => {
     const getUnverified = await getUnverifiedCount();

@@ -9,11 +9,11 @@ import { getUnverifiedIssuer, getUnverifiedCount } from "../../../../server/API/
 import '../css_files/verifierDashboard.css';
 import '../css_files/emitterDashboard.css';
 import { shortenName } from "../../scripts/shortenName";
+
 function VerifierDashboard({
   handleSubmit,
   formatDate,
   currentVerifierAccount,
-
 }) {
   const [searchInput, setSearchInput] = useState("");
   const navigate = useNavigate();
@@ -36,15 +36,17 @@ function VerifierDashboard({
 
 
   useEffect(() => {
-    const fetchTransactions = async () => {
-      setIssuerTransactions(await getUnverifiedIssuer())
-      setTransactions(await verifierAPI.getByAddress(currentVerifierAccount)); // to show in table
-      setAllTransactions(await verifierAPI.getByAddress(currentVerifierAccount)); // to show in search bar
-    };
     fetchTransactions();
     fetchTransactionCount();
+    refreshTransactions();
 
-  }, [currentVerifierAccount, transactions]);
+  }, [currentVerifierAccount]);
+
+  const fetchTransactions = async () => {
+    setIssuerTransactions(await getUnverifiedIssuer())
+    setTransactions(await verifierAPI.getByAddress(currentVerifierAccount)); // to show in table
+    setAllTransactions(await verifierAPI.getByAddress(currentVerifierAccount)); // to show in search bar
+  };
 
   const fetchTransactionCount = async () => {
     const getUnverified = await getUnverifiedCount();
@@ -126,7 +128,7 @@ function VerifierDashboard({
                     fill="#8884d8"
                     paddingAngle={0}
                     dataKey="value"
-                  
+
                   >
                     {pieData.map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} style={{ outline: 'none' }} />
@@ -171,7 +173,7 @@ function VerifierDashboard({
                   </svg>
                 </div>
                 <div className="div-table-container" style={{ height: '300px', overflow: 'auto', width: '100%' }}>
-                  <TableContainer className="table-container" component={Paper} sx={{ overflow: 'initial',width: '100%', borderTop: '2px solid rgba(224, 224, 224, 1)' }}>
+                  <TableContainer className="table-container" component={Paper} sx={{ overflow: 'initial', width: '100%', borderTop: '2px solid rgba(224, 224, 224, 1)' }}>
                     <Table stickyHeader aria-label="recent transactions table">
                       <TableHead>
                         <TableRow>

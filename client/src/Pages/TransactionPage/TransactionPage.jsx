@@ -23,6 +23,7 @@ const useInput = (initialValue = '') => {
     };
 };
 
+
 const formatDateAndTime = (dateString) => {
     const date = new Date(dateString);
     const day = String(date.getDate()).padStart(2, '0');
@@ -462,7 +463,7 @@ function TransactionPage() {
                                         </a>
                                     ) : (
                                         <span style={{ color: 'inherit' }}>
-                                            {transaction.prev_tx === "N/A" ? "N/A" : "No previous transaction"}
+                                            {transaction.prev_tx === "N/A" ? "N/A" : "N/A"}
                                         </span>
                                     )}
                                 </TableCell>

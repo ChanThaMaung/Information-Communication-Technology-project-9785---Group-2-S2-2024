@@ -15,7 +15,7 @@ import VerifierDashboard from "./verifier_dashboard/verifierDashboard";
 import * as issuerAPI from "../../../server/API/Issuer/get_issuer_api"
 import * as emitterAPI from "../../../server/API/Emitter/get_emitter_api"
 import * as verifierAPI from "../../../server/API/Verifier/get_verifier_api"
-import * as allTransactionsAPI from "../../../server/API/get_all_transactions"
+import * as transactionsAPI from "../../../server/API/get_all_transactions"
 console.log("Dashboard rendering");
 
 function Dashboard() {
@@ -155,7 +155,7 @@ function Dashboard() {
         alert("Credit amount is required!");
         return;
       }
- 
+
       if (!formData.date_issued) {
         alert("Date issued is required!");
         return;
@@ -216,16 +216,20 @@ function Dashboard() {
     } else {
       console.log("Unknown account type");
     }
-    const currentDate = new Date();
-    const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
+    const currDate = new Date().toLocaleString('en-AU', {
+      timeZone: 'Australia/Sydney',
+      hour12: false
+    }).replace(/(\d+)\/(\d+)\/(\d+),?\s*(\d+):(\d+):(\d+)/, '$3-$2-$1 $4:$5:$6');
+
     data = {
       transaction_hash: transactionHash,
       address: currentAccount,
-      date_added: formattedDate,
+      date_added: currDate,
       type: accountType
     }
     console.log(data);
-    await allTransactionsAPI.addTransaction(data);
+    if (transactionHash) await transactionsAPI.addTransaction(data);
+    else console.log("No transaction hash");
   };
 
   const renderContent = () => {

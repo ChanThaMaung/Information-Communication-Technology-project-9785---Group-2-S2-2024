@@ -4,7 +4,7 @@ import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper
 import { shortenAddress } from "../scripts/shortenAddress";
 import * as getByAddressAPI from "../../../server/api/Emitter/get_by_address_api";
 import './css_files/emitterDashboard.css';
-import { getTotalCreditsActiveAndVerified, getActiveAndVerifiedRows } from "../../../server/api/Issuer/get_issuer_api";
+import { getTotalCreditsActiveAndVerified, getActiveAndVerifiedRows } from "../../../server/API/Issuer/get_issuer_api";
 import { shortenName } from "../scripts/shortenName";
 
 function emitterDashboard({
@@ -214,7 +214,7 @@ function emitterDashboard({
                     <span style={{ fontSize: '0.9em' }}>
                       {Number(creditsByYear) > yearlyAverage ? '▲' : '▼'}
                     </span>
-                    {`${((creditsByYear / yearlyAverage) * 100).toFixed(2)}% (Last Year's)`}
+                    {`${((creditsByYear / yearlyAverage) * 100 - 100).toFixed(2)}% (Last Year's)`}
                   </>
                 )}
               </p>

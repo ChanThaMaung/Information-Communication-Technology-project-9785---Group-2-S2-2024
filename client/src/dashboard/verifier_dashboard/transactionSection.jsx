@@ -166,6 +166,7 @@ function TransactionSection({
     const [searchInput, setSearchInput] = useState("");
     const [allTransactions, setAllTransactions] = useState([]);
     const [totalVerifiedCredits, setTotalVerifiedCredits] = useState(0);
+    const [percentage, SetPercentage] = useState(0);
 
     useEffect(() => {
         const fetchTotalCredits = async () => {
@@ -174,7 +175,8 @@ function TransactionSection({
         };
         fetchTotalCredits();
         setAllTransactions(issuerTransactions);
-    }, [issuerTransactions]);
+        getPercentage();
+    }, [issuerTransactions, currentVerifierAccount]);
 
     const handleRowClick = (tx) => {
         setSelectedTransaction(tx);
@@ -185,7 +187,9 @@ function TransactionSection({
         setIsPopupOpen(false);
         setSelectedTransaction(null);
     };
-
+    const getPercentage = () => {
+        SetPercentage(Math.round((totalVerifiedIssuer / (unverifiedCount + totalVerifiedIssuer)) * 100));
+    }
     const handleKeyUp = (event) => {
         const inputValue = event.target.value;
         setSearchInput(inputValue);
@@ -251,7 +255,7 @@ function TransactionSection({
                     </div>
                     <div style={{ padding: '1rem', width: '100%', textAlign: 'center' }}>
                         <p className="verifier-bold-text" style={{ paddingLeft: '1.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                            {Math.round((totalVerifiedIssuer / (unverifiedCount + totalVerifiedIssuer)) * 100)} <span className="percentage-text"style={{ fontSize: '1.5rem', marginLeft: '0.5rem' }}>%</span>
+                            {percentage} <span className="percentage-text"style={{ fontSize: '1.5rem', marginLeft: '0.5rem' }}>%</span>
                         </p>
                         <p className="emitter-item-header text-sm justify-center">of Projects Verified</p>
                     </div>

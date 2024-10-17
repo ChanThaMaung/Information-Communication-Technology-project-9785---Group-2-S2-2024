@@ -26,8 +26,8 @@ function issuerDashboard({
     period_covered: "",
     verification_status: "0",
     country: "",
-    bought_by: "N/A",
-    prev_tx: "N/A",
+    bought_by: "",
+    prev_tx: "",
   });
 
   const [formErrors, setFormErrors] = useState({});
@@ -49,6 +49,7 @@ function issuerDashboard({
         }
       }
     }
+
   };
 
   const handleDateRangeChange = (newValue) => {
@@ -71,12 +72,24 @@ function issuerDashboard({
       setIsSubmitting(true);
       try {
         await handleSubmit(formData);
-        handleCloseCreateDialog();
       } catch (error) {
         console.error("Error submitting form:", error);
         // Handle error (e.g., show error message)
       } finally {
         setIsSubmitting(false);
+        handleCloseCreateDialog();
+        formData.project_name = "";
+        formData.credit_amount = "";
+        formData.date_issued = "";
+        formData.active_status = "";
+        formData.period_covered = "";
+        formData.verification_status = "";
+        formData.country = "";
+        formData.bought_by = "";
+        formData.prev_tx = "";
+
+
+
       }
     }
     else {
@@ -198,7 +211,7 @@ function issuerDashboard({
                       {Number(yearlyCredits) >= lastYearCredits ? '▲' : '▼'}
                     </span>
                     <span style={{ fontSize: '0.9rem' }}>
-                      {`${((yearlyCredits / lastYearCredits) * 100).toFixed(2)}% (Last Year)`}
+                      {`${Math.abs((yearlyCredits / lastYearCredits) * 100 - 100).toFixed(2)}% (Last Year)`}
                     </span>
                   </>
                 )}

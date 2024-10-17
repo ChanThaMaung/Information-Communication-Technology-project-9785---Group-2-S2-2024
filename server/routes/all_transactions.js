@@ -24,6 +24,18 @@ function createRouter(pool) {
 		}
 	});
 
+	router.delete('/delete', async (req, res) => {
+		try {
+			const [rows] = await pool.query('DELETE FROM all_transactions WHERE transaction_hash = ""');
+			res.json(rows);
+		}
+		catch (error) {
+			console.error('Error deleting transaction:', error);
+			res.status(500).json({ error: 'Internal server error', details: error.message });
+		}
+	});
+
+
 	return router;
 }
 
